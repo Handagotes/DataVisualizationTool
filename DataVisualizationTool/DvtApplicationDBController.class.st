@@ -68,8 +68,39 @@ DvtApplicationDBController >> dataSets [
 ]
 
 { #category : #api }
+DvtApplicationDBController >> dataSetsOfRequest: request [
+	^ self dataSetsOfRequestWithId: request id
+]
+
+{ #category : #api }
+DvtApplicationDBController >> dataSetsOfRequestWithId: id [
+	| cursor |
+	cursor := connection execute: 'SELECT * FROM dataset WHERE request_id = ?' value: id.
+	^ cursor rowsOfClassFixed: DvtDataSet
+]
+
+{ #category : #api }
 DvtApplicationDBController >> dbFilename [
 	^ 'dvt.db'
+]
+
+{ #category : #api }
+DvtApplicationDBController >> deleteDataSet: dataSet [
+	connection execute: 'DELETE FROM dataset_sample WHERE dataset_id = ?' value: dataSet id.
+	self deleteEntity: dataSet
+]
+
+{ #category : #api }
+DvtApplicationDBController >> deleteRequest: request [
+	connection execute: 'DELETE FROM header_field WHERE request_id = ?' value: request id.
+	self deleteEntity: request.
+]
+
+{ #category : #api }
+DvtApplicationDBController >> deleteSample: sample [
+	connection execute: 'DELETE FROM visualization WHERE sample_id = ?' value: sample id.
+	connection execute: 'DELETE FROM dataset_sample WHERE sample_id = ?' value: sample id.
+	self deleteEntity: sample
 ]
 
 { #category : #private }
@@ -87,6 +118,18 @@ DvtApplicationDBController >> dropTableQueries [
 { #category : #accessing }
 DvtApplicationDBController >> headerFields [
 	^ self selectAllFrom: #header_field entityClass: DvtHeaderField
+]
+
+{ #category : #api }
+DvtApplicationDBController >> headerFieldsOfRequest: request [
+	^ self headerFieldsOfRequestWithId: request id
+]
+
+{ #category : #api }
+DvtApplicationDBController >> headerFieldsOfRequestWithId: id [
+	| cursor |
+	cursor := connection execute: 'SELECT * FROM header_field WHERE request_id = ?' value: id.
+	^ cursor rowsOfClassFixed: DvtHeaderField
 ]
 
 { #category : #api }
@@ -110,4 +153,25 @@ DvtApplicationDBController >> insertVisualization: visualization [
 { #category : #accessing }
 DvtApplicationDBController >> requests [
 	^ self selectAllFrom: #request entityClass: DvtRequest
+]
+
+{ #category : #api }
+DvtApplicationDBController >> updateRequest: request headerFields: headerFields [
+	self updateEntity: request.
+	connection execute: 'DELETE FROM header_field WHERE request_id = ?' value: request id.
+	headerFields do: [ :hf |
+		self insertEntity: hf
+	]
+]
+
+{ #category : #api }
+DvtApplicationDBController >> visualizationsOfSample: sample [
+	^ self visualizationsOfSampleWithId: sample id
+]
+
+{ #category : #api }
+DvtApplicationDBController >> visualizationsOfSampleWithId: id [
+	| cursor |
+	cursor := connection execute: 'SELECT * FROM visualization WHERE sample_id = ?' value: id.
+	^ cursor rowsOfClassFixed: DvtVisualization
 ]

@@ -8,6 +8,14 @@ Class {
 	#category : #'DataVisualizationTool-Entity'
 }
 
+{ #category : #accessing }
+DvtRequest class >> default [
+	^ self new
+		name: '';
+		text: 'http://';
+		yourself
+]
+
 { #category : #api }
 DvtRequest class >> tableName [
 	^ 'request'

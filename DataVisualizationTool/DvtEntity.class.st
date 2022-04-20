@@ -7,6 +7,11 @@ Class {
 	#category : #'DataVisualizationTool-Entity'
 }
 
+{ #category : #accessing }
+DvtEntity class >> default [
+	^ self new
+]
+
 { #category : #api }
 DvtEntity class >> tableName [
 	^ self subclassResponsibility

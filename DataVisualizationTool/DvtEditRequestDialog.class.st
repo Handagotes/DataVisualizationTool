@@ -58,10 +58,7 @@ DvtEditRequestDialog class >> defaultSpec [
 
 { #category : #'instance creation' }
 DvtEditRequestDialog class >> open [
-	^ self open: (DvtRequest new
-		name: '';
-		text: 'http://';
-		yourself)
+	^ self open: DvtRequest default
 ]
 
 { #category : #api }

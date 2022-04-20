@@ -19,7 +19,6 @@ DvtDBController class >> remove [
 DvtDBController >> attributesForEntity: aPMAEntity [
 	| entityClass |
 	entityClass := aPMAEntity class.
-	self inspect.
 	^ attrDict at: entityClass ifAbsentPut: [ | columns |
 		(columns := connection columnNamesFor: entityClass tableName)
 			remove: #id.
@@ -104,9 +103,13 @@ DvtDBController >> insertEntity: aPMAEntity [
 	].
 	traceQueries ifTrue: [ query traceCr ].
 	args := attributes values collect: [ :a | aPMAEntity perform: a ].
-	connection
-		beginTransaction;
-		execute: query with: args.
+	connection beginTransaction.
+	[ 
+		connection execute: query with: args
+	] on: Error do: [ :e |
+		connection rollbackTransaction.
+		e pass
+	].
 	aPMAEntity id: self lastId.
 	connection commitTransaction.
 	^ aPMAEntity id

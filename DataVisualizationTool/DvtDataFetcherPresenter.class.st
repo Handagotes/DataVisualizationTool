@@ -121,6 +121,8 @@ DvtDataFetcherPresenter >> initializeWidgets [
 	dataSetText := self newText.
 	dataSetTable := self newDvtDataSetTable.
 	
+	requestDropList displayBlock: [ :request | '{1} | {2}' format: { request name. request text } ].
+	dataSetDropList displayBlock: [ :dataSet | '{1} {2} | {3}' format: { dataSet fetchDate. dataSet fetchTime. dataSet dataFilePath } ].
 	requestLabel label: 'Запрос:'.
 	dataSetLabel label: 'Набор данных:'.
 	createRequestButton label: 'Создать запрос...'.
@@ -133,10 +135,21 @@ DvtDataFetcherPresenter >> initializeWidgets [
 { #category : #private }
 DvtDataFetcherPresenter >> onCreateRequestButtonAction [
 	| result request headerFields |
-	(result := DvtEditRequestDialog open) ifNil: [ ^ self ].
-	request := result at: 1.
-	headerFields := result at: 2.
-	DvtAppDB insertRequest: request headerFields: headerFields
+	request := DvtRequest default.
+	headerFields := OrderedCollection empty.
+	[ 
+		(result := DvtEditRequestDialog open: request headerFields: headerFields) ifNil: [ ^ self ].
+		request := result at: 1.
+		headerFields := result at: 2.
+		[ 
+			DvtAppDB insertRequest: request headerFields: headerFields.
+			^ self
+		] on: SQLite3ConstraintViolation do: [ 
+			false
+		]
+	] whileFalse: [ 
+		DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name })
+	]
 ]
 
 { #category : #private }
@@ -172,4 +185,14 @@ DvtDataFetcherPresenter >> requestDropList [
 { #category : #accessing }
 DvtDataFetcherPresenter >> requestLabel [
 	^ requestLabel
+]
+
+{ #category : #'as yet unclassified' }
+DvtDataFetcherPresenter >> updateDataSetDropList [
+	
+]
+
+{ #category : #private }
+DvtDataFetcherPresenter >> updateRequestDropList [
+	requestDropList items: DvtAppDB requests
 ]
