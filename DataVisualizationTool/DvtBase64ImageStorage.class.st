@@ -1,0 +1,44 @@
+Class {
+	#name : #DvtBase64ImageStorage,
+	#superclass : #DvtSingleton,
+	#instVars : [
+		'base64Images'
+	],
+	#category : #'DataVisualizationTool-Control'
+}
+
+{ #category : #accessing }
+DvtBase64ImageStorage class >> globalName [
+	^ #DvtImages
+]
+
+{ #category : #api }
+DvtBase64ImageStorage >> graphIconBase64 [
+	^ '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'
+]
+
+{ #category : #initialization }
+DvtBase64ImageStorage >> initialize [
+	base64Images := { 
+		#requestIcon -> self requestIconBase64.
+		#sampleIcon -> self sampleIconBase64.
+		#graphIcon -> self graphIconBase64.
+	} asDictionary
+]
+
+{ #category : #api }
+DvtBase64ImageStorage >> loadImageNamed: imageName [
+	| s |
+	s := base64Images at: imageName ifAbsent: [ ^ nil ].
+	^ Form fromBinaryStream: s base64Decoded readStream
+]
+
+{ #category : #api }
+DvtBase64ImageStorage >> requestIconBase64 [
+	^ 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURTMzMwAAACOWWdUAAAACdFJOU/8A5bcwSgAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAQhJREFUWEftVFsOwzAIa+9/6QEGQiJosz6mfcQqELCxukXbtt/EMvg/g+3ED3Qnyg24JmaYDCtagQcMCFoIrQcbsqNvTT0EF2ZDdvTtsOgBMuSGvs+WOUCG3ND32TIFl2K/NJAvkMNGcwYjZBMo9t82mMD7BmeCZbAMGK8YyI+4gEoaUgOtCZbBjwzov7iyyKjEIL1uQUYl0nI/pTJtuZ9RB+I5PGdQf/BjPGdwFd0byC3hrjmP5kZQ8KNDrT7kpGfpG5w2XuAaGVKnYccAaU3jnGtA+KaWCLRwCHvIaqm1FYeOcKJwyofycEdZJAgD+qDBmI5aO/U3sLWr++0NrmIZLAPGTYN9/wAXdg6n5Nf9YgAAAABJRU5ErkJggg=='
+]
+
+{ #category : #api }
+DvtBase64ImageStorage >> sampleIconBase64 [
+	^ 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAPUExURTMzM8bGxuDg4AAAAAAAAMayKxMAAAAFdFJOU/////8A+7YOUwAAAAlwSFlzAAAOwwAADsMBx2+oZAAAANhJREFUWEftlYEORDAMhrl5/2e+bq2uWzeKniPZlyD+1KdlYVou8gzBZEMVegrmCp1AFAs/GS0ItAE6sQigNlenQ0cQ0r4h4GI3wRyCiPYFagRACcAZMT7E3ICpg4xOdgQm/ARIIaA2me0RkHOCAm8BvDJeCCmRAQpaHOqgxb0Cmn3FU2CiupOvgDKmOwKdRB4oUCsxnfInZRXgBwlS/w4kLxSYcBEUCAFJme4IBccFLRwFct3p5I4OJC8UmMALapwE9MPdYgiGIDIEPxeYwAtqXASX+LdgWb71jB951puvNQAAAABJRU5ErkJggg=='
+]

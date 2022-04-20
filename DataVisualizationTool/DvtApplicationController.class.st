@@ -51,6 +51,7 @@ DvtApplicationController >> launch [
 
 { #category : #private }
 DvtApplicationController >> onAppPresenterClosed: presenter [
+	presenter window = launcher ifTrue: [ ^ self ].
 	appPresenters
 		remove: presenter;
 		ifEmpty: [ DvtAppDB closeConnection ]

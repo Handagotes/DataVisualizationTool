@@ -93,9 +93,9 @@ DvtLauncherPresenter >> initializeWidgets [
 	visualizerButton := self newButton.
 	visualizerText := self newText.
 	
-	dataFetcherButton icon: (Form fromFileNamed: 'request.png').
-	visualizerButton icon: (Form fromFileNamed: 'graph.png').
-	sampleEditorButton icon: (Form fromFileNamed: 'sample.png').
+	dataFetcherButton icon: (DvtImages loadImageNamed: #requestIcon).
+	visualizerButton icon: (DvtImages loadImageNamed: #graphIcon).
+	sampleEditorButton icon: (DvtImages loadImageNamed: #sampleIcon).
 	
 	dataFetcherText
 		disable;
