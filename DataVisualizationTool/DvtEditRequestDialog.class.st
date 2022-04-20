@@ -264,6 +264,7 @@ DvtEditRequestDialog >> okButton [
 
 { #category : #private }
 DvtEditRequestDialog >> onAddButtonAction [
+	headerTextInput text ifEmpty: [ ^ self ].
 	headerFields add: (DvtHeaderField new
 		header: headerTextInput text;
 		field: fieldTextInput text;

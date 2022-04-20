@@ -93,6 +93,7 @@ DvtApplicationDBController >> deleteDataSet: dataSet [
 { #category : #api }
 DvtApplicationDBController >> deleteRequest: request [
 	connection execute: 'DELETE FROM header_field WHERE request_id = ?' value: request id.
+	connection execute: 'DELETE FROM dataset WHERE request_id = ?' value: request id.
 	self deleteEntity: request.
 ]
 

@@ -185,13 +185,17 @@ DvtDataFetcherPresenter >> onDeleteDataSetButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDeleteRequestButtonAction [
-	
+	| request |
+	(request := requestDropList selectedItem) ifNil: [ ^ self ].
+	(DvtYesNoDialog open: 'Удалить запрос и все полученные им наборы данных?') ifFalse: [ ^ self ].
+	DvtAppDB deleteRequest: request.
+	self updateRequestDropList
 ]
 
 { #category : #private }
 DvtDataFetcherPresenter >> onEditRequestButtonAction [
 	| request headerFields |
-	request := requestDropList selectedItem.
+	(request := requestDropList selectedItem) ifNil: [ ^ self ].
 	headerFields := DvtAppDB headerFieldsOfRequest: request.
 	self editRequest: request headerFields: headerFields create: false
 ]
