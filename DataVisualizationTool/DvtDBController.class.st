@@ -19,10 +19,15 @@ DvtDBController class >> remove [
 DvtDBController >> attributesForEntity: aPMAEntity [
 	| entityClass |
 	entityClass := aPMAEntity class.
+	self inspect.
 	^ attrDict at: entityClass ifAbsentPut: [ | columns |
 		(columns := connection columnNamesFor: entityClass tableName)
 			remove: #id.
-		(columns collect: [ :c | c -> c snakeToCamel uncapitalized asSymbol ]) asDictionary
+		(columns collect: [ :c | | snake camel |
+			snake := '"{1}"' format: { c }.
+			camel := c snakeToCamel uncapitalized asSymbol.
+			snake -> camel
+		]) asDictionary
 	]
 ]
 

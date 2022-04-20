@@ -90,13 +90,16 @@ DvtApplicationDBController >> headerFields [
 ]
 
 { #category : #api }
-DvtApplicationDBController >> insertHeaderField: headerField [
-	^ self insertEntity: headerField
-]
-
-{ #category : #api }
-DvtApplicationDBController >> insertRequest: request [
-	^ self insertEntity: request
+DvtApplicationDBController >> insertRequest: request headerFields: headerFields [
+	| id |
+	id := self insertEntity: request.
+	
+	headerFields do: [ :hf |
+		hf requestId: id.
+		self insertEntity: hf
+	].
+	
+	^ id
 ]
 
 { #category : #api }

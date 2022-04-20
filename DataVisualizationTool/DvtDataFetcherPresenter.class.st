@@ -136,7 +136,7 @@ DvtDataFetcherPresenter >> onCreateRequestButtonAction [
 	(result := DvtEditRequestDialog open) ifNil: [ ^ self ].
 	request := result at: 1.
 	headerFields := result at: 2.
-	
+	DvtAppDB insertRequest: request headerFields: headerFields
 ]
 
 { #category : #private }
