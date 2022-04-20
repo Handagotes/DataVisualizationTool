@@ -36,6 +36,14 @@ DvtApplicationController >> close [
 	launcher := nil
 ]
 
+{ #category : #accessing }
+DvtApplicationController >> description [
+	^ '{1} ({2})
+Данил Захаров, г. Нижневартовск, НВГУ
+danilzakharovm@yandex.ru
+2022' format: { self appName. self version }
+]
+
 { #category : #initialization }
 DvtApplicationController >> initialize [
 	launcher := nil.

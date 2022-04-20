@@ -14,10 +14,7 @@ DvtPresenter >> initializePresenter [
 		self onWindowOpened
 	].
 	
-	self aboutText: ('{1} ({2})
-Данил Захаров, г. Нижневартовск, НВГУ
-danilzakharovm@yandex.ru
-2022' format: {DvtApp appName. DvtApp version})
+	self aboutText: DvtApp description
 ]
 
 { #category : #private }
