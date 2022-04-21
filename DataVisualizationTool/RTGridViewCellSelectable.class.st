@@ -63,6 +63,7 @@ RTGridViewCellSelectable >> gridView: anObject [
 { #category : #initialization }
 RTGridViewCellSelectable >> initialize [
 	super initialize.
+	ignoreDragging := true.
 	dragStartBlock := [ :e |
 		ignoreDragging := false.
 		self processDragStart: e positionFromCamera

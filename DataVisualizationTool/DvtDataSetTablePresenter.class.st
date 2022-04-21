@@ -46,10 +46,7 @@ DvtDataSetTablePresenter >> goBackButton [
 
 { #category : #initialization }
 DvtDataSetTablePresenter >> initializeDataGrid [
-	dataGrid := self instantiate: DataGridPresenter.
-	dataGrid tsvData: 'a,hitherimdanil,c
-d,e,f
-gggggggg,h,i'
+	dataGrid := self instantiate: DataGridPresenter
 ]
 
 { #category : #initialization }

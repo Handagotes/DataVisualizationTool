@@ -228,7 +228,8 @@ DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 		^ self
 	].
 	
-	dataSetText text: response contents
+	dataSetText text: response contents.
+	dataSetTable dataGrid tsvData: response contents
 ]
 
 { #category : #private }

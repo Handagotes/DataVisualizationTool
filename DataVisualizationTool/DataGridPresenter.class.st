@@ -6,6 +6,7 @@ Class {
 		'dataGridView',
 		'gridInteraction',
 		'selectableInteraction',
+		'draggableViewInteraction',
 		'cellValueBlock',
 		'columnCount',
 		'rowCount',
@@ -77,7 +78,10 @@ DataGridPresenter >> cellValueBlock: a3ArgumentsBlock columnCount: columns rowCo
 		]
 	].
 	
-	self updateCells
+	self
+		updateCells;
+		updateCameraLimits;
+		resetCamera
 ]
 
 { #category : #accessing }
@@ -88,7 +92,9 @@ DataGridPresenter >> columnCount [
 { #category : #accessing }
 DataGridPresenter >> columnCount: anObject [
 	columnCount := anObject.
-	self updateCells
+	self
+		updateCells;
+		updateCameraLimits
 ]
 
 { #category : #accessing }
@@ -115,7 +121,8 @@ DataGridPresenter >> columnWidth [
 
 { #category : #accessing }
 DataGridPresenter >> columnWidth: columnWidth [
-	gridInteraction gridSize: columnWidth @ gridInteraction gridSize y
+	gridInteraction gridSize: columnWidth @ gridInteraction gridSize y.
+	self updateCameraLimits
 ]
 
 { #category : #accessing }
@@ -130,6 +137,7 @@ DataGridPresenter >> createLabelAt: aPoint text: text [
 		model: text;
 		@ (RTPopup text: [ text ]).
 	selectableInteraction coverElementEvents: label.
+	draggableViewInteraction coverElementEvents: label.
 	dataGridView add: label
 ]
 
@@ -154,10 +162,18 @@ DataGridPresenter >> initializeDataGridView [
 	dataGridView := RTView new.
 	gridInteraction := RTRectangularGridView new gridSize: 50 @ 25; mustDrawCenterMarker: false; yourself.
 	selectableInteraction := RTGridViewCellSelectable forGridView: gridInteraction.
+	draggableViewInteraction := RTDraggableViewWithLimit right.
 	dataGridView
 		@ gridInteraction;
 		@ selectableInteraction;
-		when: TRResizeCanvasEvent do: [ :e | self updateCamera ]
+		@ draggableViewInteraction;
+		when: TRMouseDoubleRightClick do: [ :e | self resetCamera ];
+		when: TRResizeCanvasEvent do: [ :e |
+			self updateCameraLimits.
+			draggableViewInteraction isCameraOutsideLimits ifTrue: [ 
+				self resetCamera
+			]
+		]
 ]
 
 { #category : #initialization }
@@ -167,7 +183,7 @@ DataGridPresenter >> initializeWidgets [
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		asSpecAdapter.
-	self updateCamera
+	self updateCameraLimits
 ]
 
 { #category : #private }
@@ -183,6 +199,11 @@ DataGridPresenter >> removeLabelAt: aPoint [
 	label remove
 ]
 
+{ #category : #initialization }
+DataGridPresenter >> resetCamera [
+	dataGridView canvas camera translateTo: draggableViewInteraction limitRect topLeft
+]
+
 { #category : #accessing }
 DataGridPresenter >> rowCount [
 	^ rowCount
@@ -191,7 +212,9 @@ DataGridPresenter >> rowCount [
 { #category : #accessing }
 DataGridPresenter >> rowCount: anObject [
 	rowCount := anObject.
-	self updateCells
+	self
+		updateCells
+		updateCameraLimits
 ]
 
 { #category : #accessing }
@@ -201,7 +224,8 @@ DataGridPresenter >> rowHeight [
 
 { #category : #accessing }
 DataGridPresenter >> rowHeight: rowHeight [
-	gridInteraction gridSize: gridInteraction gridSize x @ rowHeight
+	gridInteraction gridSize: gridInteraction gridSize x @ rowHeight.
+	self updateCameraLimits
 ]
 
 { #category : #accessing }
@@ -245,8 +269,8 @@ DataGridPresenter >> tsvData: aTsvString [
 		input: aTsvString;
 		values.
 	
-	columns := data size.
-	rows := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
+	columns := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
+	rows := data size.
 	
 	self cellValueBlock: [ :column :columnIndex :rowIndex | | row |
 		(row := data at: rowIndex ifAbsent: [ nil ])
@@ -258,8 +282,15 @@ DataGridPresenter >> tsvData: aTsvString [
 ]
 
 { #category : #private }
-DataGridPresenter >> updateCamera [
-	dataGridView canvas camera translateTo: (dataGridView canvas extent / 2) + gridInteraction gridSize - (1 @ 1)
+DataGridPresenter >> updateCameraLimits [
+	| gs topLeft bottomRight |
+	gs := gridInteraction gridSize.
+	topLeft := (dataGridView canvas extent / 2) + gs - (1 @ 1).
+	bottomRight := columnCount
+		ifNotNil: [ (columnCount @ rowCount) * gs ]
+		ifNil: [ gs * 10 ].
+	draggableViewInteraction limitRect: (topLeft corner: bottomRight).
+	draggableViewInteraction limitRect traceCr
 ]
 
 { #category : #updating }
@@ -294,7 +325,9 @@ DataGridPresenter >> updateCells [
 		1 to: rowCount do: [ :row |
 			self updateCellAt: column @ row
 		]
-	]
+	].
+	
+	dataGridView canvas signalUpdate
 ]
 
 { #category : #api }
