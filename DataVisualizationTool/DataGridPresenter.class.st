@@ -159,6 +159,8 @@ DataGridPresenter >> initialize [
 
 { #category : #initialization }
 DataGridPresenter >> initializeDataGridView [
+	| initialResize |
+	initialResize := true.
 	dataGridView := RTView new.
 	gridInteraction := RTRectangularGridView new
 		gridSize: 50 @ 25;
@@ -177,11 +179,13 @@ DataGridPresenter >> initializeDataGridView [
 		when: TRMouseDragging do: [ self updateVisibleCells ];
 		when: TRResizeCanvasEvent do: [ 
 			self updateCameraLimits.
-			draggableViewInteraction isCameraOutsideLimits ifTrue: [ 
-				self
-					resetCamera;
-					updateVisibleCells
-			]
+			
+			(initialResize or: [ draggableViewInteraction isCameraOutsideLimits ]) ifTrue: [ 
+				self resetCamera.
+				initialResize := false
+			].
+			
+			self updateVisibleCells.
 		]
 ]
 
@@ -192,9 +196,6 @@ DataGridPresenter >> initializeWidgets [
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		asSpecAdapter.
-	self
-		updateCameraLimits;
-		resetCamera
 ]
 
 { #category : #private }
@@ -212,8 +213,8 @@ DataGridPresenter >> removeLabelAt: aPoint [
 
 { #category : #initialization }
 DataGridPresenter >> resetCamera [
-	draggableViewInteraction moveCameraToLimitTopLeft.
 	dataGridView canvas camera scale: 1.
+	draggableViewInteraction moveCameraToLimitTopLeft.
 	self updateVisibleCells
 ]
 
@@ -299,11 +300,8 @@ DataGridPresenter >> updateCameraLimits [
 	| gs topLeft bottomRight |
 	gs := gridInteraction gridSize.
 	topLeft := gs - (1 @ 1).
-	bottomRight := columnCount
-		ifNotNil: [ ((columnCount @ rowCount) + (5 @ 5)) * gs ]
-		ifNil: [ gs * 50 ].
-	draggableViewInteraction limitRect: (topLeft corner: bottomRight).
-	draggableViewInteraction limitRect traceCr
+	bottomRight := ((columnCount @ rowCount) + (5 @ 5)) * gs.
+	draggableViewInteraction limitRect: (topLeft corner: bottomRight)
 ]
 
 { #category : #updating }
