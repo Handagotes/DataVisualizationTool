@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'errorImage',
 		'errorLabel',
+		'errorText',
 		'okButton'
 	],
 	#category : #'DataVisualizationTool-Boundary'
@@ -17,8 +18,9 @@ DvtErrorDialog class >> defaultSpec [
 				row
 					add: #errorImage width: self errorIcon width;
 					add: #errorLabel
-			];
-			add: #okButton
+			] height: self labelHeight;
+			add: #errorText;
+			add: #okButton height: self buttonHeight
 	]
 ]
 
@@ -30,7 +32,7 @@ DvtErrorDialog class >> errorIcon [
 { #category : #api }
 DvtErrorDialog class >> open: errorString [
 	^ self openDialogConfiguredAs: [ :dialog :window |
-		dialog errorLabel label: 'Ошибка: ' , errorString.
+		dialog errorText text: errorString.
 		window extent: dialog extent
 	]
 ]
@@ -45,9 +47,14 @@ DvtErrorDialog >> errorLabel [
 	^ errorLabel
 ]
 
+{ #category : #accessing }
+DvtErrorDialog >> errorText [
+	^ errorText
+]
+
 { #category : #api }
 DvtErrorDialog >> extent [
-	^ super extent max: 30 + (self widthOfString: errorLabel label) @ 100
+	^ 400 @ 150
 ]
 
 { #category : #initialization }
@@ -59,9 +66,12 @@ DvtErrorDialog >> initializePresenter [
 DvtErrorDialog >> initializeWidgets [
 	errorImage := self newImage.
 	errorLabel := self newLabel.
+	errorText := self newTextInput.
 	okButton := self newButton.
 	
 	errorImage image: self class errorIcon.
+	errorLabel label: 'Ошибка'.
+	errorText disable.
 	okButton label: 'Ок'.
 	
 	self focusOrder

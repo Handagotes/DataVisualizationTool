@@ -202,7 +202,33 @@ DvtDataFetcherPresenter >> onEditRequestButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
+	| request headerFields client response |
+	(request := requestDropList selectedItem) ifNil: [ ^ self ].
+	headerFields := DvtAppDB headerFieldsOfRequest: request.
 	
+	(client := ZnClient new)
+		beOneShot;
+		url: request text.
+	
+	headerFields
+		sort: [ :a :b | a order < b order ];
+		do: [ :hf | client headerAt: hf header add: hf field ].
+	
+	[ 
+		response := client
+			get;
+			response
+	] on: Error do: [ :e |
+		DvtErrorDialog open: ('Ошибка выполнения запроса: {1}' format: { e messageText }).
+		^ self
+	].
+	
+	response isSuccess ifFalse: [ 
+		DvtErrorDialog open: ('Не удалось получить данные: {1}' format: { response contents }).
+		^ self
+	].
+	
+	dataSetText text: response contents
 ]
 
 { #category : #private }
