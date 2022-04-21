@@ -180,7 +180,7 @@ DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDeleteDataSetButtonAction [
-	
+	dataSetTable dataGrid visibleCellsRect traceCr
 ]
 
 { #category : #private }

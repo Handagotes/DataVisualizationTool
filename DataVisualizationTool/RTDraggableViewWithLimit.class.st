@@ -7,7 +7,6 @@ Class {
 		'move',
 		'mouseBlock',
 		'draggingBlock',
-		'afterDraggingBlock',
 		'dragEndBlock'
 	],
 	#category : #'DataVisualizationTool-Util'
@@ -46,8 +45,7 @@ RTDraggableViewWithLimit >> coverElementEvents: anElement [
 	anElement
 		when: self mouse do: mouseBlock;
 		when: TRMouseDragEnd do: dragEndBlock;
-		when: TRMouseDragging do: draggingBlock;
-		when: TRMouseDragging do: afterDraggingBlock
+		when: TRMouseDragging do: draggingBlock
 ]
 
 { #category : #initialization }
@@ -58,15 +56,12 @@ RTDraggableViewWithLimit >> initialize [
 	mouseBlock := [ move := true].
 	dragEndBlock := [ move := false ].
 	draggingBlock := [ :e |
-		move ifTrue: [ 
-			view canvas camera translateBy: e step negated / view canvas camera scale.
-			e signalUpdate
+		move ifTrue: [ | camera |
+			(camera := view canvas camera)
+				translateBy: e step negated / camera scale;
+				translateBy: (camera viewCanvasRect amountToTranslateWithin: limitRect).
+			view canvas signalUpdate
 		]
-	].
-	afterDraggingBlock := [ :e | | camera pos |
-		camera := view canvas camera.
-		pos := camera position.
-		camera translateTo: (limitRect pointNearestTo: pos)
 	]
 ]
 
@@ -76,15 +71,12 @@ RTDraggableViewWithLimit >> initializeElement: aView [
 	view canvas
 		when: self mouse do: mouseBlock;
 		when: TRMouseDragEnd do: dragEndBlock;
-		when: TRMouseDragging do: draggingBlock;
-		when: TRMouseDragging do: afterDraggingBlock
+		when: TRMouseDragging do: draggingBlock
 ]
 
 { #category : #testing }
 RTDraggableViewWithLimit >> isCameraOutsideLimits [
-	| p |
-	p := view canvas camera position.
-	^ (limitRect containsPoint: p) not
+	^ (limitRect intersects: view canvas camera viewCanvasRect) not
 ]
 
 { #category : #accessing }
@@ -95,4 +87,14 @@ RTDraggableViewWithLimit >> limitRect [
 { #category : #accessing }
 RTDraggableViewWithLimit >> limitRect: anObject [
 	limitRect := anObject
+]
+
+{ #category : #api }
+RTDraggableViewWithLimit >> moveCameraToLimitCenter [
+	view canvas camera translateTo: limitRect center
+]
+
+{ #category : #api }
+RTDraggableViewWithLimit >> moveCameraToLimitTopLeft [
+	view canvas camera translateTo: limitRect topLeft + (view canvas extent // 2)
 ]

@@ -11,7 +11,8 @@ Class {
 		'ignoreDragging',
 		'dragStartBlock',
 		'draggingBlock',
-		'leftClickBlock'
+		'leftClickBlock',
+		'rightDragStartBlock'
 	],
 	#category : #'DataVisualizationTool-Util'
 }
@@ -40,7 +41,8 @@ RTGridViewCellSelectable >> coverElementEvents: anElement [
 	anElement
 		when: TRMouseLeftDragStart do: dragStartBlock;
 		when: TRMouseDragging do: draggingBlock;
-		when: TRMouseLeftClick do: leftClickBlock
+		when: TRMouseLeftClick do: leftClickBlock;
+		when: TRMouseRightDragStart do: rightDragStartBlock
 ]
 
 { #category : #accessing }
@@ -75,6 +77,9 @@ RTGridViewCellSelectable >> initialize [
 	].
 	leftClickBlock := [ :e |
 		self processDragStart: e position
+	].
+	rightDragStartBlock := [ :e |
+		ignoreDragging := true
 	]
 ]
 
@@ -84,9 +89,7 @@ RTGridViewCellSelectable >> initializeElement: aView [
 		when: TRMouseLeftDragStart do: dragStartBlock;
 		when: TRMouseDragging do: draggingBlock;
 		when: TRMouseLeftClick do: leftClickBlock;
-		when: TRMouseRightDragStart do: [ :e |
-			ignoreDragging := true
-		]
+		when: TRMouseRightDragStart do: rightDragStartBlock.
 ]
 
 { #category : #private }

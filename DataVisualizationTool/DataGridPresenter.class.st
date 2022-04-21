@@ -135,10 +135,10 @@ DataGridPresenter >> createLabelAt: aPoint text: text [
 	labelsByPoint at: aPoint put: label.
 	label
 		model: text;
-		@ (RTPopup text: [ text ]).
+		@ (RTPopup text: [ text ]);
+		when: TRMouseDragging do: [ self updateVisibleCells ].
 	selectableInteraction coverElementEvents: label.
-	draggableViewInteraction coverElementEvents: label.
-	dataGridView add: label
+	draggableViewInteraction coverElementEvents: label
 ]
 
 { #category : #accessing }
@@ -148,30 +148,39 @@ DataGridPresenter >> dataGridAdapter [
 
 { #category : #initialization }
 DataGridPresenter >> initialize [
-	super initialize.
 	cellValueBlock := nil.
 	rowCount := 0.
 	columnCount := 0.
 	columnsIdxByName := Dictionary new.
 	columnsNamesByIdx := Dictionary new.
 	labelsByPoint := Dictionary new.
+	super initialize.
 ]
 
 { #category : #initialization }
 DataGridPresenter >> initializeDataGridView [
 	dataGridView := RTView new.
-	gridInteraction := RTRectangularGridView new gridSize: 50 @ 25; mustDrawCenterMarker: false; yourself.
+	gridInteraction := RTRectangularGridView new
+		gridSize: 50 @ 25;
+		mustDrawCenterMarker: false;
+		color: Color lightGray;
+		yourself.
 	selectableInteraction := RTGridViewCellSelectable forGridView: gridInteraction.
 	draggableViewInteraction := RTDraggableViewWithLimit right.
 	dataGridView
 		@ gridInteraction;
 		@ selectableInteraction;
 		@ draggableViewInteraction;
-		when: TRMouseDoubleRightClick do: [ :e | self resetCamera ];
-		when: TRResizeCanvasEvent do: [ :e |
+		@ RTZoomableView;
+		when: TRMouseDoubleRightClick do: [ self resetCamera ];
+		when: TRMouseWheelEvent do: [ self updateVisibleCells ];
+		when: TRMouseDragging do: [ self updateVisibleCells ];
+		when: TRResizeCanvasEvent do: [ 
 			self updateCameraLimits.
 			draggableViewInteraction isCameraOutsideLimits ifTrue: [ 
-				self resetCamera
+				self
+					resetCamera;
+					updateVisibleCells
 			]
 		]
 ]
@@ -183,7 +192,9 @@ DataGridPresenter >> initializeWidgets [
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		asSpecAdapter.
-	self updateCameraLimits
+	self
+		updateCameraLimits;
+		resetCamera
 ]
 
 { #category : #private }
@@ -201,7 +212,9 @@ DataGridPresenter >> removeLabelAt: aPoint [
 
 { #category : #initialization }
 DataGridPresenter >> resetCamera [
-	dataGridView canvas camera translateTo: draggableViewInteraction limitRect topLeft
+	draggableViewInteraction moveCameraToLimitTopLeft.
+	dataGridView canvas camera scale: 1.
+	self updateVisibleCells
 ]
 
 { #category : #accessing }
@@ -281,14 +294,14 @@ DataGridPresenter >> tsvData: aTsvString [
 	] columnCount: columns rowCount: rows
 ]
 
-{ #category : #private }
+{ #category : #api }
 DataGridPresenter >> updateCameraLimits [
 	| gs topLeft bottomRight |
 	gs := gridInteraction gridSize.
-	topLeft := (dataGridView canvas extent / 2) + gs - (1 @ 1).
+	topLeft := gs - (1 @ 1).
 	bottomRight := columnCount
-		ifNotNil: [ (columnCount @ rowCount) * gs ]
-		ifNil: [ gs * 10 ].
+		ifNotNil: [ ((columnCount @ rowCount) + (5 @ 5)) * gs ]
+		ifNil: [ gs * 50 ].
 	draggableViewInteraction limitRect: (topLeft corner: bottomRight).
 	draggableViewInteraction limitRect traceCr
 ]
@@ -328,6 +341,44 @@ DataGridPresenter >> updateCells [
 	].
 	
 	dataGridView canvas signalUpdate
+]
+
+{ #category : #api }
+DataGridPresenter >> updateVisibleCells [
+	"This method should be called whenever camera changes position or scale and after canvas resizing"
+	| rect |
+	rect := self visibleCellsRect.
+	
+	dataGridView elements do: [ :e |
+		(e shape class = RTLabel) ifTrue: [ | cellPos |
+			cellPos := gridInteraction cellCoordForPoint: e position.
+			(rect containsPoint: cellPos) ifFalse: [ 
+				dataGridView removeElement: e.
+				e view: nil
+			]
+		]
+	].
+	
+	rect left to: rect right by: 1 do: [ :column |
+		rect top to: rect bottom by: 1 do: [ :row | | label |
+			(label := labelsByPoint at: column @ row ifAbsent: [ nil ]) ifNotNil: [ 
+				label view ifNil: [ 
+					dataGridView add: label.
+					label view: dataGridView
+				]
+			]
+		]
+	].
+	
+	dataGridView canvas signalUpdate
+]
+
+{ #category : #private }
+DataGridPresenter >> visibleCellsRect [
+	| gs viewRect |
+	gs := gridInteraction gridSize.
+	viewRect := dataGridView canvas camera viewCanvasRect.
+	^ (((viewRect topLeft / gs) - (1 @ 1)) corner: (viewRect bottomRight / gs)) rounded
 ]
 
 { #category : #api }
