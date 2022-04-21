@@ -102,11 +102,11 @@ DvtDataFetcherPresenter >> editRequest: r headerFields: hfs create: shouldCreate
 		headerFields := result at: 2.
 		[ 
 			shouldCreate
-				ifTrue: [ DvtAppDB insertRequest: request headerFields: headerFields ];
+				ifTrue: [ DvtAppDB insertRequest: request headerFields: headerFields ]
 				ifFalse: [ DvtAppDB updateRequest: request headerFields: headerFields ].
 			^ self updateRequestDropList
 		] on: SQLite3ConstraintViolation do: [ 
-			DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name }).
+			DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name. }).
 			false
 		]
 	] whileFalse

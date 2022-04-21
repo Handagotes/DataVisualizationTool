@@ -161,6 +161,7 @@ DvtApplicationDBController >> updateRequest: request headerFields: headerFields 
 	self updateEntity: request.
 	connection execute: 'DELETE FROM header_field WHERE request_id = ?' value: request id.
 	headerFields do: [ :hf |
+		hf requestId: request id.
 		self insertEntity: hf
 	]
 ]
