@@ -433,5 +433,6 @@ DvtDataSetTablePresenter >> transposeCheckBox [
 
 { #category : #updating }
 DvtDataSetTablePresenter >> updateNode [
+	node ifNil: [ ^ self ].
 	self node: node
 ]

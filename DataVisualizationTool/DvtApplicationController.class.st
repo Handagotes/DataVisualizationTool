@@ -36,6 +36,11 @@ DvtApplicationController >> close [
 	launcher := nil
 ]
 
+{ #category : #api }
+DvtApplicationController >> dataSetsFolder [
+	^ self folderRoot , 'datasets/'
+]
+
 { #category : #accessing }
 DvtApplicationController >> description [
 	^ '{1} ({2})
@@ -44,7 +49,7 @@ danilzakharovm@yandex.ru
 2022' format: { self appName. self version }
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #api }
 DvtApplicationController >> folderRoot [
 	^ 'data visualization tool/'
 ]

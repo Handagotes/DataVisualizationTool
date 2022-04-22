@@ -20,16 +20,17 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 			request_id integer(10),
 			FOREIGN KEY(request_id) REFERENCES request(id)
 		);
-		CREATE UNIQUE IF NOT EXISTS INDEX dataset_id ON dataset (id);'.
+		CREATE UNIQUE INDEX IF NOT EXISTS dataset_id ON dataset (id);'.
 		'CREATE TABLE IF NOT EXISTS dataset_sample (
 			id integer(10) NOT NULL,
-			datasetid integer(10) NOT NULL,
-			sampleid integer(10) NOT NULL,
-			PRIMARY KEY (id, datasetid, sampleid),
-			FOREIGN KEY(sampleid) REFERENCES sample(id),
-			FOREIGN KEY(datasetid) REFERENCES dataset(id)
+			dataset_id integer(10) NOT NULL,
+			sample_id integer(10) NOT NULL,
+			PRIMARY KEY (id, dataset_id, sample_id),
+			FOREIGN KEY(sample_id) REFERENCES sample(id),
+			FOREIGN KEY(dataset_id) REFERENCES dataset(id)
 		);
-		CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);'.
+		CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);
+		'.
 		'CREATE TABLE IF NOT EXISTS header_field (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			header varchar(255) NOT NULL,

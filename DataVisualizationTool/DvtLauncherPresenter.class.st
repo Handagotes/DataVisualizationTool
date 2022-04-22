@@ -118,6 +118,7 @@ DvtLauncherPresenter >> menu [
 { #category : #private }
 DvtLauncherPresenter >> onClearDBMenuItemAction [
 	(DvtYesNoDialog open: 'Все сохраненные запросы, визуализации и выборки будут уничтожены. Продолжить?' ) ifFalse: [ ^ self ].
+	DvtApp folderRoot asFileReference deleteAll.
 	DvtApp clearDB
 ]
 

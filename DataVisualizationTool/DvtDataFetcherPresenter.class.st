@@ -209,22 +209,31 @@ DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDeleteDataSetButtonAction [
-	dataSetTable dataGrid visibleCellsRect traceCr
+	| dataSet |
+	dataSetDropList selectedIndex isZero ifTrue: [ ^ self ].
+	(DvtYesNoDialog open: 'Набор данных будет удалён из базы данных и из файловой системы. Продолжить?') ifFalse: [ ^ self ].
+	dataSet := dataSetDropList selectedItem.
+	DvtAppDB deleteDataSet: dataSet.
+	dataSet dataFilePath asFileReference delete.
+	self updateDataSetDropList
 ]
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDeleteRequestButtonAction [
 	| request |
-	(request := requestDropList selectedItem) ifNil: [ ^ self ].
+	requestDropList selectedIndex isZero ifTrue: [ ^ self ].
+	request := requestDropList selectedItem.
 	(DvtYesNoDialog open: 'Удалить запрос и все полученные им наборы данных?') ifFalse: [ ^ self ].
 	DvtAppDB deleteRequest: request.
+	DvtApp dataSetsFolder asFileReference deleteAll.
 	self updateRequestDropList
 ]
 
 { #category : #private }
 DvtDataFetcherPresenter >> onEditRequestButtonAction [
 	| request headerFields |
-	(request := requestDropList selectedItem) ifNil: [ ^ self ].
+	requestDropList selectedIndex isZero ifTrue: [ ^ self ].
+	request := requestDropList selectedItem.
 	headerFields := DvtAppDB headerFieldsOfRequest: request.
 	self editRequest: request headerFields: headerFields create: false
 ]
@@ -232,7 +241,8 @@ DvtDataFetcherPresenter >> onEditRequestButtonAction [
 { #category : #private }
 DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 	| request headerFields client response |
-	(request := requestDropList selectedItem) ifNil: [ ^ self ].
+	requestDropList selectedIndex isZero ifTrue: [ ^ self ].
+	request := requestDropList selectedItem.
 	headerFields := DvtAppDB headerFieldsOfRequest: request.
 	
 	(client := ZnClient new)
@@ -324,15 +334,18 @@ DvtDataFetcherPresenter >> requestLabel [
 
 { #category : #private }
 DvtDataFetcherPresenter >> updateDataSetDropList [
-	| request |
-	(request := requestDropList selectedItem) ifNil: [ 
-		dataSetDropList items: #()
-	] ifNotNil: [ 
+	requestDropList selectedIndex isZero ifTrue: [ 
+		dataSetDropList items: OrderedCollection empty
+	] ifFalse: [ | request |
+		request := requestDropList selectedItem.
 		dataSetDropList items: (DvtAppDB dataSetsOfRequest: request)
-	]
+	].
+	dataSetDropList setIndex: 0
 ]
 
 { #category : #private }
 DvtDataFetcherPresenter >> updateRequestDropList [
-	requestDropList items: DvtAppDB requests
+	requestDropList
+		items: DvtAppDB requests;
+		setIndex: 0
 ]
