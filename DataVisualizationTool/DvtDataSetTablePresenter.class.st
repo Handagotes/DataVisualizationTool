@@ -27,8 +27,8 @@ DvtDataSetTablePresenter class >> defaultSpec [
 DvtDataSetTablePresenter >> applyArrayBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := 2.
+	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -39,8 +39,8 @@ DvtDataSetTablePresenter >> applyArrayBlock [
 DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
+	rows := data size.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -51,8 +51,8 @@ DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
 DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data ifNotEmpty: [ data first keys size ] ifEmpty: [ 0 ].
+	rows := data size.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -63,8 +63,8 @@ DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
 DvtDataSetTablePresenter >> applyDictBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data keys size.
+	rows := 2.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -75,8 +75,8 @@ DvtDataSetTablePresenter >> applyDictBlock [
 DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data keys size.
+	rows := data ifNotEmpty: [ data maxValue: [ :e | e size ] ] ifEmpty: [ 0 ].
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -87,8 +87,8 @@ DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 DvtDataSetTablePresenter >> applyTransposedArrayBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data size.
+	rows := 2.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -99,8 +99,8 @@ DvtDataSetTablePresenter >> applyTransposedArrayBlock [
 DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data size.
+	rows := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -111,8 +111,8 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
 DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data size + 1.
+	rows := data ifNotEmpty: [ data first keys size + 1 ] ifEmpty: [ 1 ].
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -123,8 +123,8 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 DvtDataSetTablePresenter >> applyTransposedDictBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := 2.
+	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -135,8 +135,8 @@ DvtDataSetTablePresenter >> applyTransposedDictBlock [
 DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 	| columns rows |
 	
-	columns := 0.
-	rows := 0.
+	columns := data ifNotEmpty: [ (data maxValue: [ :e | e size ]) + 1 ] ifEmpty: [ 1 ].
+	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		
@@ -187,39 +187,6 @@ DvtDataSetTablePresenter >> data: aCollectionOfCollections [
 	].
 	
 	self error: 'Data type must be either dictionary or array.'
-	
-	
-	"transposeCheckBox state ifFalse: [ 
-		data isDictionary ifTrue: [ 
-			columns := data size.
-			rows := (data allSatisfy: [ :e | e isArray ])
-				ifTrue: [ data maxValue: [ :e | e size ] ]
-				ifFalse: [ 2 ]
-		] ifFalse: [ 
-			(data allSatisfy: [ :e | e isDictionary and: [ data first areKeysCompatibleWith: e ] ]) ifTrue: [ 
-				columns := data first keys size.
-				rows := data size
-			] ifFalse: [ 
-				columns := 2.
-				rows := data size + 1
-			]
-		]
-	] ifTrue: [ 
-		data isDictionary ifTrue: [ 
-			rows := data keys size + 1.
-			columns := (data allSatisfy: [ :e | e isArray ])
-				ifTrue: [ (data maxValue: [ :e | e size ]) + 1 ]
-				ifFalse: [ 2 ]
-		] ifFalse: [ 
-			(data allSatisfy: [ :e | e isDictionary and: [ data first areKeysCompatibleWith: e ] ]) ifTrue: [ 
-				columns := data size + 1.
-				rows := data first keys size + 1
-			] ifFalse: [ 
-				columns := data size.
-				rows := 2
-			]
-		]
-	]."
 ]
 
 { #category : #accessing }

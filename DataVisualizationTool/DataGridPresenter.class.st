@@ -282,7 +282,7 @@ DataGridPresenter >> tsvData: aTsvString [
 	data := RTTabTable new
 		input: aTsvString;
 		values.
-	
+	data inspect.
 	columns := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
 	rows := data size.
 	
