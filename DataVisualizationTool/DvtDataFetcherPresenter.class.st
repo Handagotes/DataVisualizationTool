@@ -214,12 +214,14 @@ DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 		sort: [ :a :b | a order < b order ];
 		do: [ :hf | client headerAt: hf header add: hf field ].
 	
+	response := nil.
+	
 	[ 
 		response := client
 			get;
 			response
 	] on: Error do: [ :e |
-		DvtErrorDialog open: ('Ошибка выполнения запроса: {1}' format: { e messageText }).
+		DvtErrorDialog open: ('Произошла ошибка при выполнении запроса, возможно он был неправильно сформулирован. "{1}"' format: { e messageText }).
 		^ self
 	].
 	
@@ -228,8 +230,7 @@ DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 		^ self
 	].
 	
-	dataSetText text: response contents.
-	dataSetTable dataGrid tsvData: response contents
+	self processNewDataSet: response contents
 ]
 
 { #category : #private }
@@ -242,6 +243,11 @@ DvtDataFetcherPresenter >> onWindowOpened [
 	self
 		updateRequestDropList;
 		updateDataSetDropList
+]
+
+{ #category : #private }
+DvtDataFetcherPresenter >> processNewDataSet: dataString [
+	
 ]
 
 { #category : #accessing }

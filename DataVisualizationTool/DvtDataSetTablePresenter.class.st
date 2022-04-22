@@ -42,8 +42,10 @@ DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
 	columns := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
 	rows := data size.
 	
-	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | | row |
+		(row := data at: rowIndex ifAbsent: [ nil ])
+			ifNil: [ nil ]
+			ifNotNil: [ row at: columnIndex ifAbsent: [ nil ] ]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -102,8 +104,10 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
 	columns := data size.
 	rows := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
 	
-	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | | row |
+		(row := data at: columnIndex ifAbsent: [ nil ])
+			ifNil: [ nil ]
+			ifNotNil: [ row at: rowIndex ifAbsent: [ nil ] ]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -232,10 +236,15 @@ DvtDataSetTablePresenter >> onGoBackButtonAction [
 
 { #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
-	
+	self updateData
 ]
 
 { #category : #accessing }
 DvtDataSetTablePresenter >> transposeCheckBox [
 	^ transposeCheckBox
+]
+
+{ #category : #updating }
+DvtDataSetTablePresenter >> updateData [
+	self data: data
 ]
