@@ -230,6 +230,11 @@ DataGridPresenter >> removeLabelAt: aPoint [
 ]
 
 { #category : #initialization }
+DataGridPresenter >> reset [
+	self cellValueBlock: [  ] columnCount: 0 rowCount: 0
+]
+
+{ #category : #initialization }
 DataGridPresenter >> resetCamera [
 	dataGridView canvas camera scale: 1.
 	draggableViewInteraction moveCameraToLimitTopLeft.

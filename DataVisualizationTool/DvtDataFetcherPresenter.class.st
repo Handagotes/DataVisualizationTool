@@ -199,7 +199,11 @@ DvtDataFetcherPresenter >> onCreateRequestButtonAction [
 { #category : #private }
 DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 	| dataSet dataString data |
-	dataSetDropList selectedIndex isZero ifTrue: [ ^ self ].
+	dataSetDropList selectedIndex isZero ifTrue: [ 
+		dataSetText text: String empty.
+		dataSetTable data: nil.
+		^ self
+	].
 	dataSet := dataSetDropList selectedItem.
 	dataString := dataSet dataFilePath asFileReference readStreamDo: [ :rs | rs upToEnd ].
 	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
@@ -225,8 +229,10 @@ DvtDataFetcherPresenter >> onDeleteRequestButtonAction [
 	request := requestDropList selectedItem.
 	(DvtYesNoDialog open: 'Удалить запрос и все полученные им наборы данных?') ifFalse: [ ^ self ].
 	DvtAppDB deleteRequest: request.
-	DvtApp dataSetsFolder asFileReference deleteAll.
-	self updateRequestDropList
+	('{1}{2}/' format: { DvtApp dataSetsFolder. request name }) asFileReference ensureDeleteAll.
+	self
+		updateRequestDropList;
+		updateDataSetDropList
 ]
 
 { #category : #private }
@@ -334,13 +340,13 @@ DvtDataFetcherPresenter >> requestLabel [
 
 { #category : #private }
 DvtDataFetcherPresenter >> updateDataSetDropList [
+	dataSetDropList setIndex: 0.
 	requestDropList selectedIndex isZero ifTrue: [ 
 		dataSetDropList items: OrderedCollection empty
 	] ifFalse: [ | request |
 		request := requestDropList selectedItem.
 		dataSetDropList items: (DvtAppDB dataSetsOfRequest: request)
-	].
-	dataSetDropList setIndex: 0
+	]
 ]
 
 { #category : #private }

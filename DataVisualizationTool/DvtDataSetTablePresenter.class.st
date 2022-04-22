@@ -346,6 +346,12 @@ DvtDataSetTablePresenter >> node: aNode [
 	
 	node := aNode.
 	subNodeDict removeAll.
+	
+	node ifNil: [ 
+		dataGrid reset.
+		^ self
+	].
+	
 	transpose := transposeCheckBox state.
 	
 	node isDictionary ifTrue: [ 
@@ -433,6 +439,5 @@ DvtDataSetTablePresenter >> transposeCheckBox [
 
 { #category : #updating }
 DvtDataSetTablePresenter >> updateNode [
-	node ifNil: [ ^ self ].
 	self node: node
 ]
