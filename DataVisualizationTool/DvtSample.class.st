@@ -8,6 +8,11 @@ Class {
 	#category : #'DataVisualizationTool-Entity'
 }
 
+{ #category : #api }
+DvtSample class >> tableName [
+	^ 'sample'
+]
+
 { #category : #accessing }
 DvtSample >> name [
 	^ name

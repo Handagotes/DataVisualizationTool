@@ -397,5 +397,5 @@ DvtEditRequestDialog >> updateHeadersDataTable [
 
 { #category : #private }
 DvtEditRequestDialog >> updateOkButton [
-	okButton enabled: (nameTextInput text isNotEmpty and: [ requestTextInput text isNotEmpty ])
+	okButton enabled: (nameTextInput text isValidFileName and: [ requestTextInput text isNotEmpty ])
 ]

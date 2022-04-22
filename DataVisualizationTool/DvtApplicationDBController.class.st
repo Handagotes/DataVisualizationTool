@@ -134,6 +134,11 @@ DvtApplicationDBController >> headerFieldsOfRequestWithId: id [
 ]
 
 { #category : #api }
+DvtApplicationDBController >> insertDataSet: dataSet [
+	self insertEntity: dataSet
+]
+
+{ #category : #api }
 DvtApplicationDBController >> insertRequest: request headerFields: headerFields [
 	| id |
 	id := self insertEntity: request.

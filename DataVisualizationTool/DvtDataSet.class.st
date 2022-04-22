@@ -10,6 +10,11 @@ Class {
 	#category : #'DataVisualizationTool-Entity'
 }
 
+{ #category : #api }
+DvtDataSet class >> tableName [
+	^ 'dataset'
+]
+
 { #category : #accessing }
 DvtDataSet >> dataFilePath [
 	^ dataFilePath

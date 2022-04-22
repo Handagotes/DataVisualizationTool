@@ -54,6 +54,28 @@ DvtDataFetcherPresenter class >> defaultSpec [
 	]
 ]
 
+{ #category : #private }
+DvtDataFetcherPresenter class >> parseDataString: dataString [
+	| data |
+	
+	data := nil.
+	
+	[ 
+		data := NeoJSONReader fromString: dataString
+	] on: Error do: [ 
+		[ 
+			data := RTTabTable new
+				input: dataString;
+				values
+		] on: Error do: [ 
+			DvtErrorDialog open: 'Формат полученных данных не поддерживается.'.
+			data := nil
+		]
+	].
+	
+	^ data
+]
+
 { #category : #accessing }
 DvtDataFetcherPresenter >> createRequestButton [
 	^ createRequestButton
@@ -175,7 +197,13 @@ DvtDataFetcherPresenter >> onCreateRequestButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
-	
+	| dataSet dataString data |
+	dataSetDropList selectedIndex isZero ifTrue: [ ^ self ].
+	dataSet := dataSetDropList selectedItem.
+	dataString := dataSet dataFilePath asFileReference readStreamDo: [ :rs | rs upToEnd ].
+	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
+	dataSetText text: dataString.
+	dataSetTable data: data
 ]
 
 { #category : #private }
@@ -247,7 +275,39 @@ DvtDataFetcherPresenter >> onWindowOpened [
 
 { #category : #private }
 DvtDataFetcherPresenter >> processNewDataSet: dataString [
+	| request filePath date time |
 	
+	(self class parseDataString: dataString) ifNil: [ ^ self ].
+	
+	request := requestDropList selectedItem.
+	date := Date today.
+	time := Time now.
+	filePath := String streamContents: [ :ws |
+		ws
+			nextPutAll: DvtApp folderRoot;
+			nextPutAll: 'datasets/';
+			nextPutAll: request name;
+			nextPut: $/;
+			nextPutAll: date yyyymmdd;
+			nextPut: $_;
+			nextPutAll: (time print24 replaceAll: $: with: $-);
+			nextPutAll: '.txt'
+	].
+	
+	filePath asFileReference
+		ensureCreateFile;
+		writeStreamDo: [ :ws |
+			ws nextPutAll: dataString
+		].
+	
+	DvtAppDB insertDataSet: (DvtDataSet new
+		requestId: request id;
+		fetchDate: date;
+		fetchTime: time;
+		dataFilePath: filePath;
+		yourself).
+	
+	self updateDataSetDropList
 ]
 
 { #category : #accessing }
@@ -262,7 +322,12 @@ DvtDataFetcherPresenter >> requestLabel [
 
 { #category : #private }
 DvtDataFetcherPresenter >> updateDataSetDropList [
-	
+	| request |
+	(request := requestDropList selectedItem) ifNil: [ 
+		dataSetDropList items: #()
+	] ifNotNil: [ 
+		dataSetDropList items: (DvtAppDB dataSetsOfRequest: request)
+	]
 ]
 
 { #category : #private }

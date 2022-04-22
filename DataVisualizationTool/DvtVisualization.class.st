@@ -9,6 +9,11 @@ Class {
 	#category : #'DataVisualizationTool-Entity'
 }
 
+{ #category : #api }
+DvtVisualization class >> tableName [
+	^ 'visualization'
+]
+
 { #category : #accessing }
 DvtVisualization >> name [
 	^ name

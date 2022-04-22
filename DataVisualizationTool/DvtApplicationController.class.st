@@ -44,6 +44,11 @@ danilzakharovm@yandex.ru
 2022' format: { self appName. self version }
 ]
 
+{ #category : #'as yet unclassified' }
+DvtApplicationController >> folderRoot [
+	^ 'data visualization tool/'
+]
+
 { #category : #initialization }
 DvtApplicationController >> initialize [
 	launcher := nil.
