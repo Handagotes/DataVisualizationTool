@@ -283,6 +283,13 @@ DvtDataSetTablePresenter >> initialize [
 { #category : #initialization }
 DvtDataSetTablePresenter >> initializeDataGrid [
 	(dataGrid := self instantiate: DataGridPresenter)
+		cellTextColorBlock: [ :e |
+			(#('<объект>' '<массив>') includes: e) ifTrue: [ 
+				Color fromHexString: '0B4E60' 
+			] ifFalse: [ 
+				Color veryDarkGray
+			]
+		];
 		whenCellDoubleClicked: [ :value :coord |
 			(#('<объект>' '<массив>') includes: value) ifTrue: [ 
 				(subNodeDict includesKey: coord) ifTrue: [ 

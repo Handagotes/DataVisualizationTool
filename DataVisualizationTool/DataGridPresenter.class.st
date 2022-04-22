@@ -12,7 +12,8 @@ Class {
 		'rowCount',
 		'labelsByPoint',
 		'columnsIdxByName',
-		'columnsNamesByIdx'
+		'columnsNamesByIdx',
+		'cellTextColorBlock'
 	],
 	#category : #'DataVisualizationTool-Util'
 }
@@ -33,6 +34,17 @@ DataGridPresenter >> cellSize [
 DataGridPresenter >> cellSize: size [
 	gridInteraction gridSize: size.
 	self updateCells
+]
+
+{ #category : #accessing }
+DataGridPresenter >> cellTextColorBlock [
+	^ cellTextColorBlock
+]
+
+{ #category : #accessing }
+DataGridPresenter >> cellTextColorBlock: aBlock [
+	cellTextColorBlock := aBlock.
+	dataGridView canvas signalUpdate
 ]
 
 { #category : #accessing }
@@ -84,6 +96,11 @@ DataGridPresenter >> cellValueBlock: a3ArgumentsBlock columnCount: columns rowCo
 		resetCamera
 ]
 
+{ #category : #private }
+DataGridPresenter >> colorElement: anElement [
+	^ cellTextColorBlock value: anElement
+]
+
 { #category : #accessing }
 DataGridPresenter >> columnCount [
 	^ columnCount
@@ -130,7 +147,7 @@ DataGridPresenter >> createLabelAt: aPoint text: text [
 	| label |
 	(labelsByPoint includesKey: aPoint) ifTrue: [ ^ self ].
 	label := RTLabel new
-		color: Color veryDarkGray;
+		color: [ :e | self colorElement: e ];
 		element.
 	labelsByPoint at: aPoint put: label.
 	label
@@ -154,6 +171,7 @@ DataGridPresenter >> initialize [
 	columnsIdxByName := Dictionary new.
 	columnsNamesByIdx := Dictionary new.
 	labelsByPoint := Dictionary new.
+	cellTextColorBlock := [ :e | Color veryDarkGray ].
 	super initialize.
 ]
 
