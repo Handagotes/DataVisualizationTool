@@ -283,8 +283,9 @@ DataGridPresenter >> selectedCellValues [
 { #category : #enumerating }
 DataGridPresenter >> selectionDo: aBlock [
 	| start end |
-	start := self selectionStart.
-	end := self selectionEnd.
+	start := selectableInteraction selectionStart.
+	end := selectableInteraction selectionEnd.
+	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
 	start x to: end x do: [ :x |
 		start y to: end y do: [ :y | | p v |
 			p := x @ y.

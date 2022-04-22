@@ -3,7 +3,7 @@ Class {
 	#superclass : #DvtEntity,
 	#instVars : [
 		'name',
-		'sample_file_path'
+		'sampleFilePath'
 	],
 	#category : #'DataVisualizationTool-Entity'
 }
@@ -24,11 +24,11 @@ DvtSample >> name: anObject [
 ]
 
 { #category : #accessing }
-DvtSample >> sample_file_path [
-	^ sample_file_path
+DvtSample >> sampleFilePath [
+	^ sampleFilePath
 ]
 
 { #category : #accessing }
-DvtSample >> sample_file_path: anObject [
-	sample_file_path := anObject
+DvtSample >> sampleFilePath: anObject [
+	sampleFilePath := anObject
 ]

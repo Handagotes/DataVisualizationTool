@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'name',
 		'script',
-		'sample_id'
+		'sampleId'
 	],
 	#category : #'DataVisualizationTool-Entity'
 }
@@ -25,13 +25,13 @@ DvtVisualization >> name: anObject [
 ]
 
 { #category : #accessing }
-DvtVisualization >> sample_id [
-	^ sample_id
+DvtVisualization >> sampleId [
+	^ sampleId
 ]
 
 { #category : #accessing }
-DvtVisualization >> sample_id: anObject [
-	sample_id := anObject
+DvtVisualization >> sampleId: anObject [
+	sampleId := anObject
 ]
 
 { #category : #accessing }

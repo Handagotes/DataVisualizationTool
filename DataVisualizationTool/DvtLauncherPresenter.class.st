@@ -142,7 +142,7 @@ DvtLauncherPresenter >> onVisualizerButtonAction [
 	DvtApp openVisualizer
 ]
 
-{ #category : #'events-processing' }
+{ #category : #private }
 DvtLauncherPresenter >> onWindowOpened [
 	self window containingWindow
 		beUnresizeable;

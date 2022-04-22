@@ -17,7 +17,7 @@ Class {
 	#category : #'DataVisualizationTool-Util'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
 RTGridViewCellSelectable class >> forGridView: aGridView [
 	^ self new
 		gridView: aGridView;
