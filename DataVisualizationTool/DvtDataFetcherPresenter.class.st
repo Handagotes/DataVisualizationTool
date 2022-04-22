@@ -264,7 +264,8 @@ DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onRequestDropListSelectedItemChanged [
-	
+	requestDropList selectedIndex isZero ifTrue: [ ^ self ].
+	self updateDataSetDropList
 ]
 
 { #category : #private }
