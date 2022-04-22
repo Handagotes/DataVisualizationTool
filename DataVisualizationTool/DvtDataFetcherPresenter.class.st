@@ -142,7 +142,7 @@ DvtDataFetcherPresenter >> editRequestButton [
 
 { #category : #api }
 DvtDataFetcherPresenter >> extent [
-	^ 900 @ 500
+	^ 1150 @ 500
 ]
 
 { #category : #accessing }

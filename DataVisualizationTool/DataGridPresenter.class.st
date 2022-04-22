@@ -261,6 +261,11 @@ DataGridPresenter >> rowHeight: rowHeight [
 ]
 
 { #category : #accessing }
+DataGridPresenter >> selectableInteraction [
+	^ selectableInteraction
+]
+
+{ #category : #accessing }
 DataGridPresenter >> selectedCellValues [
 	| values |
 	values := Dictionary new.
@@ -282,16 +287,6 @@ DataGridPresenter >> selectionDo: aBlock [
 			aBlock value: v value: p
 		]
 	]
-]
-
-{ #category : #accessing }
-DataGridPresenter >> selectionEnd [
-	^ selectableInteraction selectionEnd
-]
-
-{ #category : #accessing }
-DataGridPresenter >> selectionStart [
-	^ selectableInteraction selectionStart
 ]
 
 { #category : #api }
@@ -395,7 +390,7 @@ DataGridPresenter >> visibleCellsRect [
 	| gs viewRect |
 	gs := gridInteraction gridSize.
 	viewRect := dataGridView canvas camera viewCanvasRect.
-	^ (((viewRect topLeft / gs) - (1 @ 1)) corner: (viewRect bottomRight / gs)) rounded
+	^ ((viewRect topLeft // gs) - (1 @ 1)) corner: (viewRect bottomRight // gs)
 ]
 
 { #category : #api }

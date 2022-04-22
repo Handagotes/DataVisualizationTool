@@ -4,6 +4,8 @@ Class {
 	#instVars : [
 		'dataGrid',
 		'goBackButton',
+		'selectRowsButton',
+		'selectColumnsButton',
 		'transposeCheckBox',
 		'data',
 		'node',
@@ -21,6 +23,8 @@ DvtDataSetTablePresenter class >> defaultSpec [
 			newRow: [ :row |
 				row
 					add: #goBackButton;
+					add: #selectColumnsButton;
+					add: #selectRowsButton;
 					add: #transposeCheckBox
 			] height: self toolbarHeight
 	]
@@ -305,6 +309,12 @@ DvtDataSetTablePresenter >> initializePresenter [
 	goBackButton action: [ 
 		self onGoBackButtonAction
 	].
+	selectColumnsButton action: [ 
+		self onSelectColumnsButtonAction
+	].
+	selectRowsButton action: [ 
+		self onSelectRowsButtonAction
+	].
 	transposeCheckBox whenChangedDo: [ 
 		self onTransposeCheckBoxStateChanged
 	].
@@ -315,9 +325,13 @@ DvtDataSetTablePresenter >> initializePresenter [
 DvtDataSetTablePresenter >> initializeWidgets [
 	self initializeDataGrid.
 	goBackButton := self newButton.
+	selectColumnsButton := self newButton.
+	selectRowsButton := self newButton.
 	transposeCheckBox := self newCheckBox.
 	
 	goBackButton label: 'Назад'.
+	selectColumnsButton label: 'Выделить столбцы'.
+	selectRowsButton label: 'Выделить строки'.
 	transposeCheckBox label: 'Транспонировать'.
 ]
 
@@ -376,8 +390,40 @@ DvtDataSetTablePresenter >> onGoBackButtonAction [
 ]
 
 { #category : #private }
+DvtDataSetTablePresenter >> onSelectColumnsButtonAction [
+	| selectableInteraction start end range |
+	selectableInteraction := dataGrid selectableInteraction.
+	start := selectableInteraction selectionStart.
+	end := selectableInteraction selectionEnd.
+	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
+	range := (start x min: end x) @ (start x max: end x).
+	selectableInteraction selectFrom: range x @ 1 to: range y @ dataGrid rowCount
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> onSelectRowsButtonAction [
+	| selectableInteraction start end range |
+	selectableInteraction := dataGrid selectableInteraction.
+	start := selectableInteraction selectionStart.
+	end := selectableInteraction selectionEnd.
+	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
+	range := (start y min: end y) @ (start y max: end y).
+	selectableInteraction selectFrom: 1 @ range x to: dataGrid columnCount @ range y
+]
+
+{ #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
 	self updateNode
+]
+
+{ #category : #accessing }
+DvtDataSetTablePresenter >> selectColumnsButton [
+	^ selectColumnsButton
+]
+
+{ #category : #accessing }
+DvtDataSetTablePresenter >> selectRowsButton [
+	^ selectRowsButton
 ]
 
 { #category : #accessing }

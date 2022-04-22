@@ -24,11 +24,11 @@ RTGridViewCellSelectable class >> forGridView: aGridView [
 		yourself
 ]
 
-{ #category : #resolution }
+{ #category : #api }
 RTGridViewCellSelectable >> clearSelection [
 	selectionElement ifNotNil: [ 
-		selectionElement remove.
-		selectionElement := nil
+		view removeElement: selectionElement.
+		selectionElement view: nil
 	].
 	prevCoord := nil.
 	selectionStart := nil.
@@ -59,7 +59,7 @@ RTGridViewCellSelectable >> gridView [
 
 { #category : #accessing }
 RTGridViewCellSelectable >> gridView: anObject [
-	^ gridView := anObject
+	gridView := anObject.
 ]
 
 { #category : #initialization }
@@ -80,7 +80,12 @@ RTGridViewCellSelectable >> initialize [
 	].
 	rightDragStartBlock := [ :e |
 		ignoreDragging := true
-	]
+	].
+	selectionElement := RTBox new
+		color: Color transparent;
+		borderWidth: 2;
+		borderColor: Color black;
+		element.
 ]
 
 { #category : #hooks }
@@ -94,21 +99,14 @@ RTGridViewCellSelectable >> initializeElement: aView [
 
 { #category : #private }
 RTGridViewCellSelectable >> processDragStart: mousePos [
-	| gridSize coord |
-	
+	| coord gridSize |
 	self clearSelection.
-	gridSize := self gridSize.
-	
-	selectionElement := RTBox new
-		color: Color transparent;
-		borderWidth: 2;
-		borderColor: Color black;
-		width: gridSize x;
-		height: gridSize y;
-		element.
-	
 	view add: selectionElement.
 	coord := gridView cellCoordForPoint: mousePos.
+	gridSize := self gridSize.
+	selectionElement shape
+		width: gridSize x;
+		height: gridSize y.
 	selectionElement translateTo: (gridView pointForCellCoord: coord).
 	prevCoord := coord.
 	selectionStart := coord.
@@ -118,18 +116,28 @@ RTGridViewCellSelectable >> processDragStart: mousePos [
 
 { #category : #private }
 RTGridViewCellSelectable >> processDragging: mousePos [
-	| coord gridSize |
+	| coord |
 	selectionElement ifNil: [ ^ self ].
 	coord := gridView cellCoordForPoint: mousePos.
 	coord = prevCoord ifTrue: [ ^ self ].
-	selectionEnd := coord.
+	self selectFrom: selectionStart to: coord.
+	prevCoord := coord
+]
+
+{ #category : #api }
+RTGridViewCellSelectable >> selectFrom: fromPoint to: toPoint [
+	| gridSize |
+	selectionStart ifNil: [ 
+		view add: selectionElement
+	].
+	selectionStart := fromPoint.
+	selectionEnd := toPoint.
 	gridSize := self gridSize.
 	selectionElement shape
 		width: gridSize x * ((selectionEnd x - selectionStart x) abs + 1);
 		height: gridSize y * ((selectionEnd y - selectionStart y) abs + 1).
 	selectionElement translateTo: ((selectionEnd + selectionStart + (1 @ 1)) / 2) * gridSize.
-	self updateCanvasAndSelection.
-	prevCoord := coord
+	self updateCanvasAndSelection
 ]
 
 { #category : #accessing }

@@ -36,7 +36,7 @@ RTDraggableSnapToRectangularGrid >> initializeElementForCenter: element [
 			d := element encompassingRectangle center.
 			d := d + (element view canvas camera distanceFromPixelToSpace: event step).
 			totalD := totalD + d.
-			d := spacing * (totalD / spacing) rounded.
+			d := spacing * (totalD // spacing).
 			totalD := totalD - d.
 			d := d - element encompassingRectangle center.
 			t translateBy: d.
@@ -60,7 +60,7 @@ RTDraggableSnapToRectangularGrid >> initializeElementForTopLeft: element [
 			d := element encompassingRectangle topLeft.
 			d := d + (element view canvas camera distanceFromPixelToSpace: event step).
 			totalD := totalD + d.
-			d := spacing * (totalD / spacing) rounded.
+			d := spacing * (totalD // spacing).
 			totalD := totalD - d.
 			d := d - element encompassingRectangle topLeft.
 			t translateBy: d.
