@@ -83,7 +83,7 @@ DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
 		rowIndex = 1 ifTrue: [ 
 			node
 				ifEmpty: [ nil ]
-				ifNotEmpty: [ node first keys at: columnIndex ]
+				ifNotEmpty: [ node first keys at: columnIndex ifAbsent: [ nil ] ]
 		] ifFalse: [ | dict |
 			(dict := node at: rowIndex - 1 ifAbsent: [ nil ])
 				ifNil: [ nil ]
@@ -103,9 +103,11 @@ DvtDataSetTablePresenter >> applyDictBlock [
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		rowIndex = 1 ifTrue: [ 
-			node keys at: columnIndex
+			node keys at: columnIndex ifAbsent: [ nil ]
 		] ifFalse: [ 
-			self cellValueFor: (node at: column) coord: columnIndex @ rowIndex
+			rowIndex = 2
+				ifTrue: [ self cellValueFor: (node at: column ifAbsent: [ nil ]) coord: columnIndex @ rowIndex ]
+				ifFalse: [ nil ]
 		]
 	] columnCount: columns rowCount: rows
 ]
@@ -119,10 +121,11 @@ DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
 		rowIndex = 1 ifTrue: [ 
-			node keys at: columnIndex
+			node keys at: columnIndex ifAbsent: [ nil ]
 		] ifFalse: [ | array |
-			array := node at: column.
-			self cellValueFor: (array at: rowIndex - 1 ifAbsent: [ nil ]) coord: columnIndex @ rowIndex
+			(array := node at: column ifAbsent: [ nil ])
+				ifNil: [ nil ]
+				ifNotNil: [ self cellValueFor: (array at: rowIndex - 1 ifAbsent: [ nil ]) coord: columnIndex @ rowIndex ]
 		]
 	] columnCount: columns rowCount: rows
 ]
@@ -138,7 +141,9 @@ DvtDataSetTablePresenter >> applyTransposedArrayBlock [
 		rowIndex = 1 ifTrue: [ 
 			columnIndex
 		] ifFalse: [ 
-			self cellValueFor: (node at: columnIndex ifAbsent: [ nil ]) coord: columnIndex @ rowIndex
+			rowIndex = 2
+				ifTrue: [ self cellValueFor: (node at: columnIndex ifAbsent: [ nil ]) coord: columnIndex @ rowIndex ]
+				ifFalse: [ nil ]
 		]
 	] columnCount: columns rowCount: rows
 ]
@@ -174,14 +179,14 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 				ifTrue: [ 
 					node
 						ifEmpty: [ nil ]
-						ifNotEmpty: [ node first keys at: rowIndex - 1 ]
+						ifNotEmpty: [ node first keys at: rowIndex - 1 ifAbsent: [ nil ] ]
 				]
 				ifFalse: [ | dict |
 					(dict := node at: columnIndex - 1 ifAbsent: [ nil ])
 						ifNil: [ nil ]
 						ifNotNil: [ | key |
 							key := dataGrid cellValueAt: 1 @ rowIndex.
-							self cellValueFor: (dict at: key) coord: columnIndex @ rowIndex
+							self cellValueFor: (dict at: key ifAbsent: [ nil ]) coord: columnIndex @ rowIndex
 						]
 				]
 		]
@@ -206,10 +211,12 @@ DvtDataSetTablePresenter >> applyTransposedDictBlock [
 				]
 		] ifFalse: [ 
 			columnIndex = 1
-				ifTrue: [ node keys at: rowIndex - 1 ]
-				ifFalse: [ | key |
-					key := dataGrid cellValueAt: 1 @ rowIndex.
-					self cellValueFor: (node at: key) coord: columnIndex @ rowIndex
+				ifTrue: [ node keys at: rowIndex - 1 ifAbsent: [ nil ] ]
+				ifFalse: [ 
+					columnIndex = 2 ifTrue: [ | key |
+						key := dataGrid cellValueAt: 1 @ rowIndex.
+						self cellValueFor: (node at: key ifAbsent: [ nil ]) coord: columnIndex @ rowIndex
+					] ifFalse: [ nil ]
 				]
 		]
 	] columnCount: columns rowCount: rows
@@ -229,11 +236,12 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 				ifFalse: [ columnIndex - 1 ]
 		] ifFalse: [ 
 			columnIndex = 1
-				ifTrue: [ node keys at: rowIndex - 1	]
+				ifTrue: [ node keys at: rowIndex - 1 ifAbsent: [ nil ]	]
 				ifFalse: [ | key array |
 					key := dataGrid cellValueAt: 1 @ rowIndex.
-					array := node at: key.
-					self cellValueFor: (array at: columnIndex - 1 ifAbsent: [ nil ]) coord: columnIndex @ rowIndex
+					(array := node at: key ifAbsent: [ nil ])
+						ifNil: [ nil ]
+						ifNotNil: [ self cellValueFor: (array at: columnIndex - 1 ifAbsent: [ nil ]) coord: columnIndex @ rowIndex ]
 				]
 		]
 	] columnCount: columns rowCount: rows

@@ -193,8 +193,8 @@ DataGridPresenter >> initializeDataGridView [
 		@ draggableViewInteraction;
 		@ RTZoomableView;
 		when: TRMouseDoubleRightClick do: [ self resetCamera ];
-		when: TRMouseWheelEvent do: [ self updateVisibleCells ];
 		when: TRMouseDragging do: [ self updateVisibleCells ];
+		when: TRMouseWheelEvent do: [ self updateVisibleCells ];
 		when: TRResizeCanvasEvent do: [ 
 			self updateCameraLimits.
 			
@@ -231,7 +231,7 @@ DataGridPresenter >> removeLabelAt: aPoint [
 
 { #category : #initialization }
 DataGridPresenter >> reset [
-	self cellValueBlock: [  ] columnCount: 0 rowCount: 0
+	self cellValueBlock: [ :a :b :c | ] columnCount: 0 rowCount: 0
 ]
 
 { #category : #initialization }
