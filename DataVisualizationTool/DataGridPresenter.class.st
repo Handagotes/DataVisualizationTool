@@ -328,7 +328,8 @@ DataGridPresenter >> updateCellAt: aPoint [
 DataGridPresenter >> updateCells [
 	labelsByPoint
 		do: [ :label |
-			label remove
+			dataGridView removeElement: label.
+			label view: nil
 		];
 		removeAll.
 	
