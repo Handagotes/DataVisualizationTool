@@ -10,6 +10,14 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
+{ #category : #private }
+DvtDataSetTablePresenter class >> cellValueFor: dataValue [
+	dataValue ifNil: [ ^ nil ].
+	dataValue isDictionary ifTrue: [ ^ '<объект>' ].
+	dataValue isArray ifTrue: [ ^ '<массив>' ].
+	^ dataValue asString
+]
+
 { #category : #specs }
 DvtDataSetTablePresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
@@ -31,7 +39,23 @@ DvtDataSetTablePresenter >> applyArrayBlock [
 	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			columnIndex = 1
+				ifTrue: [ 'Индекс' ]
+				ifFalse: [ 
+					columnIndex = 2
+						ifTrue: [ 'Значение' ]
+						ifFalse: [ nil ]
+				]
+		] ifFalse: [ 
+			columnIndex = 1
+				ifTrue: [ rowIndex - 1 ]
+				ifFalse: [ 
+					columnIndex = 2
+						ifTrue: [ self class cellValueFor: (data at: rowIndex - 1 ifAbsent: [ nil ]) ]
+						ifFalse: [ nil ]
+				]
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -45,7 +69,7 @@ DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | | row |
 		(row := data at: rowIndex ifAbsent: [ nil ])
 			ifNil: [ nil ]
-			ifNotNil: [ row at: columnIndex ifAbsent: [ nil ] ]
+			ifNotNil: [ self class cellValueFor: (row at: columnIndex ifAbsent: [ nil ]) ]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -54,10 +78,20 @@ DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
 	| columns rows |
 	
 	columns := data ifNotEmpty: [ data first keys size ] ifEmpty: [ 0 ].
-	rows := data size.
+	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			data
+				ifEmpty: [ nil ]
+				ifNotEmpty: [ data first keys at: columnIndex ]
+		] ifFalse: [ | dict |
+			(dict := data at: rowIndex - 1 ifAbsent: [ nil ])
+				ifNil: [ nil ]
+				ifNotNil: [ 
+					self class cellValueFor: (dict at: column ifAbsent: [ nil ])
+				]
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -69,7 +103,11 @@ DvtDataSetTablePresenter >> applyDictBlock [
 	rows := 2.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			data keys at: columnIndex
+		] ifFalse: [ 
+			self class cellValueFor: (data at: column)
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -78,10 +116,15 @@ DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 	| columns rows |
 	
 	columns := data keys size.
-	rows := data ifNotEmpty: [ data maxValue: [ :e | e size ] ] ifEmpty: [ 0 ].
+	rows := data ifNotEmpty: [ (data maxValue: [ :e | e size ]) + 1 ] ifEmpty: [ 1 ].
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			data keys at: columnIndex
+		] ifFalse: [ | array |
+			array := data at: column.
+			self class cellValueFor: (array at: rowIndex - 1 ifAbsent: [ nil ])
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -93,7 +136,11 @@ DvtDataSetTablePresenter >> applyTransposedArrayBlock [
 	rows := 2.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			columnIndex
+		] ifFalse: [ 
+			self class cellValueFor: (data at: columnIndex ifAbsent: [ nil ])
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -107,7 +154,7 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | | row |
 		(row := data at: columnIndex ifAbsent: [ nil ])
 			ifNil: [ nil ]
-			ifNotNil: [ row at: rowIndex ifAbsent: [ nil ] ]
+			ifNotNil: [ self class cellValueFor: (row at: rowIndex ifAbsent: [ nil ]) ]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -119,7 +166,26 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 	rows := data ifNotEmpty: [ data first keys size + 1 ] ifEmpty: [ 1 ].
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			columnIndex = 1
+				ifTrue: [ 'Ключ' ]
+				ifFalse: [ columnIndex - 1 ]
+		] ifFalse: [ 
+			columnIndex = 1
+				ifTrue: [ 
+					data
+						ifEmpty: [ nil ]
+						ifNotEmpty: [ self class cellValueFor: (data first keys at: rowIndex - 1) ]
+				]
+				ifFalse: [ | dict |
+					(dict := data at: columnIndex - 1 ifAbsent: [ nil ])
+						ifNil: [ nil ]
+						ifNotNil: [ | key |
+							key := dataGrid cellValueAt: 1 @ rowIndex.
+							self class cellValueFor: (dict at: key)
+						]
+				]
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -131,7 +197,22 @@ DvtDataSetTablePresenter >> applyTransposedDictBlock [
 	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			columnIndex = 1
+				ifTrue: [ 'Ключ' ]
+				ifFalse: [ 
+					columnIndex = 2
+						ifTrue: [ 'Значение' ]
+						ifFalse: [ nil ]
+				]
+		] ifFalse: [ 
+			columnIndex = 1
+				ifTrue: [ data keys at: rowIndex - 1 ]
+				ifFalse: [ | key |
+					key := dataGrid cellValueAt: 1 @ rowIndex.
+					self class cellValueFor: (data at: key)
+				]
+		]
 	] columnCount: columns rowCount: rows
 ]
 
@@ -143,7 +224,19 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 	rows := data size + 1.
 	
 	dataGrid cellValueBlock: [ :column :columnIndex :rowIndex | |  |
-		
+		rowIndex = 1 ifTrue: [ 
+			columnIndex = 1
+				ifTrue: [ 'Ключ' ]
+				ifFalse: [ columnIndex - 1 ]
+		] ifFalse: [ 
+			columnIndex = 1
+				ifTrue: [ data keys at: rowIndex - 1	]
+				ifFalse: [ | key array |
+					key := dataGrid cellValueAt: 1 @ rowIndex.
+					array := data at: key.
+					self class cellValueFor: (array at: columnIndex - 1 ifAbsent: [ nil ])
+				]
+		]
 	] columnCount: columns rowCount: rows
 ]
 

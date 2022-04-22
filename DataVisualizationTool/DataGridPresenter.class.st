@@ -163,7 +163,7 @@ DataGridPresenter >> initializeDataGridView [
 	initialResize := true.
 	dataGridView := RTView new.
 	gridInteraction := RTRectangularGridView new
-		gridSize: 50 @ 25;
+		gridSize: 75 @ 25;
 		mustDrawCenterMarker: false;
 		color: Color lightGray;
 		yourself.

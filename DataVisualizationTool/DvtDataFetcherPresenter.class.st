@@ -61,7 +61,8 @@ DvtDataFetcherPresenter class >> parseDataString: dataString [
 	data := nil.
 	
 	[ 
-		data := NeoJSONReader fromString: dataString
+		data := NeoJSONReader fromString: dataString.
+		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ]
 	] on: Error do: [ 
 		[ 
 			data := RTTabTable new
