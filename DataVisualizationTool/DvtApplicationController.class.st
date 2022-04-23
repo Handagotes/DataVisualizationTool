@@ -100,7 +100,17 @@ DvtApplicationController >> openVisualizer [
 	self openAppPresenter: DvtVisualizerPresenter
 ]
 
+{ #category : #api }
+DvtApplicationController >> samplesFolder [
+	^ self folderRoot , 'samples/'
+]
+
 { #category : #versions }
 DvtApplicationController >> version [
 	^ '1.0'
+]
+
+{ #category : #api }
+DvtApplicationController >> visualizationsFolder [
+	^ self folderRoot , 'visualizations/'
 ]
