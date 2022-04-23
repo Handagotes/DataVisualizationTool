@@ -227,7 +227,10 @@ DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
 		^ self
 	].
-	(sampleData := self class parseDataString: sampleString) ifNil: [ ^ self ].
+	(sampleData := self class tryParseJSON: sampleString) ifNil: [ 
+		DvtErrorDialog open: 'Не удаётся прочитать файл выборки в формате JSON.'.
+		^ self
+	].
 	sampleTable data: sampleData
 ]
 

@@ -13,23 +13,14 @@ DvtPresenter class >> dataSetDropListDisplayBlock [
 DvtPresenter class >> parseDataString: dataString [
 	| data |
 	
-	data := nil.
+	(data := self tryParseJSON: dataString)
+		ifNotNil: [ ^ data ].
 	
-	[ 
-		data := NeoJSONReader fromString: dataString.
-		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ]
-	] on: Error do: [ 
-		[ 
-			data := RTTabTable new
-				input: dataString;
-				values
-		] on: Error do: [ 
-			DvtErrorDialog open: 'Формат полученных данных не поддерживается.'.
-			data := nil
-		]
-	].
+	(data := self tryParseTSV: dataString)
+		ifNotNil: [ ^ data ].
 	
-	^ data
+	DvtErrorDialog open: 'Формат данных не поддерживается.'.
+	^ nil
 ]
 
 { #category : #private }
@@ -40,6 +31,24 @@ DvtPresenter class >> requestDropListDisplayBlock [
 { #category : #private }
 DvtPresenter class >> sampleDropListDisplayBlock [
 	^ [ :sample | '{1} | {2}' format: { sample name. sample sampleFilePath } ]
+]
+
+{ #category : #private }
+DvtPresenter class >> tryParseJSON: dataString [
+	[ | data |
+		data := NeoJSONReader fromString: dataString.
+		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ].
+		^ data
+	] on: Error do: [ ^ nil ]
+]
+
+{ #category : #private }
+DvtPresenter class >> tryParseTSV: dataString [
+	[ 
+		^ RTTabTable new
+			input: dataString;
+			values
+	] on: Error do: [ ^ nil ]
 ]
 
 { #category : #private }
