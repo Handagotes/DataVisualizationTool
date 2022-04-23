@@ -10,6 +10,29 @@ DvtPresenter class >> dataSetDropListDisplayBlock [
 ]
 
 { #category : #private }
+DvtPresenter class >> parseDataString: dataString [
+	| data |
+	
+	data := nil.
+	
+	[ 
+		data := NeoJSONReader fromString: dataString.
+		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ]
+	] on: Error do: [ 
+		[ 
+			data := RTTabTable new
+				input: dataString;
+				values
+		] on: Error do: [ 
+			DvtErrorDialog open: 'Формат полученных данных не поддерживается.'.
+			data := nil
+		]
+	].
+	
+	^ data
+]
+
+{ #category : #private }
 DvtPresenter class >> requestDropListDisplayBlock [
 	^ [ :request | '{1} | {2}' format: { request name. request text } ]
 ]

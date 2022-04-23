@@ -136,8 +136,12 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetLabel label: 'Набор данных:'.
 	dataSetDropList displayBlock: self class dataSetDropListDisplayBlock.
 	
-	copyButton icon: (DvtImages loadImageNamed: #moveIcon).
-	clearButton icon: (DvtImages loadImageNamed: #crossIcon).
+	copyButton
+		icon: (DvtImages loadImageNamed: #moveIcon);
+		help: 'Копировать выделенные ячейки из левой таблицы в правую'.
+	clearButton icon:
+		(DvtImages loadImageNamed: #crossIcon);
+		help: 'Удалить содержимое выделенных ячеек в правой таблице'.
 	
 	sampleLabel label: 'Выборка:'.
 	sampleDropList displayBlock: self class sampleDropListDisplayBlock.
@@ -163,7 +167,15 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onDataSetDropListSelectedItemChanged [
-	
+	| dataSet dataString data |
+	dataSetDropList selectedIndex isZero ifTrue: [ 
+		dataSetTable data: nil.
+		^ self
+	].
+	dataSet := dataSetDropList selectedItem.
+	dataString := dataSet loadDataString.
+	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
+	dataSetTable data: data
 ]
 
 { #category : #private }
@@ -173,12 +185,19 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onRequestDropListSelectedItemChanged [
-	
+	self updateDataSetDropList
 ]
 
 { #category : #private }
 DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 	
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> onWindowOpened [
+	self
+		updateRequestDropList;
+		updateDataSetDropList
 ]
 
 { #category : #accessing }
@@ -204,4 +223,22 @@ DvtSampleEditorPresenter >> sampleLabel [
 { #category : #accessing }
 DvtSampleEditorPresenter >> sampleTable [
 	^ sampleTable
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> updateDataSetDropList [
+	dataSetDropList setIndex: 0.
+	requestDropList selectedIndex isZero ifTrue: [ 
+		dataSetDropList items: OrderedCollection empty
+	] ifFalse: [ | request |
+		request := requestDropList selectedItem.
+		dataSetDropList items: (DvtAppDB dataSetsOfRequest: request)
+	]
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> updateRequestDropList [
+	requestDropList
+		items: DvtAppDB requests;
+		setIndex: 0
 ]

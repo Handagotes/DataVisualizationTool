@@ -54,29 +54,6 @@ DvtDataFetcherPresenter class >> defaultSpec [
 	]
 ]
 
-{ #category : #private }
-DvtDataFetcherPresenter class >> parseDataString: dataString [
-	| data |
-	
-	data := nil.
-	
-	[ 
-		data := NeoJSONReader fromString: dataString.
-		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ]
-	] on: Error do: [ 
-		[ 
-			data := RTTabTable new
-				input: dataString;
-				values
-		] on: Error do: [ 
-			DvtErrorDialog open: 'Формат полученных данных не поддерживается.'.
-			data := nil
-		]
-	].
-	
-	^ data
-]
-
 { #category : #accessing }
 DvtDataFetcherPresenter >> createRequestButton [
 	^ createRequestButton
@@ -185,7 +162,9 @@ DvtDataFetcherPresenter >> initializeWidgets [
 	deleteRequestButton label: 'Удалить запрос'.
 	fetchDataSetButton label: 'Запросить данные'.
 	deleteDataSetButton label: 'Удалить данные'.
-	dataSetText disable; beForCode
+	dataSetText
+		disable;
+		beForCode
 ]
 
 { #category : #private }
