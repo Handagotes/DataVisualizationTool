@@ -14,6 +14,16 @@ DvtPresenter class >> requestDropListDisplayBlock [
 	^ [ :request | '{1} | {2}' format: { request name. request text } ]
 ]
 
+{ #category : #private }
+DvtPresenter class >> sampleDropListDisplayBlock [
+	^ [ :sample | '{1} | {2}' format: { sample name. sample sampleFilePath } ]
+]
+
+{ #category : #private }
+DvtPresenter class >> visualizationDropListDisplayBlock [
+	^ [ :visualization | visualization name ]
+]
+
 { #category : #initialization }
 DvtPresenter >> initializePresenter [
 	self whenBuiltDo: [ 
