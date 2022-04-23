@@ -14,11 +14,11 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 	^ { 
 		'CREATE TABLE IF NOT EXISTS dataset (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			fetch_date date NOT NULL,
-			fetch_time time NOT NULL,
+			fetch_date date NOT NULL, fetch_time time NOT NULL,
 			data_file_path varchar(255) NOT NULL,
 			request_id integer(10),
-			FOREIGN KEY(request_id) REFERENCES request(id)
+			FOREIGN KEY(request_id)
+			REFERENCES request(id)
 		);
 		CREATE UNIQUE INDEX IF NOT EXISTS dataset_id ON dataset (id);'.
 		'CREATE TABLE IF NOT EXISTS dataset_sample (
@@ -29,8 +29,7 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 			FOREIGN KEY(sample_id) REFERENCES sample(id),
 			FOREIGN KEY(dataset_id) REFERENCES dataset(id)
 		);
-		CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);
-		'.
+		CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);'.
 		'CREATE TABLE IF NOT EXISTS header_field (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			header varchar(255) NOT NULL,
@@ -48,14 +47,14 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 		CREATE UNIQUE INDEX IF NOT EXISTS request_id ON request (id);'.
 		'CREATE TABLE IF NOT EXISTS sample (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			name varchar(255) NOT NULL,
-			sample_tsv_path varchar(255) NOT NULL
+			name varchar(255) NOT NULL UNIQUE,
+			sample_file_path varchar(255) NOT NULL
 		);
 		CREATE UNIQUE INDEX IF NOT EXISTS sample_id ON sample (id);'.
 		'CREATE TABLE IF NOT EXISTS visualization (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			name varchar(255) NOT NULL,
-			script varchar(255) NOT NULL,
+			script_file_path varchar(255) NOT NULL,
 			sample_id integer(10) NOT NULL,
 			FOREIGN KEY(sample_id) REFERENCES sample(id)
 		);
@@ -153,6 +152,11 @@ DvtApplicationDBController >> insertRequest: request headerFields: headerFields 
 ]
 
 { #category : #api }
+DvtApplicationDBController >> insertSample: sample [
+	self insertEntity: sample
+]
+
+{ #category : #api }
 DvtApplicationDBController >> insertVisualization: visualization [
 	^ self insertEntity: visualization
 ]
@@ -160,6 +164,11 @@ DvtApplicationDBController >> insertVisualization: visualization [
 { #category : #accessing }
 DvtApplicationDBController >> requests [
 	^ self selectAllFrom: #request entityClass: DvtRequest
+]
+
+{ #category : #accessing }
+DvtApplicationDBController >> samples [
+	^ self selectAllFrom: #sample entityClass: DvtSample
 ]
 
 { #category : #api }

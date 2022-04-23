@@ -45,11 +45,6 @@ DvtDataSet >> fetchTime: anObject [
 	fetchTime := anObject
 ]
 
-{ #category : #'as yet unclassified' }
-DvtDataSet >> loadDataString [
-	^ (DvtApp folderRoot , dataFilePath) asFileReference readStreamDo: [ :rs | rs upToEnd ]
-]
-
 { #category : #accessing }
 DvtDataSet >> requestId [
 	^ requestId

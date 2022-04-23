@@ -162,7 +162,24 @@ DvtSampleEditorPresenter >> onCopyButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onCreateSampleButtonAction [
-	
+	| name sample |
+	name := ''.
+	[ 
+		(name := (DvtTextInputDialog open: 'Введите имя выборки.' default: name)) ifNil: [ ^ self ].
+		sample := (DvtSample new
+			name: name;
+			sampleFilePath: name , '.json';
+			yourself).
+		[ 
+			DvtAppDB insertSample: sample.
+			true
+		] on: SQLite3ConstraintViolation do: [ 
+			DvtErrorDialog open: ('Выборка с именем "{1}" уже существует.' format: { name }).
+			false
+		]
+	] whileFalse.
+	(DvtApp sampleFileRefFor: sample) ensureCreateFile.
+	self updateSampleDropList
 ]
 
 { #category : #private }
@@ -173,14 +190,20 @@ DvtSampleEditorPresenter >> onDataSetDropListSelectedItemChanged [
 		^ self
 	].
 	dataSet := dataSetDropList selectedItem.
-	dataString := dataSet loadDataString.
+	dataString := (DvtApp dataSetFileRefFor: dataSet) contents.
 	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
 	dataSetTable data: data
 ]
 
 { #category : #private }
 DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
-	
+	| sample |
+	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
+	sample := sampleDropList selectedItem.
+	(DvtYesNoDialog open: ('Выборка {1} будет удалёна из базы данных и из файловой системы. Продолжить?' format: { sample name })) ifFalse: [ ^ self ].
+	DvtAppDB deleteSample: sample.
+	(DvtApp sampleFileRefFor: sample) delete.
+	self updateSampleDropList
 ]
 
 { #category : #private }
@@ -190,14 +213,30 @@ DvtSampleEditorPresenter >> onRequestDropListSelectedItemChanged [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
-	
+	| sample sampleString sampleData |
+	sampleDropList selectedIndex isZero ifTrue: [ 
+		sampleTable data: nil.
+		^ self
+	].
+	sampleString := nil.
+	sample := sampleDropList selectedItem.
+	[
+		sampleString := (DvtApp sampleFileRefFor: sample) contents
+	] on: FileDoesNotExistException do: [
+		sampleTable data: nil.
+		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
+		^ self
+	].
+	(sampleData := self class parseDataString: sampleString) ifNil: [ ^ self ].
+	sampleTable data: sampleData
 ]
 
 { #category : #private }
 DvtSampleEditorPresenter >> onWindowOpened [
 	self
 		updateRequestDropList;
-		updateDataSetDropList
+		updateDataSetDropList;
+		updateSampleDropList
 ]
 
 { #category : #accessing }
@@ -239,6 +278,23 @@ DvtSampleEditorPresenter >> updateDataSetDropList [
 { #category : #private }
 DvtSampleEditorPresenter >> updateRequestDropList [
 	requestDropList
-		items: DvtAppDB requests;
-		setIndex: 0
+		setIndex: 0;
+		items: DvtAppDB requests
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> updateSampleDropList [
+	sampleDropList
+		setIndex: 0;
+		items: DvtAppDB samples
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> updateSampleFile [
+	| sample json |
+	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
+	sample := sampleDropList selectedItem.
+	json := NeoJSONWriter toString: sampleTable data.
+	(DvtApp sampleFileRefFor: sample)
+		writeStreamDo: [ :ws | ws nextPutAll: json	]
 ]

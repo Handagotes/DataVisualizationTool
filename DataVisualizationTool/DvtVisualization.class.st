@@ -3,7 +3,7 @@ Class {
 	#superclass : #DvtEntity,
 	#instVars : [
 		'name',
-		'script',
+		'scriptFilePath',
 		'sampleId'
 	],
 	#category : #'DataVisualizationTool-Entity'
@@ -35,11 +35,11 @@ DvtVisualization >> sampleId: anObject [
 ]
 
 { #category : #accessing }
-DvtVisualization >> script [
-	^ script
+DvtVisualization >> scriptFilePath [
+	^ scriptFilePath
 ]
 
 { #category : #accessing }
-DvtVisualization >> script: anObject [
-	script := anObject
+DvtVisualization >> scriptFilePath: anObject [
+	scriptFilePath := anObject
 ]

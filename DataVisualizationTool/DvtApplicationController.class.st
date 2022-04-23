@@ -37,6 +37,11 @@ DvtApplicationController >> close [
 ]
 
 { #category : #api }
+DvtApplicationController >> dataSetFileRefFor: dataSet [
+	^ (self dataSetsFolder , dataSet dataFilePath) asFileReference
+]
+
+{ #category : #api }
 DvtApplicationController >> dataSetsFolder [
 	^ self folderRoot , 'datasets/'
 ]
@@ -101,6 +106,11 @@ DvtApplicationController >> openVisualizer [
 ]
 
 { #category : #api }
+DvtApplicationController >> sampleFileRefFor: sample [
+	^ (self samplesFolder , sample sampleFilePath) asFileReference
+]
+
+{ #category : #api }
 DvtApplicationController >> samplesFolder [
 	^ self folderRoot , 'samples/'
 ]
@@ -108,6 +118,11 @@ DvtApplicationController >> samplesFolder [
 { #category : #versions }
 DvtApplicationController >> version [
 	^ '1.0'
+]
+
+{ #category : #api }
+DvtApplicationController >> visualizationFileRefFor: visualization [
+	^ (self visualizationsFolder , visualization scriptFilePath) asFileReference
 ]
 
 { #category : #api }

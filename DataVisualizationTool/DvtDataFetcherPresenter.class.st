@@ -106,7 +106,7 @@ DvtDataFetcherPresenter >> editRequest: r headerFields: hfs create: shouldCreate
 				ifFalse: [ DvtAppDB updateRequest: request headerFields: headerFields ].
 			^ self updateRequestDropList
 		] on: SQLite3ConstraintViolation do: [ 
-			DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name. }).
+			DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name }).
 			false
 		]
 	] whileFalse
@@ -184,7 +184,7 @@ DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 		^ self
 	].
 	dataSet := dataSetDropList selectedItem.
-	dataString := dataSet loadDataString.
+	dataString := (DvtApp dataSetFileRefFor: dataSet) contents.
 	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
 	dataSetText text: dataString.
 	dataSetTable data: data
@@ -197,7 +197,7 @@ DvtDataFetcherPresenter >> onDeleteDataSetButtonAction [
 	(DvtYesNoDialog open: 'Набор данных будет удалён из базы данных и из файловой системы. Продолжить?') ifFalse: [ ^ self ].
 	dataSet := dataSetDropList selectedItem.
 	DvtAppDB deleteDataSet: dataSet.
-	dataSet dataFilePath asFileReference delete.
+	(DvtApp dataSetFileRefFor: dataSet) delete.
 	self updateDataSetDropList
 ]
 
@@ -271,7 +271,7 @@ DvtDataFetcherPresenter >> onWindowOpened [
 
 { #category : #private }
 DvtDataFetcherPresenter >> processNewDataSet: dataString [
-	| request filePath date time |
+	| request filePath date time dataSet |
 	
 	(self class parseDataString: dataString) ifNil: [ ^ self ].
 	
@@ -280,7 +280,6 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 	time := Time now.
 	filePath := String streamContents: [ :ws |
 		ws
-			nextPutAll: 'datasets/';
 			nextPutAll: request name;
 			nextPut: $/;
 			nextPutAll: date yyyymmdd;
@@ -289,19 +288,20 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 			nextPutAll: '.txt'
 	].
 	
-	(DvtApp folderRoot , filePath)
-		asFileReference
-			ensureCreateFile;
-			writeStreamDo: [ :ws |
-				ws nextPutAll: dataString
-			].
-	
-	DvtAppDB insertDataSet: (DvtDataSet new
+	dataSet := DvtDataSet new
 		requestId: request id;
 		fetchDate: date;
 		fetchTime: time;
 		dataFilePath: filePath;
-		yourself).
+		yourself.
+	
+	DvtAppDB insertDataSet: dataSet.
+	
+	(DvtApp dataSetFileRefFor: dataSet)
+		ensureCreateFile;
+		writeStreamDo: [ :ws |
+			ws nextPutAll: dataString
+		].
 	
 	self updateDataSetDropList
 ]
@@ -330,6 +330,6 @@ DvtDataFetcherPresenter >> updateDataSetDropList [
 { #category : #private }
 DvtDataFetcherPresenter >> updateRequestDropList [
 	requestDropList
-		items: DvtAppDB requests;
-		setIndex: 0
+		setIndex: 0;
+		items: DvtAppDB requests
 ]
