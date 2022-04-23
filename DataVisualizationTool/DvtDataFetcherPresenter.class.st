@@ -184,7 +184,7 @@ DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 		^ self
 	].
 	dataSet := dataSetDropList selectedItem.
-	dataString := (DvtApp folderRoot , dataSet dataFilePath) asFileReference readStreamDo: [ :rs | rs upToEnd ].
+	dataString := dataSet loadDataString.
 	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
 	dataSetText text: dataString.
 	dataSetTable data: data
