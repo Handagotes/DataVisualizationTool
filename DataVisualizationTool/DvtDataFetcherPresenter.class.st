@@ -185,7 +185,7 @@ DvtDataFetcherPresenter >> initializeWidgets [
 	deleteRequestButton label: 'Удалить запрос'.
 	fetchDataSetButton label: 'Запросить данные'.
 	deleteDataSetButton label: 'Удалить данные'.
-	dataSetText disable
+	dataSetText disable; beForCode
 ]
 
 { #category : #private }
@@ -280,7 +280,6 @@ DvtDataFetcherPresenter >> onFetchDataSetButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onRequestDropListSelectedItemChanged [
-	requestDropList selectedIndex isZero ifTrue: [ ^ self ].
 	self updateDataSetDropList
 ]
 

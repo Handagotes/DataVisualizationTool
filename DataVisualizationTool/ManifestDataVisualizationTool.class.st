@@ -23,6 +23,11 @@ ManifestDataVisualizationTool class >> ruleMissingSubclassResponsibilityRuleV1Fa
 ]
 
 { #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleRBLongMethodsRuleV1FalsePositive [
+	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-23T12:25:22.819456+05:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRTInvocationSequenceRuleV1FalsePositive [
 	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-21T17:27:02.580795+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateVisibleCells #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateCellAt: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #selectFrom:to: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #processDragStart: #false)) #'2022-04-22T23:52:21.871938+05:00') )
 ]
