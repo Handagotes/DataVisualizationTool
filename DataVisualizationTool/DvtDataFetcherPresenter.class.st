@@ -205,7 +205,7 @@ DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
 		^ self
 	].
 	dataSet := dataSetDropList selectedItem.
-	dataString := dataSet dataFilePath asFileReference readStreamDo: [ :rs | rs upToEnd ].
+	dataString := (DvtApp folderRoot , dataSet dataFilePath) asFileReference readStreamDo: [ :rs | rs upToEnd ].
 	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
 	dataSetText text: dataString.
 	dataSetTable data: data
@@ -301,7 +301,6 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 	time := Time now.
 	filePath := String streamContents: [ :ws |
 		ws
-			nextPutAll: DvtApp folderRoot;
 			nextPutAll: 'datasets/';
 			nextPutAll: request name;
 			nextPut: $/;
@@ -311,11 +310,12 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 			nextPutAll: '.txt'
 	].
 	
-	filePath asFileReference
-		ensureCreateFile;
-		writeStreamDo: [ :ws |
-			ws nextPutAll: dataString
-		].
+	(DvtApp folderRoot , filePath)
+		asFileReference
+			ensureCreateFile;
+			writeStreamDo: [ :ws |
+				ws nextPutAll: dataString
+			].
 	
 	DvtAppDB insertDataSet: (DvtDataSet new
 		requestId: request id;
