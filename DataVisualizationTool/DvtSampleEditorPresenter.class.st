@@ -56,7 +56,7 @@ DvtSampleEditorPresenter class >> defaultSpec [
 						sampleButtonsRow
 							add: #createSampleButton;
 							add: #deleteSampleButton
-					] height: self toolbarHeight;
+					] height: self buttonHeight;
 					add: #sampleTable
 			]
 	]

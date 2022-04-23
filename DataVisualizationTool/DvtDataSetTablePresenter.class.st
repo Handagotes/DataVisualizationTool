@@ -26,7 +26,7 @@ DvtDataSetTablePresenter class >> defaultSpec [
 					add: #selectColumnsButton;
 					add: #selectRowsButton;
 					add: #transposeCheckBox
-			] height: self toolbarHeight
+			] height: self buttonHeight
 	]
 ]
 
