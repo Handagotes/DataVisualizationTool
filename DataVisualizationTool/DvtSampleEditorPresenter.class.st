@@ -8,6 +8,7 @@ Class {
 		'dataSetDropList',
 		'dataSetTable',
 		'copyButton',
+		'clearButton',
 		'sampleLabel',
 		'sampleDropList',
 		'createSampleButton',
@@ -39,8 +40,11 @@ DvtSampleEditorPresenter class >> defaultSpec [
 			addSplitter;
 			newColumn: [ :column |
 				column
-					add: #copyButton
-			] width: 32;
+					add: #newNullPresenter;
+					add: #copyButton height: 32;
+					add: #clearButton height: 32;
+					add: #newNullPresenter
+			] width: 36;
 			newColumn: [ :column |
 				column
 					newRow: [ :sampleDropListRow |
@@ -56,6 +60,11 @@ DvtSampleEditorPresenter class >> defaultSpec [
 					add: #sampleTable
 			]
 	]
+]
+
+{ #category : #accessing }
+DvtSampleEditorPresenter >> clearButton [
+	^ clearButton
 ]
 
 { #category : #accessing }
@@ -100,6 +109,7 @@ DvtSampleEditorPresenter >> initializePresenter [
 	dataSetDropList whenSelectedItemChanged: [ self onDataSetDropListSelectedItemChanged ].
 	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
 	copyButton action: [ self onCopyButtonAction ].
+	clearButton action: [ self onClearButtonAction ].
 	createSampleButton action: [ self onCreateSampleButtonAction ].
 	deleteSampleButton action: [ self onDeleteSampleButtonAction ]
 ]
@@ -113,6 +123,7 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetTable := self newDvtDataSetTable.
 	
 	copyButton := self newButton.
+	clearButton := self newButton.
 	
 	sampleLabel := self newLabel.
 	sampleDropList := self newDropList.
@@ -125,12 +136,18 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetLabel label: 'Набор данных:'.
 	dataSetDropList displayBlock: self class dataSetDropListDisplayBlock.
 	
-	copyButton label: '[]'.
+	copyButton icon: (DvtImages loadImageNamed: #moveIcon).
+	clearButton icon: (DvtImages loadImageNamed: #crossIcon).
 	
 	sampleLabel label: 'Выборка:'.
 	sampleDropList displayBlock: self class sampleDropListDisplayBlock.
 	createSampleButton label: 'Новая выборка'.
 	deleteSampleButton label: 'Удалить выборку'
+	
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> onClearButtonAction [
 	
 ]
 
