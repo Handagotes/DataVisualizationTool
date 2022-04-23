@@ -152,11 +152,13 @@ DvtSampleEditorPresenter >> initializeWidgets [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onClearButtonAction [
+	sampleTable data ifNil: [ ^ self ].
 	
 ]
 
 { #category : #private }
 DvtSampleEditorPresenter >> onCopyButtonAction [
+	sampleTable data ifNil: [ ^ self ].
 	
 ]
 
@@ -214,16 +216,14 @@ DvtSampleEditorPresenter >> onRequestDropListSelectedItemChanged [
 { #category : #private }
 DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 	| sample sampleString sampleData |
-	sampleDropList selectedIndex isZero ifTrue: [ 
-		sampleTable data: nil.
-		^ self
-	].
+	self updateSampleFile.
+	sampleTable data: nil.
+	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sampleString := nil.
 	sample := sampleDropList selectedItem.
 	[
 		sampleString := (DvtApp sampleFileRefFor: sample) contents
-	] on: FileDoesNotExistException do: [
-		sampleTable data: nil.
+	] on: FileDoesNotExistException do: [ 
 		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
 		^ self
 	].
@@ -296,6 +296,7 @@ DvtSampleEditorPresenter >> updateSampleDropList [
 DvtSampleEditorPresenter >> updateSampleFile [
 	| sample json |
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
+	sampleTable data ifNil: [ ^ self ].
 	sample := sampleDropList selectedItem.
 	json := NeoJSONWriter toString: sampleTable data.
 	(DvtApp sampleFileRefFor: sample)
