@@ -62,6 +62,11 @@ RTGridViewCellSelectable >> gridView: anObject [
 	gridView := anObject.
 ]
 
+{ #category : #testing }
+RTGridViewCellSelectable >> hasSelection [
+	^ selectionStart isNotNil and: [ selectionEnd isNotNil ]
+]
+
 { #category : #initialization }
 RTGridViewCellSelectable >> initialize [
 	super initialize.
@@ -140,9 +145,27 @@ RTGridViewCellSelectable >> selectFrom: fromPoint to: toPoint [
 	self updateCanvasAndSelection
 ]
 
+{ #category : #api }
+RTGridViewCellSelectable >> selectionDo: aBlock [
+	| rect |
+	self hasSelection ifFalse: [ ^ self ].
+	rect := self selectionRect.
+	rect top to: rect bottom by: 1 do: [ :row |
+		rect left to: rect right by: 1 do: [ :column |
+			aBlock value: column @ row
+		]
+	]
+]
+
 { #category : #accessing }
 RTGridViewCellSelectable >> selectionEnd [
 	^ selectionEnd
+]
+
+{ #category : #accessing }
+RTGridViewCellSelectable >> selectionRect [
+	self hasSelection ifFalse: [ ^ nil ].
+	^ selectionStart corner: selectionEnd
 ]
 
 { #category : #accessing }

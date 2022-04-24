@@ -142,6 +142,21 @@ DataGridPresenter >> columnWidth: columnWidth [
 	self updateCameraLimits
 ]
 
+{ #category : #api }
+DataGridPresenter >> copySelectedCellsToClipboard [
+	selectableInteraction hasSelection ifFalse: [ ^ self ].
+	Clipboard clipboardText: (String streamContents: [ :ws | | rowEnd |
+		rowEnd := selectableInteraction selectionRect right.
+		selectableInteraction selectionDo: [ :coord | | cell |
+			(cell := (self cellValueAt: coord)) ifNotNil: [ 
+				ws nextPutAll: cell asString.
+				(coord x = rowEnd) ifFalse: [ ws tab ]
+			].
+			(coord x = rowEnd) ifTrue: [ ws crlf ]
+		]
+	])
+]
+
 { #category : #accessing }
 DataGridPresenter >> createLabelAt: aPoint text: text [
 	| label |
@@ -195,6 +210,12 @@ DataGridPresenter >> initializeDataGridView [
 		when: TRMouseDoubleRightClick do: [ self resetCamera ];
 		when: TRMouseDragging do: [ self updateVisibleCells ];
 		when: TRMouseWheelEvent do: [ self updateVisibleCells ];
+		when: TRMouseEnter do: [ dataGridView canvas morph takeKeyboardFocus ];
+		when: TRKeyDown do: [ :e |
+			(e keyCombination asString = 'Ctrl + c') ifTrue: [ 
+				self copySelectedCellsToClipboard
+			]
+		];
 		when: TRResizeCanvasEvent do: [ 
 			self updateCameraLimits.
 			
@@ -209,11 +230,13 @@ DataGridPresenter >> initializeDataGridView [
 
 { #category : #initialization }
 DataGridPresenter >> initializeWidgets [
+	| m |
 	self initializeDataGridView.
-	dataGridAdapter := dataGridView canvas buildMorph
+	m := dataGridView canvas buildMorph.
+	dataGridAdapter := m
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
-		asSpecAdapter.
+		asSpecAdapter
 ]
 
 { #category : #private }
@@ -274,24 +297,18 @@ DataGridPresenter >> selectableInteraction [
 DataGridPresenter >> selectedCellValues [
 	| values |
 	values := Dictionary new.
-	self selectionDo: [ :value :coord |
+	self selectedCellsDo: [ :value :coord |
 		values add: coord -> value
 	].
 	^ values
 ]
 
 { #category : #enumerating }
-DataGridPresenter >> selectionDo: aBlock [
-	| start end |
-	start := selectableInteraction selectionStart.
-	end := selectableInteraction selectionEnd.
-	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
-	start x to: end x do: [ :x |
-		start y to: end y do: [ :y | | p v |
-			p := x @ y.
-			v := self cellValueAt: p.
-			aBlock value: v value: p
-		]
+DataGridPresenter >> selectedCellsDo: aBlock [
+	selectableInteraction hasSelection ifFalse: [ ^ self ].
+	selectableInteraction selectionDo: [ :coord | | cell |
+		cell := self cellValueAt: coord.
+		aBlock value: cell value: coord 
 	]
 ]
 

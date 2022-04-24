@@ -105,9 +105,12 @@ DvtLauncherPresenter >> initializeWidgets [
 		text: 'Редактор выборки. Комбинирует данные из разных файлов чтобы подготовить их к анализу.'.
 	visualizerText
 		disable;
-		text: 'Визуализатор. Позволяет создавать, настраивать, и экспортировать визуализации.'
+		text: 'Визуализатор. Позволяет создавать, настраивать, и экспортировать визуализации.'.
 	
-	
+	self focusOrder
+		add: dataFetcherButton;
+		add: sampleEditorButton;
+		add: visualizerButton
 ]
 
 { #category : #accessing }

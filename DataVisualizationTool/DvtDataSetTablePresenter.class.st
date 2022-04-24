@@ -341,6 +341,12 @@ DvtDataSetTablePresenter >> initializeWidgets [
 	selectColumnsButton label: 'Выделить столбцы'.
 	selectRowsButton label: 'Выделить строки'.
 	transposeCheckBox label: 'Транспонировать'.
+	
+	self focusOrder
+		add: goBackButton;
+		add: selectColumnsButton;
+		add: selectRowsButton;
+		add: transposeCheckBox
 ]
 
 { #category : #accessing }
@@ -405,24 +411,20 @@ DvtDataSetTablePresenter >> onGoBackButtonAction [
 
 { #category : #private }
 DvtDataSetTablePresenter >> onSelectColumnsButtonAction [
-	| selectableInteraction start end range |
+	| selectableInteraction rect |
 	selectableInteraction := dataGrid selectableInteraction.
-	start := selectableInteraction selectionStart.
-	end := selectableInteraction selectionEnd.
-	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
-	range := (start x min: end x) @ (start x max: end x).
-	selectableInteraction selectFrom: range x @ 1 to: range y @ dataGrid rowCount
+	(selectableInteraction hasSelection) ifFalse: [ ^ self ].
+	rect := selectableInteraction selectionRect.
+	selectableInteraction selectFrom: rect left @ 1 to: rect right @ dataGrid rowCount
 ]
 
 { #category : #private }
 DvtDataSetTablePresenter >> onSelectRowsButtonAction [
-	| selectableInteraction start end range |
+	| selectableInteraction rect|
 	selectableInteraction := dataGrid selectableInteraction.
-	start := selectableInteraction selectionStart.
-	end := selectableInteraction selectionEnd.
-	(start isNil or: [ end isNil ]) ifTrue: [ ^ self ].
-	range := (start y min: end y) @ (start y max: end y).
-	selectableInteraction selectFrom: 1 @ range x to: dataGrid columnCount @ range y
+	(selectableInteraction hasSelection) ifFalse: [ ^ self ].
+	rect := selectableInteraction selectionRect.
+	selectableInteraction selectFrom: 1 @ rect top to: dataGrid columnCount @ rect bottom
 ]
 
 { #category : #private }
