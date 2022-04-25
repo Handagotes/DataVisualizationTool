@@ -199,10 +199,11 @@ DvtSampleEditorPresenter >> onCopyButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onCreateSampleButtonAction [
-	| name sample |
+	| name sample rootNodeType |
 	name := ''.
 	[ 
 		(name := (DvtTextInputDialog open: 'Введите имя выборки.' default: name)) ifNil: [ ^ self ].
+		(rootNodeType := self class openPickNodeTypeDialog) ifNil: [ ^ self ].
 		
 		sample := (DvtSample new
 			name: name;
@@ -216,7 +217,16 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 			false
 		]
 	] whileFalse.
-	(DvtApp sampleFileRefFor: sample) ensureCreateFile.
+	(DvtApp sampleFileRefFor: sample)
+		ensureCreateFile
+		writeStreamDo: [ :ws |
+			ws nextPutAll: ({
+				#dict -> '{}'.
+				#array -> '[]'.
+				#arrayOfArrays -> '[[]]'.
+				#arrayOfDicts -> '[{}]'.
+			} asDictionary at: rootNodeType)
+		].
 	self updateSampleDropList
 ]
 
