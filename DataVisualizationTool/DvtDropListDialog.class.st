@@ -29,21 +29,41 @@ DvtDropListDialog class >> defaultSpec [
 
 { #category : #api }
 DvtDropListDialog class >> open: labelText items: items [
-	^ self open: labelText items: items displayBlock: nil descriptionBlock: nil
+	^ self open: labelText items: items displayBlock: nil descriptionBlock: nil allowCancel: true
+]
+
+{ #category : #api }
+DvtDropListDialog class >> open: labelText items: items allowCancel: allowCancel [
+	^ self open: labelText items: items displayBlock: nil descriptionBlock: nil allowCancel: allowCancel
 ]
 
 { #category : #api }
 DvtDropListDialog class >> open: labelText items: items descriptionBlock: descriptionBlock [
-	^ self open: labelText items: items displayBlock: nil descriptionBlock: descriptionBlock
+	^ self open: labelText items: items displayBlock: nil descriptionBlock: descriptionBlock allowCancel: true
+]
+
+{ #category : #api }
+DvtDropListDialog class >> open: labelText items: items descriptionBlock: descriptionBlock allowCancel: allowCancel [
+	^ self open: labelText items: items displayBlock: nil descriptionBlock: descriptionBlock allowCancel: allowCancel
 ]
 
 { #category : #api }
 DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlock [
-	^ self open: labelText items: items displayBlock: displayBlock descriptionBlock: nil
+	^ self open: labelText items: items displayBlock: displayBlock descriptionBlock: nil allowCancel: true
+]
+
+{ #category : #api }
+DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlock allowCancel: allowCancel [
+	^ self open: labelText items: items displayBlock: displayBlock descriptionBlock: nil allowCancel: allowCancel
 ]
 
 { #category : #api }
 DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlock descriptionBlock: descriptionBlock [
+	^ self open: labelText items: items displayBlock: displayBlock descriptionBlock: descriptionBlock allowCancel: true
+]
+
+{ #category : #api }
+DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlock descriptionBlock: descriptionBlock allowCancel: allowCancel [
 	^ self openDialogConfiguredAs: [ :dialog |
 		dialog label
 			label: labelText.
@@ -51,6 +71,7 @@ DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlo
 			items: items;
 			displayBlock: displayBlock;
 			setIndex: 0.
+		dialog cancelButton enabled: allowCancel.
 		dialog itemDescriptionBlock: descriptionBlock
 	]
 ]
