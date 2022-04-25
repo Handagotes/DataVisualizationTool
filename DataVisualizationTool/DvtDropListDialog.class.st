@@ -68,8 +68,8 @@ DvtDropListDialog class >> open: labelText items: items displayBlock: displayBlo
 		dialog label
 			label: labelText.
 		dialog dropList
+			displayBlock: (displayBlock ifNil: [ [ :e | e asString ] ]);
 			items: items;
-			displayBlock: displayBlock;
 			setIndex: 0.
 		dialog cancelButton enabled: allowCancel.
 		dialog itemDescriptionBlock: descriptionBlock

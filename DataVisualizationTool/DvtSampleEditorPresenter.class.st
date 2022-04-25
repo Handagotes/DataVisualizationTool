@@ -64,6 +64,29 @@ DvtSampleEditorPresenter class >> defaultSpec [
 	]
 ]
 
+{ #category : #private }
+DvtSampleEditorPresenter class >> openPickNodeTypeDialog [
+	^ DvtDropListDialog
+		open: 'Выберите тип узла'
+		items: #(dict array arrayOfArrays arrayOfDicts)
+		displayBlock: [ :option | 
+			{
+				#dict -> 'Объект'.
+				#array -> 'Массив'.
+				#arrayOfArrays -> 'Двумерный массив'.
+				#arrayOfDicts -> 'Массив объектов'.
+			} asDictionary at: option
+		]
+		descriptionBlock: [ :option |
+			{ 
+				#dict -> 'Множество пар ключ - значение. Первая строка - ключи, вторая - соответствующие значения.'.
+				#array -> 'Упорядоченное множество значений. Первый столбец - индекс, второй - значения.'.
+				#arrayOfArrays -> 'Таблица со свободным редактированием ячеек.'.
+				#arrayOfDicts -> 'Таблица объектов с одинаковыми наборами ключей. Первая строка - ключи, вторая - значения первого объекта, третья - второго, и т.д.'.
+			} asDictionary at: option
+		]
+]
+
 { #category : #accessing }
 DvtSampleEditorPresenter >> clearButton [
 	^ clearButton
@@ -180,6 +203,7 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 	name := ''.
 	[ 
 		(name := (DvtTextInputDialog open: 'Введите имя выборки.' default: name)) ifNil: [ ^ self ].
+		
 		sample := (DvtSample new
 			name: name;
 			sampleFilePath: name , '.json';
