@@ -7,6 +7,7 @@ Class {
 		'dataSetLabel',
 		'dataSetDropList',
 		'dataSetTable',
+		'newNodeButton',
 		'copyButton',
 		'clearButton',
 		'sampleLabel',
@@ -41,6 +42,7 @@ DvtSampleEditorPresenter class >> defaultSpec [
 			newColumn: [ :column |
 				column
 					add: #newNullPresenter;
+					add: #newNodeButton height: 32;
 					add: #copyButton height: 32;
 					add: #clearButton height: 32;
 					add: #newNullPresenter
@@ -108,6 +110,7 @@ DvtSampleEditorPresenter >> initializePresenter [
 	requestDropList whenSelectedItemChanged: [ self onRequestDropListSelectedItemChanged ].
 	dataSetDropList whenSelectedItemChanged: [ self onDataSetDropListSelectedItemChanged ].
 	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
+	newNodeButton action: [ self onNewNodeButtonAction ].
 	copyButton action: [ self onCopyButtonAction ].
 	clearButton action: [ self onClearButtonAction ].
 	createSampleButton action: [ self onCreateSampleButtonAction ].
@@ -122,6 +125,7 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetDropList := self newDropList.
 	dataSetTable := self newDvtDataSetTable.
 	
+	newNodeButton := self newButton.
 	copyButton := self newButton.
 	clearButton := self newButton.
 	
@@ -136,6 +140,9 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetLabel label: 'Набор данных:'.
 	dataSetDropList displayBlock: self class dataSetDropListDisplayBlock.
 	
+	newNodeButton
+		icon: (DvtImages loadImageNamed: #newNodeIcon);
+		help: 'Создать новый узел в выделенной ячейке'.
 	copyButton
 		icon: (DvtImages loadImageNamed: #moveIcon);
 		help: 'Копировать выделенные ячейки из левой таблицы в правую'.
@@ -148,6 +155,11 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	createSampleButton label: 'Новая выборка'.
 	deleteSampleButton label: 'Удалить выборку'
 	
+]
+
+{ #category : #accessing }
+DvtSampleEditorPresenter >> newNodeButton [
+	^ newNodeButton
 ]
 
 { #category : #private }
@@ -206,6 +218,11 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 	DvtAppDB deleteSample: sample.
 	(DvtApp sampleFileRefFor: sample) delete.
 	self updateSampleDropList
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> onNewNodeButtonAction [
+	
 ]
 
 { #category : #private }
