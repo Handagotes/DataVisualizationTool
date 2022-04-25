@@ -148,6 +148,6 @@ DvtDropListDialog >> onDropListSelectedItemChanged [
 	i := dropList selectedIndex.
 	okButton enabled: i > 0.
 	itemDescriptionText text: ((i > 0 and: [ itemDescriptionBlock isNotNil ])
-		ifTrue: [ (itemDescriptionBlock value: dropList selectedItem) ]
+		ifTrue: [ itemDescriptionBlock value: dropList selectedItem ]
 		ifFalse: [ '' ])
 ]

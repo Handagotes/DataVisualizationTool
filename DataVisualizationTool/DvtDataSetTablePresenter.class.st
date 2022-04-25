@@ -9,6 +9,7 @@ Class {
 		'transposeCheckBox',
 		'data',
 		'node',
+		'nodeType',
 		'parentStack',
 		'subNodeDict'
 	],
@@ -180,8 +181,7 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 					node
 						ifEmpty: [ nil ]
 						ifNotEmpty: [ node first keys at: rowIndex - 1 ifAbsent: [ nil ] ]
-				]
-				ifFalse: [ | dict |
+				] ifFalse: [ | dict |
 					(dict := node at: columnIndex - 1 ifAbsent: [ nil ])
 						ifNil: [ nil ]
 						ifNotNil: [ | key |
@@ -349,6 +349,28 @@ DvtDataSetTablePresenter >> initializeWidgets [
 		add: transposeCheckBox
 ]
 
+{ #category : #testing }
+DvtDataSetTablePresenter >> isCellEditable: coord [
+	| transposed |
+	nodeType ifNil: [ ^ false ].
+	(coord x <= 0 or: [ coord y <= 0 ]) ifTrue: [ ^ false ].
+	coord x > dataGrid columnCount ifTrue: [ ^ false ].
+	coord y > dataGrid rowCount ifTrue: [ ^ false ].
+	nodeType = #arrayOfArrays ifTrue: [ ^ true	].
+	transposed := transposeCheckBox state.
+	nodeType = #array ifTrue: [ 
+		transposed
+			ifFalse: [ ^ coord y ~= 1 and: [ coord x = 2 ] ]
+			ifTrue: [ ^ coord y = 2 ]
+	].
+	(#(dict dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [
+		transposed
+			ifFalse: [ ^ true ]
+			ifTrue: [ ^ coord y ~= 1 ]
+	].
+	^ false
+]
+
 { #category : #accessing }
 DvtDataSetTablePresenter >> node [
 	^ node
@@ -363,6 +385,7 @@ DvtDataSetTablePresenter >> node: aNode [
 	
 	node ifNil: [ 
 		dataGrid reset.
+		nodeType := nil.
 		^ self
 	].
 	
@@ -370,10 +393,12 @@ DvtDataSetTablePresenter >> node: aNode [
 	
 	node isDictionary ifTrue: [ 
 		(node allSatisfy: [ :e | e isArray ]) ifTrue: [ 
+			nodeType := #dictOfArrays.
 			transpose
 				ifTrue: [ self applyTransposedDictOfArraysBlock ]
 				ifFalse: [ self applyDictOfArraysBlock ]
 		] ifFalse: [ 
+			nodeType := #dict.
 			transpose
 				ifTrue: [ self applyTransposedDictBlock ]
 				ifFalse: [ self applyDictBlock ]
@@ -383,15 +408,18 @@ DvtDataSetTablePresenter >> node: aNode [
 	
 	node isArray ifTrue: [ 
 		(node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ]) ifTrue: [ 
+			nodeType := #arrayOfDicts.
 			transpose
 				ifTrue: [ self applyTransposedArrayOfDictsBlock ]
 				ifFalse: [ self applyArrayOfDictsBlock ]
 		] ifFalse: [ 
 			(node allSatisfy: [ :e | e isArray ]) ifTrue: [ 
+				nodeType := #arrayOfArrays.
 				transpose
 					ifTrue: [ self applyTransposedArrayOfArraysBlock ]
 					ifFalse: [ self applyArrayOfArraysBlock ]
 			] ifFalse: [ 
+				nodeType := #array.
 				transpose
 					ifTrue: [ self applyTransposedArrayBlock ]
 					ifFalse: [ self applyArrayBlock ]
@@ -401,6 +429,11 @@ DvtDataSetTablePresenter >> node: aNode [
 	].
 	
 	self error: 'Node type must be either dictionary or array.'
+]
+
+{ #category : #accessing }
+DvtDataSetTablePresenter >> nodeType [
+	^ nodeType
 ]
 
 { #category : #private }

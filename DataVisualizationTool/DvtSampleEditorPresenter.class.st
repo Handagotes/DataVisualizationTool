@@ -217,6 +217,7 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 			false
 		]
 	] whileFalse.
+	
 	(DvtApp sampleFileRefFor: sample)
 		ensureCreateFile
 		writeStreamDo: [ :ws |
@@ -227,6 +228,7 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 				#arrayOfDicts -> '[{}]'.
 			} asDictionary at: rootNodeType)
 		].
+	
 	self updateSampleDropList
 ]
 
