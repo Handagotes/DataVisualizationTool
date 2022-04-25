@@ -30,6 +30,7 @@ DvtBase64ImageStorage >> initialize [
 		#graphIcon -> self graphIconBase64.
 		#crossIcon -> self crossIconBase64.
 		#moveIcon -> self moveIconBase64.
+		#newNodeIcon -> self newNodeIconBase64.
 	} asDictionary
 ]
 
@@ -40,9 +41,14 @@ DvtBase64ImageStorage >> loadImageNamed: imageName [
 	^ Form fromBinaryStream: s base64Decoded readStream
 ]
 
-{ #category : #copying }
+{ #category : #api }
 DvtBase64ImageStorage >> moveIconBase64 [
 	^ 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAISSURBVEhLpZU9TBRhEIbnu937IULioYWGEKEx2AiEYAUU9lY22pAYNdGCgoLK1lhbaUFBRSi1oKaAguYIhwXQiYbEK+Qn4UzA3btl3vd2N7vLefcFn+Kbn7wzOzt7tyvg4ehEiU5INr4ORpv0qj1rhSnGd6qVKhxjDC4WMJtm/NvOFjVZDA4U5XpHpHj/HZP+0bp4Pxbh9mlhHY6NJkkutPlmfZ9i4N6aEad/Gm7yTmw0MWysV/RhvcMVCfyWLj84S6uTvoG10SSJJkahkUadhcA4JSk++AD3sxaOwbHRRMSNQ8qN4w1pnO0xyPUMSv7ea7jbTLSw0aQb60SnsN7PJQmaf5nDLoFOxDFtNCA7MW83uPglfm01zIiURvn0n0W7tNFcaRwy7Ne+6EP6wyCzy5tMdtDgaNtYJzqANe4NxgC7BNEqOmnAvyb+b9o21tsdgo1+r6B5XqONVtFJA6401gJXzXf37lO9zT7m8PQvdhfgzmMV3TQ42k3s4Z3g3nkShiLn1ZcwX7XpRyYsNKnGOskUbGHorb7RHOb8401a5QUOGw2IG2sBdrdRGJ4TU+hnDjvzDj7BnQxX0FXDpJKc+MS5/Vic8iMGmb1WmLTTEDbWSV7B5geewxDvcJk22pmNJklOC/AZWiyOvOe/B2Bnjd9rcMtMtLDRxMRfEEZpsLNKEASdPk3UhH53tEn0PrgmIpd7GTKrWBp4vgAAAABJRU5ErkJggg=='
+]
+
+{ #category : #api }
+DvtBase64ImageStorage >> newNodeIconBase64 [
+	^ 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAMAAADzapwJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJUExURS4vMzfWcQAAALzEBdEAAAADdFJOU///ANfKDUEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABcSURBVChTlY0BDsAgCAOF/z96UOjojInZkUgpVZcfudiL9Fht7zOy3OyUtmBG8rWT1vpIIrpkPwDKkBPcbV4NWsqyoIF/EkSLtLFGbKSWyCxGREaRGMkb2Phjuz/uiALnay+OIAAAAABJRU5ErkJggg=='
 ]
 
 { #category : #api }
