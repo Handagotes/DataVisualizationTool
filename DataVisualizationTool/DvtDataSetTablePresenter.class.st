@@ -11,7 +11,8 @@ Class {
 		'node',
 		'nodeType',
 		'parentStack',
-		'subNodeDict'
+		'subNodeDict',
+		'allowCellEdit'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -29,6 +30,16 @@ DvtDataSetTablePresenter class >> defaultSpec [
 					add: #transposeCheckBox
 			] height: self buttonHeight
 	]
+]
+
+{ #category : #accessing }
+DvtDataSetTablePresenter >> allowCellEdit [
+	^ allowCellEdit
+]
+
+{ #category : #accessing }
+DvtDataSetTablePresenter >> allowCellEdit: aBoolean [
+	allowCellEdit := aBoolean
 ]
 
 { #category : #private }
@@ -278,6 +289,60 @@ DvtDataSetTablePresenter >> dataGrid [
 	^ dataGrid
 ]
 
+{ #category : #private }
+DvtDataSetTablePresenter >> editCellAt: coord value: value [
+	| newValue transposed column row columnCount rowCount resizeNode  |
+	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
+	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
+	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
+	transposed := transposeCheckBox state.
+	column := coord x.
+	row := coord y.
+	columnCount := dataGrid columnCount.
+	rowCount := dataGrid rowCount.
+	resizeNode := [ :size | | newNode |
+		newNode := node resizeCopy: size.
+		self replaceCurrentNode: node with: newNode.
+		self assert: [ node == newNode ]
+	].
+	nodeType = #array ifTrue: [ 
+		transposed
+			ifFalse: [ 
+				row > rowCount ifTrue: [ resizeNode value: row - 1 ].
+				node at: row - 1 put: newValue
+			] ifTrue: [ 
+				column > columnCount ifTrue: [ resizeNode value: column ].
+				node at: column put: newValue
+			]
+	].
+	nodeType = #arrayOfArrays ifTrue: [ 
+		transposed ifTrue: [ | t |
+			t := column.
+			column := row.
+			row := t.
+			t := columnCount.
+			columnCount := rowCount.
+			rowCount := t
+		].
+		(column > columnCount or: [ row > rowCount ]) ifTrue: [ | newNode |
+			newNode := node resizeCopyColumns: (column max: columnCount) rows: (row max: rowCount).
+			self replaceCurrentNode: node with: newNode.
+			self assert: [ node == newNode ]
+		].
+		(node at: row) at: column put: newValue
+	].
+	nodeType = #dict ifTrue: [ 
+		
+	].
+	nodeType = #arrayOfDicts ifTrue: [ 
+		
+	].
+	nodeType = #dictOfArrays ifTrue: [ 
+		
+	].
+	self updateNode
+]
+
 { #category : #accessing }
 DvtDataSetTablePresenter >> goBackButton [
 	^ goBackButton
@@ -289,7 +354,8 @@ DvtDataSetTablePresenter >> initialize [
 	data := nil.
 	node := nil.
 	parentStack := Stack new.
-	subNodeDict := Dictionary new
+	subNodeDict := Dictionary new.
+	allowCellEdit := true
 ]
 
 { #category : #initialization }
@@ -308,6 +374,8 @@ DvtDataSetTablePresenter >> initializeDataGrid [
 					parentStack push: node.
 					self node: (subNodeDict at: coord)
 				]
+			] ifFalse: [ 
+				self editCellAt: coord value: value
 			]
 		]
 ]
@@ -351,22 +419,40 @@ DvtDataSetTablePresenter >> initializeWidgets [
 
 { #category : #testing }
 DvtDataSetTablePresenter >> isCellEditable: coord [
-	| transposed |
+	| transposed column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
-	(coord x <= 0 or: [ coord y <= 0 ]) ifTrue: [ ^ false ].
-	coord x > dataGrid columnCount ifTrue: [ ^ false ].
-	coord y > dataGrid rowCount ifTrue: [ ^ false ].
+	(subNodeDict includesKey: coord) ifTrue: [ ^ false ].
+	column := coord x.
+	row := coord y.
+	columnCount := dataGrid columnCount.
+	rowCount := dataGrid rowCount.
+	(column <= 0 or: [ row <= 0 ]) ifTrue: [ ^ false ].
 	nodeType = #arrayOfArrays ifTrue: [ ^ true	].
 	transposed := transposeCheckBox state.
 	nodeType = #array ifTrue: [ 
 		transposed
-			ifFalse: [ ^ coord y ~= 1 and: [ coord x = 2 ] ]
-			ifTrue: [ ^ coord y = 2 ]
+			ifFalse: [ ^ row ~= 1 and: [ column = 2 ] ]
+			ifTrue: [ ^ row = 2 ]
 	].
-	(#(dict dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [
-		transposed
-			ifFalse: [ ^ true ]
-			ifTrue: [ ^ coord y ~= 1 ]
+	nodeType = #dict ifTrue: [ 
+		transposed ifFalse: [ 
+			row = 1 ifTrue: [ ^ column <= (columnCount + 1) ].
+			^ row = 2 and: [ column <= columnCount ]
+		] ifTrue: [ 
+			row = 1 ifTrue: [ ^ false ].
+			column = 1 ifTrue: [ ^ row <= (rowCount + 1) ].
+			^ column = 2 and: [ row <= rowCount ]
+		]
+	].
+	(#(dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [
+		transposed ifFalse: [ 
+			row = 1 ifTrue: [ ^ column <= (columnCount + 1) ].
+			^ row <= (rowCount + 1) and: [ column <= columnCount ]
+		] ifTrue: [ 
+			row = 1 ifTrue: [ ^ false ].
+			column = 1 ifTrue: [ ^ row <= (rowCount + 1) ].
+			^ column <= (columnCount + 1) and: [ row <= rowCount ]
+		]
 	].
 	^ false
 ]
@@ -462,6 +548,35 @@ DvtDataSetTablePresenter >> onSelectRowsButtonAction [
 
 { #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
+	self updateNode
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> replaceCurrentNode: oldNode with: newNode [
+	parentStack ifEmpty: [ 
+		self data: newNode
+	] ifNotEmpty: [ 
+		self replaceCurrentNode: oldNode with: newNode parent: parentStack top
+	]
+	
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> replaceCurrentNode: oldNode with: newNode parent: parentNode [
+	| key findSecondParent |
+	findSecondParent := [ | secondParent |
+		secondParent := parentNode detect: [ :sub | sub isCollection and: [ sub includes: oldNode ] ].
+		self assert: [ secondParent isNotNil ].
+		^ self replaceCurrentNode: oldNode with: newNode parent: secondParent
+	].
+	parentNode isArray ifTrue: [ 
+		(key := parentNode indexOf: oldNode) isZero ifTrue: findSecondParent 
+	].
+	parentNode isDictionary ifTrue: [ 
+		key := parentNode keyAtValue: oldNode ifAbsent: findSecondParent
+	].
+	parentNode at: key put: newNode.
+	node := newNode.
 	self updateNode
 ]
 
