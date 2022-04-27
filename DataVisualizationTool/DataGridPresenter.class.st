@@ -60,8 +60,13 @@ DataGridPresenter >> cellTextColorBlock: aBlock [
 
 { #category : #accessing }
 DataGridPresenter >> cellValueAt: coord [
+	^ self cellValueAtColumnIndex: coord x rowIndex: coord y
+]
+
+{ #category : #api }
+DataGridPresenter >> cellValueAtColumnIndex: columnIndex rowIndex: rowIndex [
 	| keys value |
-	keys := self keysForCellCoord: coord.
+	keys := self keysForCellColumnIndex: columnIndex rowIndex: rowIndex.
 	keys ifNil: [ ^ nil ].
 	keys isString ifTrue: [ ^ keys ].
 	self assert: [ keys isArray ] description: 'Cell keys block must return either an array of keys or nil or string.'.
@@ -71,11 +76,6 @@ DataGridPresenter >> cellValueAt: coord [
 		value := value at: key ifAbsent: [ ^ nil ]
 	].
 	^ value
-]
-
-{ #category : #api }
-DataGridPresenter >> cellValueAtColumnIndex: columnIndex rowIndex: rowIndex [
-	^ self cellValueAt: columnIndex @ rowIndex
 ]
 
 { #category : #private }
@@ -226,9 +226,14 @@ DataGridPresenter >> initializeWidgets [
 ]
 
 { #category : #api }
-DataGridPresenter >> keysForCellCoord: coord [
+DataGridPresenter >> keysForCellColumnIndex: columnIndex rowIndex: rowIndex [
 	cellKeysBlock ifNil: [ ^ nil ].
-	^ cellKeysBlock value: coord
+	^ cellKeysBlock value: columnIndex value: rowIndex
+]
+
+{ #category : #api }
+DataGridPresenter >> keysForCellCoord: coord [
+	^ self keysForCellColumnIndex: coord x rowIndex: coord y
 ]
 
 { #category : #private }
