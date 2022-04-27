@@ -11,6 +11,7 @@ Class {
 		'node',
 		'nodeType',
 		'parentStack',
+		'nodeAccessKeysStack',
 		'allowCellEdit'
 	],
 	#category : #'DataVisualizationTool-Boundary'
@@ -330,7 +331,8 @@ DvtDataSetTablePresenter >> initialize [
 	data := nil.
 	node := nil.
 	parentStack := Stack new.
-	allowCellEdit := true
+	nodeAccessKeysStack := Stack new.
+	allowCellEdit := true.
 ]
 
 { #category : #initialization }
@@ -352,6 +354,7 @@ DvtDataSetTablePresenter >> initializeDataGrid [
 		whenCellDoubleClicked: [ :value :coord |
 			(self class isNode: value) ifTrue: [ 
 				parentStack push: node.
+				nodeAccessKeysStack push: (dataGrid keysForCellCoord: coord).
 				self node: value
 			] ifFalse: [ 
 				self editCellAt: coord value: value
@@ -504,6 +507,7 @@ DvtDataSetTablePresenter >> nodeType [
 { #category : #private }
 DvtDataSetTablePresenter >> onGoBackButtonAction [
 	parentStack ifEmpty: [ ^ self ].
+	nodeAccessKeysStack pop.
 	self node: parentStack pop
 ]
 
@@ -527,35 +531,6 @@ DvtDataSetTablePresenter >> onSelectRowsButtonAction [
 
 { #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
-	self updateNode
-]
-
-{ #category : #private }
-DvtDataSetTablePresenter >> replaceCurrentNode: oldNode with: newNode [
-	parentStack ifEmpty: [ 
-		self data: newNode
-	] ifNotEmpty: [ 
-		self replaceCurrentNode: oldNode with: newNode parent: parentStack top
-	]
-	
-]
-
-{ #category : #private }
-DvtDataSetTablePresenter >> replaceCurrentNode: oldNode with: newNode parent: parentNode [
-	| key findSecondParent |
-	findSecondParent := [ | secondParent |
-		secondParent := parentNode detect: [ :sub | sub isCollection and: [ sub includes: oldNode ] ].
-		self assert: [ secondParent isNotNil ].
-		^ self replaceCurrentNode: oldNode with: newNode parent: secondParent
-	].
-	parentNode isArray ifTrue: [ 
-		(key := parentNode indexOf: oldNode) isZero ifTrue: findSecondParent 
-	].
-	parentNode isDictionary ifTrue: [ 
-		key := parentNode keyAtValue: oldNode ifAbsent: findSecondParent
-	].
-	parentNode at: key put: newNode.
-	node := newNode.
 	self updateNode
 ]
 
