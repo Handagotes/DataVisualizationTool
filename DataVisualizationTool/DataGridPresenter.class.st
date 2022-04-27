@@ -7,12 +7,12 @@ Class {
 		'gridInteraction',
 		'selectableInteraction',
 		'draggableViewInteraction',
-		'cellValueBlock',
+		'data',
+		'cellKeysBlock',
 		'columnCount',
 		'rowCount',
-		'labelsByPoint',
-		'columnsIdxByName',
-		'columnsNamesByIdx',
+		'cellDisplayBlock',
+		'labelsByCoord',
 		'cellTextColorBlock'
 	],
 	#category : #'DataVisualizationTool-Util'
@@ -23,6 +23,17 @@ DataGridPresenter class >> defaultSpec [
 	^ SpecLayout composed
 		add: #dataGridAdapter;
 		yourself
+]
+
+{ #category : #accessing }
+DataGridPresenter >> cellDisplayBlock [
+	^ cellDisplayBlock
+]
+
+{ #category : #accessing }
+DataGridPresenter >> cellDisplayBlock: aBlock [
+	cellDisplayBlock := aBlock.
+	self updateCells
 ]
 
 { #category : #configuration }
@@ -48,17 +59,18 @@ DataGridPresenter >> cellTextColorBlock: aBlock [
 ]
 
 { #category : #accessing }
-DataGridPresenter >> cellValueAt: aPoint [
-	| column |
-	column := columnsNamesByIdx at: aPoint x ifAbsent: [ nil ].
-	^ cellValueBlock value: column value: aPoint x value: aPoint y
-]
-
-{ #category : #api }
-DataGridPresenter >> cellValueAtColumn: column rowIndex: rowIndex [
-	| columnIndex |
-	columnIndex := columnsIdxByName at: column ifAbsent: [ self raiseNoSuchColumnError: column ].
-	^ self cellValueAtColumnIndex: columnIndex rowIndex: rowIndex
+DataGridPresenter >> cellValueAt: coord [
+	| keys value |
+	keys := self keysForCellCoord: coord.
+	keys ifNil: [ ^ nil ].
+	keys isString ifTrue: [ ^ keys ].
+	self assert: [ keys isArray ] description: 'Cell keys block must return either an array of keys or nil or string.'.
+	keys ifEmpty: [ ^ nil ].
+	value := data.
+	keys do: [ :key |
+		value := value at: key ifAbsent: [ ^ nil ]
+	].
+	^ value
 ]
 
 { #category : #api }
@@ -66,39 +78,9 @@ DataGridPresenter >> cellValueAtColumnIndex: columnIndex rowIndex: rowIndex [
 	^ self cellValueAt: columnIndex @ rowIndex
 ]
 
-{ #category : #api }
-DataGridPresenter >> cellValueBlock: a3ArgumentsBlock columnCount: columns rowCount: rows [
-	"
-	The block must return cell value and accept 3 arguments: column name, column index and column row.
-	This block also must be ready to accept nil as column name when the row index is 1 or when column name is absent.
-	"
-	
-	cellValueBlock := a3ArgumentsBlock.
-	columnCount := columns.
-	rowCount := rows.
-	
-	columnsIdxByName removeAll.
-	columnsNamesByIdx removeAll.
-	
-	rowCount isZero ifFalse: [ 
-		1 to: columnCount do: [ :i | | name |
-			(name := cellValueBlock value: nil value: i value: 1)
-				ifNotNil: [ 
-					columnsIdxByName at: name put: i.
-					columnsNamesByIdx at: i put: name
-				]
-		]
-	].
-	
-	self
-		updateCells;
-		updateCameraLimits;
-		resetCamera
-]
-
 { #category : #private }
-DataGridPresenter >> colorElement: anElement [
-	^ cellTextColorBlock value: anElement
+DataGridPresenter >> colorElement: anElement coord: coord [
+	^ cellTextColorBlock cull: anElement cull: coord
 ]
 
 { #category : #accessing }
@@ -109,9 +91,7 @@ DataGridPresenter >> columnCount [
 { #category : #accessing }
 DataGridPresenter >> columnCount: anObject [
 	columnCount := anObject.
-	self
-		updateCells;
-		updateCameraLimits
+	self updateCells
 ]
 
 { #category : #accessing }
@@ -119,16 +99,6 @@ DataGridPresenter >> columnCount: columns rowCount: rows [
 	columnCount := columns.
 	rowCount := rows.
 	self updateCells
-]
-
-{ #category : #accessing }
-DataGridPresenter >> columnNames [
-	| names |
-	names := OrderedCollection new.
-	1 to: columnCount do: [ :i |
-		names add: (columnsNamesByIdx at: i ifAbsent: [ nil ])
-	].
-	^ names
 ]
 
 { #category : #accessing }
@@ -148,7 +118,7 @@ DataGridPresenter >> copySelectedCellsToClipboard [
 	Clipboard clipboardText: (String streamContents: [ :ws | | rowEnd |
 		rowEnd := selectableInteraction selectionRect right.
 		selectableInteraction selectionDo: [ :coord | | cell |
-			(cell := (self cellValueAt: coord)) ifNotNil: [ 
+			(cell := (self stringCellValueAt: coord)) ifNotNil: [ 
 				ws nextPutAll: cell asString.
 				(coord x = rowEnd) ifFalse: [ ws tab ]
 			].
@@ -158,19 +128,38 @@ DataGridPresenter >> copySelectedCellsToClipboard [
 ]
 
 { #category : #accessing }
-DataGridPresenter >> createLabelAt: aPoint text: text [
+DataGridPresenter >> createLabelAt: coord text: text [
 	| label |
-	(labelsByPoint includesKey: aPoint) ifTrue: [ ^ self ].
-	label := RTLabel new
-		color: [ :e | self colorElement: e ];
-		element.
-	labelsByPoint at: aPoint put: label.
+	(labelsByCoord includesKey: coord) ifTrue: [ ^ self ].
+	label := RTLabel new element.
+	labelsByCoord at: coord put: label.
 	label
 		model: text;
-		@ (RTPopup text: [ text ]);
-		when: TRMouseDragging do: [ self updateVisibleCells ].
+		when: TRMouseDragging do: [ self updateVisibleCells ];
+		@ (RTPopup text: [ text ]).
+	label shape
+		color: [ :e | self colorElement: e coord: coord ].
 	selectableInteraction coverElementEvents: label.
 	draggableViewInteraction coverElementEvents: label
+]
+
+{ #category : #api }
+DataGridPresenter >> data: aCollectionOfCollections cellKeysBlock: aBlock columnCount: columns rowCount: rows [
+	"
+	The data must be a collection of collections which accept message at:ifAbsent:.
+	The cell path block must accept coordinate of cell and return array of keys to access it's value in data or nil if there is no value.
+	Additionaly, this block can return string instead of keys array which will be used as content for cell.
+	"
+	
+	data := aCollectionOfCollections.
+	cellKeysBlock := aBlock.
+	columnCount := columns.
+	rowCount := rows.
+	
+	self
+		updateCells;
+		updateCameraLimits;
+		resetCamera
 ]
 
 { #category : #accessing }
@@ -180,13 +169,12 @@ DataGridPresenter >> dataGridAdapter [
 
 { #category : #initialization }
 DataGridPresenter >> initialize [
-	cellValueBlock := nil.
+	data := nil.
+	cellKeysBlock := nil.
 	rowCount := 0.
 	columnCount := 0.
-	columnsIdxByName := Dictionary new.
-	columnsNamesByIdx := Dictionary new.
-	labelsByPoint := Dictionary new.
-	cellTextColorBlock := [ :e | Color veryDarkGray ].
+	labelsByCoord := Dictionary new.
+	cellTextColorBlock := [ Color veryDarkGray ].
 	super initialize.
 ]
 
@@ -210,7 +198,7 @@ DataGridPresenter >> initializeDataGridView [
 		when: TRMouseDoubleRightClick do: [ self resetCamera ];
 		when: TRMouseDragging do: [ self updateVisibleCells ];
 		when: TRMouseWheelEvent do: [ self updateVisibleCells ];
-		when: TRMouseEnter do: [ dataGridView canvas morph takeKeyboardFocus ];
+		when: TRMouseEnter do: [ dataGridView canvas morph takeKeyboardFocus ]; "There is a bug when morph spec adapter never takes keyboard focus."
 		when: TRKeyDown do: [ :e |
 			(e keyCombination asString = 'Ctrl + c') ifTrue: [ 
 				self copySelectedCellsToClipboard
@@ -230,34 +218,33 @@ DataGridPresenter >> initializeDataGridView [
 
 { #category : #initialization }
 DataGridPresenter >> initializeWidgets [
-	| m |
 	self initializeDataGridView.
-	m := dataGridView canvas buildMorph.
-	dataGridAdapter := m
+	dataGridAdapter := dataGridView canvas buildMorph
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		asSpecAdapter
 ]
 
-{ #category : #private }
-DataGridPresenter >> raiseNoSuchColumnError: column [
-	self error: ('Column "{1}" does not exist.' format: { column })
+{ #category : #api }
+DataGridPresenter >> keysForCellCoord: coord [
+	cellKeysBlock ifNil: [ ^ nil ].
+	^ cellKeysBlock value: coord
 ]
 
 { #category : #private }
 DataGridPresenter >> removeLabelAt: aPoint [
 	| label |
-	label := labelsByPoint at: aPoint ifAbsent: [ ^ self ].
-	labelsByPoint removeKey: aPoint.
+	label := labelsByCoord at: aPoint ifAbsent: [ ^ self ].
+	labelsByCoord removeKey: aPoint.
 	label remove
 ]
 
-{ #category : #initialization }
+{ #category : #api }
 DataGridPresenter >> reset [
-	self cellValueBlock: [ :a :b :c | ] columnCount: 0 rowCount: 0
+	self data: nil cellKeysBlock: nil columnCount: 0 rowCount: 0
 ]
 
-{ #category : #initialization }
+{ #category : #api }
 DataGridPresenter >> resetCamera [
 	dataGridView canvas camera scale: 1.
 	draggableViewInteraction moveCameraToLimitTopLeft.
@@ -272,9 +259,7 @@ DataGridPresenter >> rowCount [
 { #category : #accessing }
 DataGridPresenter >> rowCount: anObject [
 	rowCount := anObject.
-	self
-		updateCells
-		updateCameraLimits
+	self updateCells
 ]
 
 { #category : #accessing }
@@ -312,23 +297,13 @@ DataGridPresenter >> selectedCellsDo: aBlock [
 	]
 ]
 
-{ #category : #api }
-DataGridPresenter >> tsvData: aTsvString [
-	| data columns rows |
-	data := RTTabTable new
-		input: aTsvString;
-		values.
-	data inspect.
-	columns := data ifNotEmpty: [ data first size ] ifEmpty: [ 0 ].
-	rows := data size.
-	
-	self cellValueBlock: [ :column :columnIndex :rowIndex | | row |
-		(row := data at: rowIndex ifAbsent: [ nil ])
-			ifNil: [ nil ]
-			ifNotNil: [ 
-				row at: columnIndex ifAbsent: [ nil ]
-			]
-	] columnCount: columns rowCount: rows
+{ #category : #accessing }
+DataGridPresenter >> stringCellValueAt: coord [
+	| value |
+	value := self cellValueAt: coord.
+	^ (cellDisplayBlock
+		ifNotNil: [ cellDisplayBlock value: value ]
+		ifNil: [ value ifNil: [ String empty ] ]) asString
 ]
 
 { #category : #api }
@@ -342,25 +317,24 @@ DataGridPresenter >> updateCameraLimits [
 
 { #category : #updating }
 DataGridPresenter >> updateCellAt: aPoint [
-	| value label |
+	| stringValue label |
 	
-	(value := self cellValueAt: aPoint)
-		ifNil: [ ^ self removeLabelAt: aPoint ].
+	(stringValue := self stringCellValueAt: aPoint)
+		ifEmpty: [ ^ self removeLabelAt: aPoint ].
 	
-	value := value asString.
-	self createLabelAt: aPoint text: value.
-	label := labelsByPoint at: aPoint.
-	value := label shape cropTextFor: label toWidth: self columnWidth.
+	self createLabelAt: aPoint text: stringValue.
+	label := labelsByCoord at: aPoint.
+	stringValue := label shape cropTextFor: label toWidth: self columnWidth.
 	
 	label
-		model: value;
+		model: stringValue;
 		translateTo: (gridInteraction pointForCellCoord: aPoint);
 		update
 ]
 
 { #category : #updating }
 DataGridPresenter >> updateCells [
-	labelsByPoint
+	labelsByCoord
 		do: [ :label |
 			dataGridView removeElement: label.
 			label view: nil
@@ -394,7 +368,7 @@ DataGridPresenter >> updateVisibleCells [
 	
 	rect left to: rect right by: 1 do: [ :column |
 		rect top to: rect bottom by: 1 do: [ :row | | label |
-			(label := labelsByPoint at: column @ row ifAbsent: [ nil ]) ifNotNil: [ 
+			(label := labelsByCoord at: column @ row ifAbsent: [ nil ]) ifNotNil: [ 
 				label view ifNil: [ 
 					dataGridView add: label.
 					label view: dataGridView
