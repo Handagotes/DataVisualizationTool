@@ -345,9 +345,7 @@ DataGridPresenter >> updateCellAt: aPoint [
 	| value label |
 	
 	(value := self cellValueAt: aPoint)
-		ifNil: [
-			^ self removeLabelAt: aPoint
-		].
+		ifNil: [ ^ self removeLabelAt: aPoint ].
 	
 	value := value asString.
 	self createLabelAt: aPoint text: value.

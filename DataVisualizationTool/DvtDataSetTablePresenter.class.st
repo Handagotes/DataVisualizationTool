@@ -291,10 +291,11 @@ DvtDataSetTablePresenter >> dataGrid [
 
 { #category : #private }
 DvtDataSetTablePresenter >> editCellAt: coord value: value [
-	| newValue transposed column row columnCount rowCount resizeNode  |
+	| newValue transposed column row columnCount rowCount resizeNode keyEdit  |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
+	newValue = value ifTrue: [ ^ self ].
 	transposed := transposeCheckBox state.
 	column := coord x.
 	row := coord y.
@@ -306,14 +307,13 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 		self assert: [ node == newNode ]
 	].
 	nodeType = #array ifTrue: [ 
-		transposed
-			ifFalse: [ 
-				row > rowCount ifTrue: [ resizeNode value: row - 1 ].
-				node at: row - 1 put: newValue
-			] ifTrue: [ 
-				column > columnCount ifTrue: [ resizeNode value: column ].
-				node at: column put: newValue
-			]
+		transposed ifFalse: [ 
+			row > rowCount ifTrue: [ resizeNode value: row - 1 ].
+			node at: row - 1 put: newValue
+		] ifTrue: [ 
+			column > columnCount ifTrue: [ resizeNode value: column ].
+			node at: column put: newValue
+		]
 	].
 	nodeType = #arrayOfArrays ifTrue: [ 
 		transposed ifTrue: [ | t |
@@ -331,14 +331,46 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 		].
 		(node at: row) at: column put: newValue
 	].
+	keyEdit := transposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	nodeType = #dict ifTrue: [ 
-		
+		keyEdit ifTrue: [ 
+			(node includesKey: newValue) ifTrue: [ 
+				^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			].
+			value ifNil: [ 
+				node at: newValue put: nil
+			] ifNotNil: [ | v |
+				v := node at: value.
+				node removeKey: value.
+				node at: newValue put: v
+			]
+		] ifFalse: [ | key |
+			key := dataGrid cellValueAt: coord - (transposed ifFalse: [ 0 @ 1 ] ifTrue: [ 1 @ 0 ]).
+			node at: key put: newValue
+		]
 	].
 	nodeType = #arrayOfDicts ifTrue: [ 
-		
+		keyEdit ifTrue: [ 
+			
+		] ifFalse: [ 
+			
+		]
 	].
 	nodeType = #dictOfArrays ifTrue: [ 
-		
+		keyEdit ifTrue: [ 
+			(node includesKey: newValue) ifTrue: [ 
+				^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			].
+			value ifNil: [ 
+				node at: newValue put: (Array new: rowCount)
+			] ifNotNil: [ | v |
+				v := node at: value.
+				node removeKey: value.
+				node at: newValue put: v
+			]
+		] ifFalse: [ 
+			
+		]
 	].
 	self updateNode
 ]
@@ -478,7 +510,7 @@ DvtDataSetTablePresenter >> node: aNode [
 	transpose := transposeCheckBox state.
 	
 	node isDictionary ifTrue: [ 
-		(node allSatisfy: [ :e | e isArray ]) ifTrue: [ 
+		(node allSatisfy: [ :e | e isArray and: [ e size = node first size ] ]) ifTrue: [ 
 			nodeType := #dictOfArrays.
 			transpose
 				ifTrue: [ self applyTransposedDictOfArraysBlock ]
