@@ -236,7 +236,7 @@ DvtDataSetTablePresenter >> dataGrid [
 
 { #category : #private }
 DvtDataSetTablePresenter >> editCellAt: coord value: value [
-	| newValue transposed column row columnCount rowCount resizeNode keyEdit  |
+	| newValue transposed column row columnCount rowCount keyEdit  |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
@@ -246,17 +246,12 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	row := coord y.
 	columnCount := dataGrid columnCount.
 	rowCount := dataGrid rowCount.
-	resizeNode := [ :size | | newNode |
-		newNode := node resizeCopy: size.
-		self replaceCurrentNode: node with: newNode.
-		self assert: [ node == newNode ]
-	].
 	nodeType = #array ifTrue: [ 
 		transposed ifFalse: [ 
-			row > rowCount ifTrue: [ resizeNode value: row - 1 ].
+			row > rowCount ifTrue: [ self resizeArrayNode: row - 1 ].
 			node at: row - 1 put: newValue
 		] ifTrue: [ 
-			column > columnCount ifTrue: [ resizeNode value: column ].
+			column > columnCount ifTrue: [ self resizeArrayNode: column ].
 			node at: column put: newValue
 		]
 	].
@@ -269,10 +264,8 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 			columnCount := rowCount.
 			rowCount := t
 		].
-		(column > columnCount or: [ row > rowCount ]) ifTrue: [ | newNode |
-			newNode := node resizeCopyColumns: (column max: columnCount) rows: (row max: rowCount).
-			self replaceCurrentNode: node with: newNode.
-			self assert: [ node == newNode ]
+		(column > columnCount or: [ row > rowCount ]) ifTrue: [ 
+			self resizeArrayOfArraysNode: (column max: columnCount) @ (row max: rowCount)
 		].
 		(node at: row) at: column put: newValue
 	].
@@ -532,6 +525,33 @@ DvtDataSetTablePresenter >> onSelectRowsButtonAction [
 { #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
 	self updateNode
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> replaceResizedArrayNode: newNode [
+	| parent keys |
+	parentStack ifEmpty: [ 
+		self data: newNode.
+		^ self
+	].
+	parent := parentStack top.
+	keys := nodeAccessKeysStack top.
+	1 to: keys size - 1 do: [ :i |
+		parent := parent at: (keys at: i)
+	].
+	parent at: keys last put: newNode.
+	node := newNode.
+	"self node: newNode"
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> resizeArrayNode: newSize [
+	self replaceResizedArrayNode: (node resizeCopy: newSize)
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> resizeArrayOfArraysNode: newSize [
+	self replaceResizedArrayNode: (node resizeCopyColumns: newSize x rows: newSize y)
 ]
 
 { #category : #accessing }
