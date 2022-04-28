@@ -545,7 +545,9 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 			node at: newValue put: v
 		]
 	] ifFalse: [ 
-		
+		| keys |
+		keys := dataGrid keysForCellCoord: column @ row.
+		(node at: keys first) at: keys second put: newValue
 	]
 ]
 
