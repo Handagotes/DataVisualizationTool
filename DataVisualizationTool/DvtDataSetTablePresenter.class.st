@@ -12,7 +12,8 @@ Class {
 		'nodeType',
 		'parentStack',
 		'nodeAccessKeysStack',
-		'allowCellEdit'
+		'allowCellEdit',
+		'cellEditedBlock'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -236,10 +237,18 @@ DvtDataSetTablePresenter >> dataGrid [
 
 { #category : #private }
 DvtDataSetTablePresenter >> editCellAt: coord value: value [
-	| newValue column row needResize  |
+	| newValue |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
+	self editCellAt: coord value: value newValue: newValue showDvtError: true
+	
+]
+
+{ #category : #private }
+DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue showDvtError: shouldShowDvtError [
+	| column row needResize  |
+	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue = value ifTrue: [ ^ self ].
 	column := coord x.
 	row := coord y.
@@ -252,15 +261,18 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 		ifTrue: [ self putNewValue: newValue inArrayOfArraysAtColumn: column row: row needResize: needResize ].
 	
 	nodeType = #arrayOfDicts
-		ifTrue: [ self putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: value ].
+		ifTrue: [ self putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ].
 	
 	nodeType = #dict
-		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row oldValue: value ].
+		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row oldValue: value showDvtError: shouldShowDvtError ].
 	
 	nodeType = #dictOfArrays
-		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value ].
+		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ].
 	
-	self updateNode
+	self updateNode.
+	cellEditedBlock ifNotNil: [ 
+		cellEditedBlock cull: newValue cull: value
+	]
 ]
 
 { #category : #accessing }
@@ -275,7 +287,7 @@ DvtDataSetTablePresenter >> initialize [
 	node := nil.
 	parentStack := Stack new.
 	nodeAccessKeysStack := Stack new.
-	allowCellEdit := true.
+	allowCellEdit := false.
 ]
 
 { #category : #initialization }
@@ -403,7 +415,7 @@ DvtDataSetTablePresenter >> node: aNode [
 	transpose := transposeCheckBox state.
 	
 	node isDictionary ifTrue: [ 
-		(node allSatisfy: [ :e | e isArray and: [ e size = node anyOne size ] ]) ifTrue: [ 
+		(node isNotEmpty and: [ node allSatisfy: [ :e | e isArray and: [ e size = node anyOne size ] ] ]) ifTrue: [ 
 			nodeType := #dictOfArrays.
 			transpose
 				ifTrue: [ self applyTransposedDictOfArraysBlock ]
@@ -418,13 +430,13 @@ DvtDataSetTablePresenter >> node: aNode [
 	].
 	
 	node isArray ifTrue: [ 
-		(node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ]) ifTrue: [ 
+		(node isNotEmpty and: [ node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ] ]) ifTrue: [ 
 			nodeType := #arrayOfDicts.
 			transpose
 				ifTrue: [ self applyTransposedArrayOfDictsBlock ]
 				ifFalse: [ self applyArrayOfDictsBlock ]
 		] ifFalse: [ 
-			(node allSatisfy: [ :e | e isArray ]) ifTrue: [ 
+			(node isNotEmpty and: [ node allSatisfy: [ :e | e isArray ] ]) ifTrue: [ 
 				nodeType := #arrayOfArrays.
 				transpose
 					ifTrue: [ self applyTransposedArrayOfArraysBlock ]
@@ -504,12 +516,15 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfArraysAtColumn: colum
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: oldValue [
+DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
 		(node first includesKey: newValue) ifTrue: [ 
-			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			shouldShowDvtError ifTrue: [ 
+				DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue }).
+			].
+			^ self
 		].
 		oldValue ifNil: [ 
 			node do: [ :dict |
@@ -543,12 +558,15 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row oldValue: oldValue [
+DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
 		(node includesKey: newValue) ifTrue: [ 
-			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			shouldShowDvtError ifTrue: [ 
+				DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			].
+			^ self
 		].
 		oldValue ifNil: [ 
 			node at: newValue put: nil
@@ -564,12 +582,15 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: ro
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: oldValue [
+DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
 		(node includesKey: newValue) ifTrue: [ 
-			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			shouldShowDvtError ifTrue: [ 
+				DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+			].
+			^ self
 		].
 		oldValue ifNil: [ | size |
 			size := transposeCheckBox state ifFalse: [ dataGrid rowCount - 1 ] ifTrue: [ dataGrid columnCount - 1 ].
@@ -637,4 +658,9 @@ DvtDataSetTablePresenter >> transposeCheckBox [
 { #category : #updating }
 DvtDataSetTablePresenter >> updateNode [
 	self node: node
+]
+
+{ #category : #enumerating }
+DvtDataSetTablePresenter >> whenCellEditedDo: aBlock [
+	cellEditedBlock := aBlock
 ]

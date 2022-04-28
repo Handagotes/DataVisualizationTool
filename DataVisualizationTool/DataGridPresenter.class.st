@@ -115,6 +115,7 @@ DataGridPresenter >> columnWidth: columnWidth [
 { #category : #api }
 DataGridPresenter >> copySelectedCellsToClipboard [
 	selectableInteraction hasSelection ifFalse: [ ^ self ].
+	data ifNil: [ ^ self ].
 	Clipboard clipboardText: (String streamContents: [ :ws | | rowEnd |
 		rowEnd := selectableInteraction selectionRect right.
 		selectableInteraction selectionDo: [ :coord | | cell |

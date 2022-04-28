@@ -137,7 +137,8 @@ DvtSampleEditorPresenter >> initializePresenter [
 	copyButton action: [ self onCopyButtonAction ].
 	clearButton action: [ self onClearButtonAction ].
 	createSampleButton action: [ self onCreateSampleButtonAction ].
-	deleteSampleButton action: [ self onDeleteSampleButtonAction ]
+	deleteSampleButton action: [ self onDeleteSampleButtonAction ].
+	sampleTable whenCellEditedDo: [ self updateSampleFile ]
 ]
 
 { #category : #initialization }
@@ -176,8 +177,9 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	sampleLabel label: 'Выборка:'.
 	sampleDropList displayBlock: self class sampleDropListDisplayBlock.
 	createSampleButton label: 'Новая выборка'.
-	deleteSampleButton label: 'Удалить выборку'
+	deleteSampleButton label: 'Удалить выборку'.
 	
+	sampleTable allowCellEdit: true
 ]
 
 { #category : #accessing }
