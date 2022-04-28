@@ -505,6 +505,40 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfArraysAtColumn: colum
 
 { #category : #private }
 DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: oldValue [
+	| keyEdit |
+	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ 
+		(node first includesKey: newValue) ifTrue: [ 
+			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
+		].
+		oldValue ifNil: [ 
+			node do: [ :dict |
+				dict at: newValue put: nil
+			]
+		] ifNotNil: [ 
+			node do: [ :dict | | v |
+				v := dict at: oldValue.
+				dict removeKey: oldValue.
+				dict at: newValue put: v
+			]
+		]
+	] ifFalse: [ 
+		| keys |
+		keys := dataGrid keysForCellCoord: column @ row.
+		needResize ifTrue: [ | oldSize size |
+			size := keys first.
+			oldSize := node size.
+			self resizeArrayNode: size.
+			oldSize + 1 to: size do: [ :i | | dict |
+				dict := Dictionary new.
+				node first keysDo: [ :key |
+					dict add: key -> nil
+				].
+				node at: i put: dict
+			]
+		].
+		(node at: keys first) at: keys second put: newValue
+	]
 	
 ]
 
