@@ -119,7 +119,7 @@ DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 	dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex | | key |
 		key := node keys at: columnIndex ifAbsent: [ nil ].
 		rowIndex = 1
-			ifTrue: [ key asString ]
+			ifTrue: [ key ifNotNil: [ key asString ] ]
 			ifFalse: [ { key. rowIndex - 1 } ]
 	] columnCount: columns rowCount: rows
 ]
@@ -211,7 +211,7 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 		] ifFalse: [ 
 			key := node keys at: rowIndex - 1 ifAbsent: [ nil ].
 			columnIndex = 1
-				ifTrue: [ key asString ]
+				ifTrue: [ key ifNotNil: [ key asString ] ]
 				ifFalse: [ { key. columnIndex - 1 } ]
 		]
 	] columnCount: columns rowCount: rows
@@ -538,7 +538,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
 		].
 		oldValue ifNil: [ | size |
-			size := transposeCheckBox state ifFalse: [ dataGrid rowCount ] ifTrue: [ dataGrid columnCount ].
+			size := transposeCheckBox state ifFalse: [ dataGrid rowCount - 1 ] ifTrue: [ dataGrid columnCount - 1 ].
 			node at: newValue put: (Array new: size)
 		] ifNotNil: [ | v |
 			v := node at: oldValue.
