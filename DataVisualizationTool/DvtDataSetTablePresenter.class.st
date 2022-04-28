@@ -523,9 +523,8 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: ro
 			node removeKey: oldValue.
 			node at: newValue put: v
 		]
-	] ifFalse: [ | key coord |
-		coord := (column @ row) - (transposeCheckBox state ifFalse: [ 0 @ 1 ] ifTrue: [ 1 @ 0 ]).
-		key := dataGrid cellValueAt: coord.
+	] ifFalse: [ | key |
+		key := (dataGrid keysForCellCoord: column @ row) first.
 		node at: key put: newValue
 	]
 ]
