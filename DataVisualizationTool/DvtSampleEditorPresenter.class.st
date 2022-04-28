@@ -195,8 +195,31 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onCopyButtonAction [
+	| dataSetSelection dataSetSelectionCorner start offset success |
+	dataSetTable data ifNil: [ ^ self ].
 	sampleTable data ifNil: [ ^ self ].
+	(dataSetSelection := dataSetTable dataGrid selectionRect) ifNil: [ ^ self ].
+	dataSetSelectionCorner := dataSetSelection corner.
+	start := nil.
+	offset := 0 @ 0.
+	success := false.
 	
+	sampleTable dataGrid selectedCellsReverseDo: [ :value :coord | | dataSetCoord |
+		start ifNil: [ start := coord ].
+		offset := start - coord.
+		dataSetCoord := dataSetSelectionCorner - offset.
+		(sampleTable isCellValueEditable: coord) ifTrue: [ | newValue |
+			newValue := dataSetTable dataGrid cellValueAt: dataSetCoord.
+			newValue ifNotNil: [ 
+				sampleTable putCellValue: newValue at: coord.
+			].
+			success := true.
+		]
+	].
+	
+	success ifFalse: [ 
+		DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования'
+	]
 ]
 
 { #category : #private }

@@ -361,10 +361,8 @@ DvtDataSetTablePresenter >> isCellEditable: coord [
 
 { #category : #testing }
 DvtDataSetTablePresenter >> isCellKeyEditable: coord [
-	| value column row columnCount rowCount |
+	| column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
-	value := dataGrid cellValueAt: coord.
-	(self class isNode: value) ifTrue: [ ^ false ].
 	column := coord x.
 	row := coord y.
 	columnCount := dataGrid columnCount.
@@ -381,10 +379,8 @@ DvtDataSetTablePresenter >> isCellKeyEditable: coord [
 
 { #category : #testing }
 DvtDataSetTablePresenter >> isCellValueEditable: coord [
-	| value transposed column row columnCount rowCount |
+	| transposed column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
-	value := dataGrid cellValueAt: coord.
-	(self class isNode: value) ifTrue: [ ^ false ].
 	column := coord x.
 	row := coord y.
 	columnCount := dataGrid columnCount.
