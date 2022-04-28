@@ -251,11 +251,11 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	nodeType = #arrayOfArrays
 		ifTrue: [ self putNewValue: newValue inArrayOfArraysAtColumn: column row: row needResize: needResize ].
 	
-	nodeType = #dict
-		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row needResize: needResize oldValue: value ].
-	
 	nodeType = #arrayOfDicts
 		ifTrue: [ self putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: value ].
+	
+	nodeType = #dict
+		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row oldValue: value ].
 	
 	nodeType = #dictOfArrays
 		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value ].
@@ -373,11 +373,11 @@ DvtDataSetTablePresenter >> isCellEditable: coord [
 	(#(dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [
 		transposed ifFalse: [ 
 			row = 1 ifTrue: [ ^ column <= (columnCount + 1) ].
-			^ row <= (rowCount + 1) and: [ column <= columnCount ]
+			^ column <= columnCount
 		] ifTrue: [ 
 			row = 1 ifTrue: [ ^ false ].
 			column = 1 ifTrue: [ ^ row <= (rowCount + 1) ].
-			^ column <= (columnCount + 1) and: [ row <= rowCount ]
+			^ row <= rowCount
 		]
 	].
 	^ false
@@ -509,7 +509,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row needResize: needResize oldValue: oldValue [
+DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row oldValue: oldValue [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
@@ -537,8 +537,9 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 		(node includesKey: newValue) ifTrue: [ 
 			^ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue })
 		].
-		oldValue ifNil: [ 
-			node at: newValue put: (Array new: dataGrid rowCount)
+		oldValue ifNil: [ | size |
+			size := transposeCheckBox state ifFalse: [ dataGrid rowCount ] ifTrue: [ dataGrid columnCount ].
+			node at: newValue put: (Array new: size)
 		] ifNotNil: [ | v |
 			v := node at: oldValue.
 			node removeKey: oldValue.
@@ -547,6 +548,12 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 	] ifFalse: [ 
 		| keys |
 		keys := dataGrid keysForCellCoord: column @ row.
+		needResize ifTrue: [ | size |
+			size := keys second.
+			node keysAndValuesDo: [ :k :v |
+				node at: k put: (v resizeCopy: size)
+			]
+		].
 		(node at: keys first) at: keys second put: newValue
 	]
 ]
