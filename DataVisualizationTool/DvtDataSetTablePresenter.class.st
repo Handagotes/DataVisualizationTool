@@ -430,7 +430,7 @@ DvtDataSetTablePresenter >> node: aNode [
 	transpose := transposeCheckBox state.
 	
 	node isDictionary ifTrue: [ 
-		(node isNotEmpty and: [ node allSatisfy: [ :e | e isArray and: [ e size = node anyOne size ] ] ]) ifTrue: [ 
+		(node size > 1 and: [ node allSatisfy: [ :e | e isArray and: [ e size = node anyOne size ] ] ]) ifTrue: [ 
 			nodeType := #dictOfArrays.
 			transpose
 				ifTrue: [ self applyTransposedDictOfArraysBlock ]
@@ -445,13 +445,13 @@ DvtDataSetTablePresenter >> node: aNode [
 	].
 	
 	node isArray ifTrue: [ 
-		(node isNotEmpty and: [ node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ] ]) ifTrue: [ 
+		(node size > 1 and: [ node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ] ]) ifTrue: [ 
 			nodeType := #arrayOfDicts.
 			transpose
 				ifTrue: [ self applyTransposedArrayOfDictsBlock ]
 				ifFalse: [ self applyArrayOfDictsBlock ]
 		] ifFalse: [ 
-			(node isNotEmpty and: [ node allSatisfy: [ :e | e isArray ] ]) ifTrue: [ 
+			(node size > 1 and: [ node allSatisfy: [ :e | e isArray ] ]) ifTrue: [ 
 				nodeType := #arrayOfArrays.
 				transpose
 					ifTrue: [ self applyTransposedArrayOfArraysBlock ]
@@ -502,6 +502,11 @@ DvtDataSetTablePresenter >> onSelectRowsButtonAction [
 { #category : #private }
 DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
 	self updateNode
+]
+
+{ #category : #api }
+DvtDataSetTablePresenter >> putCellValue: newValue at: coord [
+	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false
 ]
 
 { #category : #private }
@@ -626,6 +631,11 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 		].
 		(node at: keys first) at: keys second put: newValue
 	]
+]
+
+{ #category : #removing }
+DvtDataSetTablePresenter >> removeCellValueAt: coord [
+	
 ]
 
 { #category : #private }

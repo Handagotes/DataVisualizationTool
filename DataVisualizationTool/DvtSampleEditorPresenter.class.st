@@ -260,12 +260,19 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onNewNodeButtonAction [
-	| selection coord nodeType |
+	| selection coord nodeType node |
 	(selection := sampleTable dataGrid selectionRect) ifNil: [ ^ self ].
 	coord := selection origin.
-	(sampleTable isCellEditable: coord) ifFalse: [ ^ self ].
+	(sampleTable isCellValueEditable: coord) ifFalse: [ 
+		DvtErrorDialog open: 'Нельзя создать узел в выделенной ячейке.'.
+		^ self
+	].
 	nodeType := self class openPickNodeTypeDialog.
-	
+	(nodeType = #dict) ifTrue: [ node := Dictionary new ].
+	(nodeType = #array) ifTrue: [ node := {} ].
+	(nodeType = #arrayOfArrays) ifTrue: [ node := { { }. { } } ].
+	(nodeType = #arrayOfDicts) ifTrue: [ node := { Dictionary new. Dictionary new } ].
+	sampleTable putCellValue: node at: coord.
 ]
 
 { #category : #private }
