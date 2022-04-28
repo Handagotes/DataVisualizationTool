@@ -33,7 +33,7 @@ DvtPresenter class >> readSampleData: sample [
 		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
 		^ nil
 	].
-	(sampleData := self class tryParseJSON: sampleString) ifNil: [ 
+	(sampleData := self tryParseJSON: sampleString) ifNil: [ 
 		DvtErrorDialog open: 'Не удаётся прочитать файл выборки в формате JSON.'.
 		^ nil
 	].
