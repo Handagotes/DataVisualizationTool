@@ -260,6 +260,11 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onNewNodeButtonAction [
+	| selection coord nodeType |
+	(selection := sampleTable dataGrid selectionRect) ifNil: [ ^ self ].
+	coord := selection origin.
+	(sampleTable isCellEditable: coord) ifFalse: [ ^ self ].
+	nodeType := self class openPickNodeTypeDialog.
 	
 ]
 

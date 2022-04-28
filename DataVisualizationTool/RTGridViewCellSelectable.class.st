@@ -168,6 +168,18 @@ RTGridViewCellSelectable >> selectionRect [
 	^ selectionStart corner: selectionEnd
 ]
 
+{ #category : #api }
+RTGridViewCellSelectable >> selectionReverseDo: aBlock [
+	| rect |
+	self hasSelection ifFalse: [ ^ self ].
+	rect := self selectionRect.
+	rect bottom to: rect top by: -1 do: [ :row |
+		rect right to: rect left by: -1 do: [ :column |
+			aBlock value: column @ row
+		]
+	]
+]
+
 { #category : #accessing }
 RTGridViewCellSelectable >> selectionStart [
 	^ selectionStart

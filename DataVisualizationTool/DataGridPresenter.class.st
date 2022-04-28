@@ -303,6 +303,20 @@ DataGridPresenter >> selectedCellsDo: aBlock [
 	]
 ]
 
+{ #category : #enumerating }
+DataGridPresenter >> selectedCellsReverseDo: aBlock [
+	selectableInteraction hasSelection ifFalse: [ ^ self ].
+	selectableInteraction selectionReverseDo: [ :coord | | cell |
+		cell := self cellValueAt: coord.
+		aBlock value: cell value: coord 
+	]
+]
+
+{ #category : #accessing }
+DataGridPresenter >> selectionRect [
+	^ selectableInteraction selectionRect
+]
+
 { #category : #accessing }
 DataGridPresenter >> stringCellValueAt: coord [
 	| value |

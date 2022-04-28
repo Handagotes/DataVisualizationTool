@@ -245,7 +245,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue showDvtError: shouldShowDvtError [
 	| column row needResize  |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
@@ -356,6 +356,31 @@ DvtDataSetTablePresenter >> initializeWidgets [
 
 { #category : #testing }
 DvtDataSetTablePresenter >> isCellEditable: coord [
+	^ (self isCellKeyEditable: coord) or: [ self isCellValueEditable: coord ]
+]
+
+{ #category : #testing }
+DvtDataSetTablePresenter >> isCellKeyEditable: coord [
+	| value column row columnCount rowCount |
+	nodeType ifNil: [ ^ false ].
+	value := dataGrid cellValueAt: coord.
+	(self class isNode: value) ifTrue: [ ^ false ].
+	column := coord x.
+	row := coord y.
+	columnCount := dataGrid columnCount.
+	rowCount := dataGrid rowCount.
+	(column <= 0 or: [ row <= 0 ]) ifTrue: [ ^ false ].
+	(#(array arrayOfArrays) includes: nodeType) ifTrue: [ ^ false ].
+	(#(dict dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [ 
+		transposeCheckBox state
+			ifFalse: [ ^ row = 1 and: [ ^ column <= (columnCount + 1) ] ]
+			ifTrue: [ ^ column = 1 and: [ row between: 2 and: rowCount + 1 ]	]
+	].
+	^ false
+]
+
+{ #category : #testing }
+DvtDataSetTablePresenter >> isCellValueEditable: coord [
 	| value transposed column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
 	value := dataGrid cellValueAt: coord.
@@ -373,24 +398,14 @@ DvtDataSetTablePresenter >> isCellEditable: coord [
 			ifTrue: [ ^ row = 2 ]
 	].
 	nodeType = #dict ifTrue: [ 
-		transposed ifFalse: [ 
-			row = 1 ifTrue: [ ^ column <= (columnCount + 1) ].
-			^ row = 2 and: [ column <= columnCount ]
-		] ifTrue: [ 
-			row = 1 ifTrue: [ ^ false ].
-			column = 1 ifTrue: [ ^ row <= (rowCount + 1) ].
-			^ column = 2 and: [ row <= rowCount ]
-		]
+		transposed
+			ifFalse: [ ^ row = 2 and: [ column <= columnCount ] ]
+			ifTrue: [ ^ column = 2 and: [ row between: 2 and: rowCount ] ]
 	].
 	(#(dictOfArrays arrayOfDicts) includes: nodeType) ifTrue: [
-		transposed ifFalse: [ 
-			row = 1 ifTrue: [ ^ column <= (columnCount + 1) ].
-			^ column <= columnCount
-		] ifTrue: [ 
-			row = 1 ifTrue: [ ^ false ].
-			column = 1 ifTrue: [ ^ row <= (rowCount + 1) ].
-			^ row <= rowCount
-		]
+		transposed
+			ifFalse: [ ^ row >= 2 and: [ column <= columnCount ] ]
+			ifTrue: [ ^ column >= 2 and: [ row between: 2 and: rowCount ] ]
 	].
 	^ false
 ]
