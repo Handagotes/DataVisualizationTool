@@ -24,6 +24,23 @@ DvtPresenter class >> parseDataString: dataString [
 ]
 
 { #category : #private }
+DvtPresenter class >> readSampleData: sample [
+	| sampleString sampleData |
+	sampleString := nil.
+	[
+		sampleString := (DvtApp sampleFileRefFor: sample) contents
+	] on: FileDoesNotExistException do: [ 
+		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
+		^ nil
+	].
+	(sampleData := self class tryParseJSON: sampleString) ifNil: [ 
+		DvtErrorDialog open: 'Не удаётся прочитать файл выборки в формате JSON.'.
+		^ nil
+	].
+	^ sampleData
+]
+
+{ #category : #private }
 DvtPresenter class >> requestDropListDisplayBlock [
 	^ [ :request | '{1} | {2}' format: { request name. request text } ]
 ]

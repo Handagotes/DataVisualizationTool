@@ -282,22 +282,12 @@ DvtSampleEditorPresenter >> onRequestDropListSelectedItemChanged [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
-	| sample sampleString sampleData |
+	| sample sampleData |
 	self updateSampleFile.
 	sampleTable data: nil.
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
-	sampleString := nil.
 	sample := sampleDropList selectedItem.
-	[
-		sampleString := (DvtApp sampleFileRefFor: sample) contents
-	] on: FileDoesNotExistException do: [ 
-		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
-		^ self
-	].
-	(sampleData := self class tryParseJSON: sampleString) ifNil: [ 
-		DvtErrorDialog open: 'Не удаётся прочитать файл выборки в формате JSON.'.
-		^ self
-	].
+	(sampleData := self class readSampleData: sample) ifNil: [ ^ self ].
 	sampleTable data: sampleData
 ]
 

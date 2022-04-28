@@ -62,7 +62,8 @@ DvtVisualizerPresenter >> extent [
 { #category : #initialization }
 DvtVisualizerPresenter >> initializePresenter [
 	super initializePresenter.
-	visualizationsDropList whenSelectedItemChanged: [ self onVisualizationDropListButtonAction ].
+	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
+	visualizationsDropList whenSelectedItemChanged: [ self onVisualizationDropListSelectedItemChanged ].
 	createVisualizationButton action: [ self onCreateVisualizationButtonAction ].
 	deleteVisualizationButton action: [ self onDeleteVisualizationButtonAction ].
 ]
@@ -97,8 +98,25 @@ DvtVisualizerPresenter >> onDeleteVisualizationButtonAction [
 ]
 
 { #category : #private }
-DvtVisualizerPresenter >> onVisualizationDropListButtonAction [
+DvtVisualizerPresenter >> onSampleDropListSelectedItemChanged [
+	| sample sampleData |
+	sampleTable data: nil.
+	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
+	sample := sampleDropList selectedItem.
+	(sampleData := self class readSampleData: sample) ifNil: [ ^ self ].
+	sampleTable data: sampleData
+]
+
+{ #category : #private }
+DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
 	
+]
+
+{ #category : #private }
+DvtVisualizerPresenter >> onWindowOpened [
+	self
+		updateSampleDropList;
+		updateVisualizationDropList
 ]
 
 { #category : #accessing }
@@ -114,6 +132,13 @@ DvtVisualizerPresenter >> sampleLabel [
 { #category : #accessing }
 DvtVisualizerPresenter >> sampleTable [
 	^ sampleTable
+]
+
+{ #category : #private }
+DvtVisualizerPresenter >> updateSampleDropList [
+	sampleDropList
+		setIndex: 0;
+		items: DvtAppDB samples
 ]
 
 { #category : #private }
