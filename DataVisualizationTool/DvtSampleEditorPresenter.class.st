@@ -219,7 +219,7 @@ DvtSampleEditorPresenter >> onCopyButtonAction [
 	].
 	
 	success ifFalse: [ 
-		DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования'
+		DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования или отсутствуют данные для копирования.'
 	]
 ]
 
