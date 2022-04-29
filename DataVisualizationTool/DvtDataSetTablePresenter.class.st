@@ -563,7 +563,9 @@ DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
 
 { #category : #api }
 DvtDataSetTablePresenter >> putCellValue: newValue at: coord [
-	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false
+	self
+		editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false;
+		updateNode
 ]
 
 { #category : #private }
@@ -699,7 +701,8 @@ DvtDataSetTablePresenter >> removeCellValueAt: coord [
 DvtDataSetTablePresenter >> replaceResizedArrayNode: newNode [
 	| parent keys |
 	parentStack ifEmpty: [ 
-		self data: newNode.
+		data := newNode.
+		node := newNode.
 		^ self
 	].
 	parent := parentStack top.
@@ -708,8 +711,7 @@ DvtDataSetTablePresenter >> replaceResizedArrayNode: newNode [
 		parent := parent at: (keys at: i)
 	].
 	parent at: keys last put: newNode.
-	node := newNode.
-	"self node: newNode"
+	node := newNode
 ]
 
 { #category : #private }
