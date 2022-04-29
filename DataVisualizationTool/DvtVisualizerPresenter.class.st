@@ -46,6 +46,33 @@ DvtVisualizerPresenter class >> defaultSpec [
 	yourself
 ]
 
+{ #category : #api }
+DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
+	^ DvtDropListDialog
+		open: 'Выберите тип визуализации'
+		items: #(graph scatterPlot barChart pieChart radar tree)
+		displayBlock: [ :option | 
+			{
+				#graph -> 'График'.
+				#scatterPlot -> 'Точечная диаграмма'.
+				#barChart -> 'Столбчатая диаграмма'.
+				#pieChart -> 'Круговая диаграмма'.
+				#radar -> 'Радиальная диаграмма'.
+				#tree -> 'Дерево'.
+			} asDictionary at: option
+		]
+		descriptionBlock: [ :option |
+			{ 
+				#graph -> 'График зависимости одного значения от другого.'.
+				#scatterPlot -> 'График, отображающий зависимость двух переменных друг от друга для каждого объекта выборки.'.
+				#barChart -> 'Диаграмма сравнения нескольких дискретных категорий.'.
+				#pieChart -> 'Секторная диаграмма, отображающая доли величин в общем объёме.'.
+				#radar -> 'Диаграмма с несколькими осями для одновременного отображения нескольких независимых величин.'.
+				#tree -> 'Диаграмма для иерархического представления данных.'.
+			} asDictionary at: option
+		]
+]
+
 { #category : #accessing }
 DvtVisualizerPresenter >> createVisualizationButton [
 	^ createVisualizationButton
