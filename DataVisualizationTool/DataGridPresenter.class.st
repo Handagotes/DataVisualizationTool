@@ -116,14 +116,16 @@ DataGridPresenter >> columnWidth: columnWidth [
 DataGridPresenter >> copySelectedCellsToClipboard [
 	selectableInteraction hasSelection ifFalse: [ ^ self ].
 	data ifNil: [ ^ self ].
-	Clipboard clipboardText: (String streamContents: [ :ws | | rowEnd |
-		rowEnd := selectableInteraction selectionRect right.
+	Clipboard clipboardText: (String streamContents: [ :ws | | rect rowEnd columnEnd |
+		rect := selectableInteraction selectionRect.
+		rowEnd := rect right.
+		columnEnd := rect bottom.
 		selectableInteraction selectionDo: [ :coord | | cell |
 			(cell := (self stringCellValueAt: coord)) ifNotNil: [ 
 				ws nextPutAll: cell asString.
 				(coord x = rowEnd) ifFalse: [ ws tab ]
 			].
-			(coord x = rowEnd) ifTrue: [ ws crlf ]
+			(coord x = rowEnd and: [ coord y < columnEnd ]) ifTrue: [ ws crlf ]
 		]
 	])
 ]
