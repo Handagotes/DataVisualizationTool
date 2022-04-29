@@ -197,6 +197,11 @@ DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
 ]
 
 { #category : #private }
+DvtVisualizerPresenter >> onWindowClosed [
+	visualizationEditorPanel updateVisualizationConfigFile
+]
+
+{ #category : #private }
 DvtVisualizerPresenter >> onWindowOpened [
 	self
 		updateSampleDropList;

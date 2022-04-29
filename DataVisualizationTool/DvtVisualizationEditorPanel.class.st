@@ -78,6 +78,7 @@ DvtVisualizationEditorPanel >> onOpenVisualizationButtonAction [
 { #category : #api }
 DvtVisualizationEditorPanel >> openEditorClass: aClass visualization: visualization sampleFilePath: sampleFilePath sampleData: sampleData [
 	self assert: [ aClass isKindOf: DvtVisualizationEditor class ].
+	self updateVisualizationConfigFile.
 	(editor := self instantiate: aClass)
 		visualization: visualization;
 		sampleFilePath: sampleFilePath;
@@ -102,4 +103,9 @@ DvtVisualizationEditorPanel >> sampleFilePath [
 DvtVisualizationEditorPanel >> sampleFilePath: aString [
 	self assert: [ editor isKindOf: DvtVisualizationEditor ].
 	editor sampleFilePath: aString
+]
+
+{ #category : #api }
+DvtVisualizationEditorPanel >> updateVisualizationConfigFile [
+	(editor isKindOf: DvtVisualizationEditor) ifTrue: [ editor updateConfigFile ]
 ]

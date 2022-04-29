@@ -66,8 +66,10 @@ DvtVisualizationEditor >> scriptSnippetForSampleLoad [
 { #category : #api }
 DvtVisualizationEditor >> updateConfigFile [
 	| json |
+	config ifNil: [ ^ self ].
 	json := NeoJSONWriter toString: config.
 	(DvtApp visualizationFileRefFor: visualization)
+		ensureCreateFile;
 		writeStreamDo: [ :ws | ws nextPutAll: json	]
 ]
 
