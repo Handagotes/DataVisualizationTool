@@ -168,12 +168,31 @@ DvtVisualizerPresenter >> onSampleDropListSelectedItemChanged [
 	sampleTable data: nil.
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
-	(sampleData := self class readSampleData: sample) ifNil: [ ^ self ].
+	(sampleData := self class readJSONDataFromFileRef: (DvtApp sampleFileRefFor: sample)) ifNil: [ ^ self ].
 	sampleTable data: sampleData
 ]
 
 { #category : #private }
 DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
+	| visualization sample configData editorClass |
+	visualizationDropList selectedIndex isZero ifTrue: [ ^ visualizationEditorPanel closeEditor ].
+	visualization := visualizationDropList selectedItem.
+	sample := sampleDropList selectedItem.
+	(configData := self class readJSONDataFromFileRef: (DvtApp visualizationFileRefFor: visualization)) ifNil: [ ^ self ].
+	editorClass := { 
+		#graph -> DvtGraphVisualizationEditor.
+		#scatterPlot -> DvtScatterPlotVisualizationEditor.
+		#barChart -> DvtBarChartVisualizationEditor.
+		#pieChart -> DvtPieChartVisualizationEditor.
+		#radar -> DvtRadarVisualizationEditor.
+		#tree -> DvtTreeVisualizationEditor.
+	} asDictionary at: (configData at: #type).
+	
+	visualizationEditorPanel
+		openEditorClass: editorClass
+		visualization: visualization
+		sampleFilePath: (DvtApp samplesFolder , sample sampleFilePath)
+		sampleData: sampleTable data
 	
 ]
 

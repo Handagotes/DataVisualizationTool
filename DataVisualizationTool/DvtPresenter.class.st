@@ -24,20 +24,20 @@ DvtPresenter class >> parseDataString: dataString [
 ]
 
 { #category : #private }
-DvtPresenter class >> readSampleData: sample [
-	| sampleString sampleData |
-	sampleString := nil.
+DvtPresenter class >> readJSONDataFromFileRef: fileRef [
+	| dataString data |
+	dataString := nil.
 	[
-		sampleString := (DvtApp sampleFileRefFor: sample) contents
+		dataString := fileRef contents
 	] on: FileDoesNotExistException do: [ 
-		DvtErrorDialog open: 'Файл выборки отсутствует в файловой системе.'.
+		DvtErrorDialog open: ('Файл {1} отсутствует в файловой системе.' format: { fileRef fullName }).
 		^ nil
 	].
-	(sampleData := self tryParseJSON: sampleString) ifNil: [ 
-		DvtErrorDialog open: 'Не удаётся прочитать файл выборки в формате JSON.'.
+	(data := self tryParseJSON: dataString) ifNil: [ 
+		DvtErrorDialog open: ('Не удаётся прочитать файл "{1}" в формате JSON.' format: { fileRef fullName }).
 		^ nil
 	].
-	^ sampleData
+	^ data
 ]
 
 { #category : #private }

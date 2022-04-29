@@ -326,7 +326,7 @@ DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 	sampleTable data: nil.
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
-	(sampleData := self class readSampleData: sample) ifNil: [ ^ self ].
+	(sampleData := self class readJSONDataFromFileRef: (DvtApp sampleFileRefFor: sample)) ifNil: [ ^ self ].
 	sampleTable data: sampleData
 ]
 
