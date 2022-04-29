@@ -9,7 +9,7 @@ Class {
 		'visualizationDropList',
 		'createVisualizationButton',
 		'deleteVisualizationButton',
-		'visualizationEditor'
+		'visualizationEditorPanel'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -40,7 +40,7 @@ DvtVisualizerPresenter class >> defaultSpec [
 							add: #createVisualizationButton;
 							add: #deleteVisualizationButton
 					] height: self buttonHeight;
-					add: #visualizationEditor
+					add: #visualizationEditorPanel
 			]
 	];
 	yourself
@@ -107,7 +107,7 @@ DvtVisualizerPresenter >> initializeWidgets [
 	visualizationDropList := self newDropList.
 	createVisualizationButton := self newButton.
 	deleteVisualizationButton := self newButton.
-	visualizationEditor := self instantiate: DvtVisualizationEditorPanel.
+	visualizationEditorPanel := self instantiate: DvtVisualizationEditorPanel.
 	
 	sampleLabel label: 'Выборка:'.
 	sampleDropList displayBlock: self class sampleDropListDisplayBlock.
@@ -222,8 +222,8 @@ DvtVisualizerPresenter >> visualizationDropList [
 ]
 
 { #category : #accessing }
-DvtVisualizerPresenter >> visualizationEditor [
-	^ visualizationEditor
+DvtVisualizerPresenter >> visualizationEditorPanel [
+	^ visualizationEditorPanel
 ]
 
 { #category : #accessing }
