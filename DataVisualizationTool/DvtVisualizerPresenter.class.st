@@ -6,7 +6,7 @@ Class {
 		'sampleDropList',
 		'sampleTable',
 		'visualizationLabel',
-		'visualizationsDropList',
+		'visualizationDropList',
 		'createVisualizationButton',
 		'deleteVisualizationButton',
 		'visualizationEditor'
@@ -33,7 +33,7 @@ DvtVisualizerPresenter class >> defaultSpec [
 					newRow: [ :visualizationRow |
 						visualizationRow
 							add: #visualizationLabel width: 90;
-							add: #visualizationsDropList
+							add: #visualizationDropList
 					] height: self toolbarHeight;
 					newRow: [ :visualizationButtonsRow |
 						visualizationButtonsRow
@@ -92,7 +92,7 @@ DvtVisualizerPresenter >> extent [
 DvtVisualizerPresenter >> initializePresenter [
 	super initializePresenter.
 	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
-	visualizationsDropList whenSelectedItemChanged: [ self onVisualizationDropListSelectedItemChanged ].
+	visualizationDropList whenSelectedItemChanged: [ self onVisualizationDropListSelectedItemChanged ].
 	createVisualizationButton action: [ self onCreateVisualizationButtonAction ].
 	deleteVisualizationButton action: [ self onDeleteVisualizationButtonAction ].
 ]
@@ -104,7 +104,7 @@ DvtVisualizerPresenter >> initializeWidgets [
 	sampleDropList := self newDropList.
 	sampleTable := self newDvtDataSetTable.
 	visualizationLabel := self newLabel.
-	visualizationsDropList := self newDropList.
+	visualizationDropList := self newDropList.
 	createVisualizationButton := self newButton.
 	deleteVisualizationButton := self newButton.
 	visualizationEditor := self instantiate: DvtVisualizationEditorPanel.
@@ -112,7 +112,7 @@ DvtVisualizerPresenter >> initializeWidgets [
 	sampleLabel label: 'Выборка:'.
 	sampleDropList displayBlock: self class sampleDropListDisplayBlock.
 	visualizationLabel label: 'Визуализация:'.
-	visualizationsDropList displayBlock: self class visualizationDropListDisplayBlock.
+	visualizationDropList displayBlock: self class visualizationDropListDisplayBlock.
 	createVisualizationButton label: 'Новая визуализация'.
 	deleteVisualizationButton label: 'Удалить визуализацию'
 ]
@@ -154,8 +154,8 @@ DvtVisualizerPresenter >> onCreateVisualizationButtonAction [
 { #category : #private }
 DvtVisualizerPresenter >> onDeleteVisualizationButtonAction [
 	| visualization |
-	visualizationsDropList selectedIndex isZero ifTrue: [ ^ self ].
-	visualization := visualizationsDropList selectedItem.
+	visualizationDropList selectedIndex isZero ifTrue: [ ^ self ].
+	visualization := visualizationDropList selectedItem.
 	(DvtYesNoDialog open: ('Визуализация {1} будет удалёна из базы данных и из файловой системы. Продолжить?' format: { visualization name })) ifFalse: [ ^ self ].
 	DvtAppDB deleteVisualization: visualization.
 	(DvtApp visualizationFileRefFor: visualization) delete.
@@ -211,9 +211,14 @@ DvtVisualizerPresenter >> updateVisualizationDropList [
 	| sample |
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
-	visualizationsDropList
+	visualizationDropList
 		setIndex: 0;
 		items: (DvtAppDB visualizationsOfSample: sample)
+]
+
+{ #category : #accessing }
+DvtVisualizerPresenter >> visualizationDropList [
+	^ visualizationDropList
 ]
 
 { #category : #accessing }
@@ -224,9 +229,4 @@ DvtVisualizerPresenter >> visualizationEditor [
 { #category : #accessing }
 DvtVisualizerPresenter >> visualizationLabel [
 	^ visualizationLabel
-]
-
-{ #category : #accessing }
-DvtVisualizerPresenter >> visualizationsDropList [
-	^ visualizationsDropList
 ]
