@@ -169,7 +169,8 @@ DvtVisualizerPresenter >> onSampleDropListSelectedItemChanged [
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
 	(sampleData := self class readJSONDataFromFileRef: (DvtApp sampleFileRefFor: sample)) ifNil: [ ^ self ].
-	sampleTable data: sampleData
+	sampleTable data: sampleData.
+	self updateVisualizationDropList
 ]
 
 { #category : #private }

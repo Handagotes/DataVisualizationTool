@@ -219,6 +219,15 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 	] columnCount: columns rowCount: rows
 ]
 
+{ #category : #api }
+DvtDataSetTablePresenter >> cellTextColorForValue: value [
+	value isString ifTrue: [ ^ Color fromHexString: '9837C4' ].
+	value isNumber ifTrue: [ ^ Color fromHexString: '2F78E6' ].
+	value isLiteral ifTrue: [ ^ Color fromHexString: 'FFC84C' ].
+	(self class isNode: value) ifTrue: [ ^ Color fromHexString: '0B4E60' ].
+	^ Color veryDarkGray
+]
+
 { #category : #accessing }
 DvtDataSetTablePresenter >> data [
 	^ data
@@ -304,9 +313,7 @@ DvtDataSetTablePresenter >> initializeDataGrid [
 		];
 		cellTextColorBlock: [ :s :coord | | value |
 			value := dataGrid cellValueAt: coord.
-			(self class isNode: value)
-				ifTrue: [ Color fromHexString: '0B4E60' ]
-				ifFalse: [ Color veryDarkGray ]
+			self cellTextColorForValue: value
 		];
 		whenCellDoubleClicked: [ :value :coord |
 			(self class isNode: value) ifTrue: [ 
