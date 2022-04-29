@@ -195,23 +195,24 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onCopyButtonAction [
-	| dataSetSelection dataSetSelectionCorner start offset success |
+	| dataSetSelection sampleSelectionEnd start offset success |
 	dataSetTable data ifNil: [ ^ self ].
 	sampleTable data ifNil: [ ^ self ].
 	(dataSetSelection := dataSetTable dataGrid selectionRect) ifNil: [ ^ self ].
-	dataSetSelectionCorner := dataSetSelection corner.
+	sampleSelectionEnd := sampleTable dataGrid selectionRect origin + dataSetSelection extent.
+	
 	start := nil.
 	offset := 0 @ 0.
 	success := false.
 	
-	sampleTable dataGrid selectedCellsReverseDo: [ :value :coord | | dataSetCoord |
+	dataSetTable dataGrid selectedCellsReverseDo: [ :value :coord | | sampleCoord |
 		start ifNil: [ start := coord ].
 		offset := start - coord.
-		dataSetCoord := dataSetSelectionCorner - offset.
-		(sampleTable isCellValueEditable: coord) ifTrue: [ | newValue |
-			newValue := dataSetTable dataGrid cellValueAt: dataSetCoord.
+		sampleCoord := sampleSelectionEnd - offset.
+		(sampleTable isCellValueEditable: sampleCoord) ifTrue: [ | newValue |
+			newValue := dataSetTable dataGrid cellValueAt: coord.
 			newValue ifNotNil: [ 
-				sampleTable putCellValue: newValue at: coord.
+				sampleTable putCellValue: newValue at: sampleCoord.
 			].
 			success := true.
 		]

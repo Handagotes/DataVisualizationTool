@@ -313,8 +313,18 @@ DataGridPresenter >> selectedCellsReverseDo: aBlock [
 ]
 
 { #category : #accessing }
+DataGridPresenter >> selectionEnd [
+	^ selectableInteraction selectionEnd
+]
+
+{ #category : #accessing }
 DataGridPresenter >> selectionRect [
 	^ selectableInteraction selectionRect
+]
+
+{ #category : #accessing }
+DataGridPresenter >> selectionStart [
+	^ selectableInteraction selectionStart
 ]
 
 { #category : #accessing }
