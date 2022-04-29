@@ -69,8 +69,10 @@ DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 
 { #category : #private }
 DvtVisualizationEditorPanel >> onOpenVisualizationButtonAction [
-	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
-	DvtVisualizationViewPresenter openForView: editor generateView
+	| view |
+	(editor isKindOf: NullPresenter) ifTrue: [ ^ self ].
+	(view := editor generateView) ifNil: [ ^ self ].
+	DvtVisualizationViewPresenter openForView: view
 ]
 
 { #category : #api }

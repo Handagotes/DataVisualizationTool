@@ -32,7 +32,7 @@ DvtVisualizationEditor >> generateView [
 		view := Smalltalk compiler evaluate: self generateScript
 	] on: Error do: [ :e |
 		DvtErrorDialog open: ('Произошла ошибка выполнения сценария. "{1}"' format: { e messageText }).
-		^ self
+		^ nil
 	].
 	self assert: [ view isKindOf: RTView ].
 	^ view
@@ -56,6 +56,11 @@ DvtVisualizationEditor >> sampleFilePath [
 { #category : #accessing }
 DvtVisualizationEditor >> sampleFilePath: anObject [
 	sampleFilePath := anObject
+]
+
+{ #category : #private }
+DvtVisualizationEditor >> scriptSnippetForSampleLoad [
+	^ 'sample := NeoJSONReader fromString: (''{1}'' asFileReference readStreamDo: [ :rs | rs upToEnd ]).' format: { sampleFilePath }
 ]
 
 { #category : #api }
