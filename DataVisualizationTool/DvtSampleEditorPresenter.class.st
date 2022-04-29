@@ -254,7 +254,6 @@ DvtSampleEditorPresenter >> onCopyButtonAction [
 		sampleCoord := sampleSelectionEnd - offset.
 		(sampleTable isCellValueEditable: sampleCoord) ifTrue: [ 
 			value ifNotNil: [ 
-				sampleCoord traceCr.
 				sampleTable putCellValue: value at: sampleCoord.
 			].
 			success := true.
