@@ -242,6 +242,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
+	newValue := [ newValue asNumber ] on: Error do: [ newValue ].
 	self
 		editCellAt: coord value: value newValue: newValue showDvtError: true;
 		updateNode.

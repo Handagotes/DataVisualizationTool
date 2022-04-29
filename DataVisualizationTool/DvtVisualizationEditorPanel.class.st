@@ -62,9 +62,10 @@ DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 	| script path |
 	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	script := editor generateScript.
-	path := (FileDialogWindow onFileSystem: FileSystem disk)
+	Clipboard clipboardText: script
+	"path := (FileDialogWindow onFileSystem: FileSystem disk)
 		openModal;
-		answer
+		answer"
 ]
 
 { #category : #private }
