@@ -16,8 +16,8 @@ DvtVisualizationEditor >> config [
 ]
 
 { #category : #accessing }
-DvtVisualizationEditor >> config: aString [
-	config := aString
+DvtVisualizationEditor >> config: aCollectionOfCollections [
+	config := aCollectionOfCollections
 ]
 
 { #category : #api }
@@ -56,6 +56,14 @@ DvtVisualizationEditor >> sampleFilePath [
 { #category : #accessing }
 DvtVisualizationEditor >> sampleFilePath: anObject [
 	sampleFilePath := anObject
+]
+
+{ #category : #api }
+DvtVisualizationEditor >> updateConfigFile [
+	| json |
+	json := NeoJSONWriter toString: config.
+	(DvtApp visualizationFileRefFor: visualization)
+		writeStreamDo: [ :ws | ws nextPutAll: json	]
 ]
 
 { #category : #accessing }

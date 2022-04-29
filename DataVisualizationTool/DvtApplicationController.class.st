@@ -122,7 +122,7 @@ DvtApplicationController >> version [
 
 { #category : #api }
 DvtApplicationController >> visualizationFileRefFor: visualization [
-	^ (self visualizationsFolder , visualization scriptFilePath) asFileReference
+	^ (self visualizationsFolder , visualization configFilePath) asFileReference
 ]
 
 { #category : #api }
