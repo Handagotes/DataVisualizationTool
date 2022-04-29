@@ -221,10 +221,10 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 
 { #category : #api }
 DvtDataSetTablePresenter >> cellTextColorForValue: value [
-	value isString ifTrue: [ ^ Color fromHexString: '9837C4' ].
-	value isNumber ifTrue: [ ^ Color fromHexString: '2F78E6' ].
-	value isLiteral ifTrue: [ ^ Color fromHexString: 'FFC84C' ].
-	(self class isNode: value) ifTrue: [ ^ Color fromHexString: '0B4E60' ].
+	value isString ifTrue: [ ^ DvtApp colorForStringValue ].
+	value isNumber ifTrue: [ ^ DvtApp colorForNumberValue ].
+	value isLiteral ifTrue: [ ^ DvtApp colorForLiteralValue ].
+	(self class isNode: value) ifTrue: [ ^ DvtApp colorForNodeValue ].
 	^ Color veryDarkGray
 ]
 

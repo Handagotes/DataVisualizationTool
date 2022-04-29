@@ -8,6 +8,7 @@ Class {
 		'dataSetDropList',
 		'dataSetTable',
 		'newNodeButton',
+		'convertButton',
 		'copyButton',
 		'clearButton',
 		'sampleLabel',
@@ -43,6 +44,7 @@ DvtSampleEditorPresenter class >> defaultSpec [
 				column
 					add: #newNullPresenter;
 					add: #newNodeButton height: 32;
+					add: #convertButton height: 32;
 					add: #copyButton height: 32;
 					add: #clearButton height: 32;
 					add: #newNullPresenter
@@ -94,6 +96,11 @@ DvtSampleEditorPresenter >> clearButton [
 ]
 
 { #category : #accessing }
+DvtSampleEditorPresenter >> convertButton [
+	^ convertButton
+]
+
+{ #category : #accessing }
 DvtSampleEditorPresenter >> copyButton [
 	^ copyButton
 ]
@@ -135,6 +142,7 @@ DvtSampleEditorPresenter >> initializePresenter [
 	dataSetDropList whenSelectedItemChanged: [ self onDataSetDropListSelectedItemChanged ].
 	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
 	newNodeButton action: [ self onNewNodeButtonAction ].
+	convertButton action: [ self onConvertButtonAction ].
 	copyButton action: [ self onCopyButtonAction ].
 	clearButton action: [ self onClearButtonAction ].
 	createSampleButton action: [ self onCreateSampleButtonAction ].
@@ -151,6 +159,7 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	dataSetTable := self newDvtDataSetTable.
 	
 	newNodeButton := self newButton.
+	convertButton := self newButton.
 	copyButton := self newButton.
 	clearButton := self newButton.
 	
@@ -168,6 +177,9 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	newNodeButton
 		icon: (DvtImages loadImageNamed: #newNodeIcon);
 		help: 'Создать новый узел в выделенной ячейке'.
+	convertButton
+		icon: (DvtImages loadImageNamed: #convertIcon);
+		help: 'Изменить тип значений выеделенных ячеек'.
 	copyButton
 		icon: (DvtImages loadImageNamed: #moveIcon);
 		help: 'Копировать выделенные ячейки из левой таблицы в правую'.
@@ -199,6 +211,11 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 	].
 	sampleTable updateNode.
 	self updateSampleFile
+]
+
+{ #category : #private }
+DvtSampleEditorPresenter >> onConvertButtonAction [
+	
 ]
 
 { #category : #private }

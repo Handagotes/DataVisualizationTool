@@ -37,6 +37,26 @@ DvtApplicationController >> close [
 ]
 
 { #category : #api }
+DvtApplicationController >> colorForLiteralValue [
+	^ Color fromHexString: 'FFC84C'
+]
+
+{ #category : #api }
+DvtApplicationController >> colorForNodeValue [
+	^ Color fromHexString: '0B4E60'
+]
+
+{ #category : #api }
+DvtApplicationController >> colorForNumberValue [
+	^ Color fromHexString: '2F78E6'
+]
+
+{ #category : #api }
+DvtApplicationController >> colorForStringValue [
+	^ Color fromHexString: '9837C4'
+]
+
+{ #category : #api }
 DvtApplicationController >> dataSetFileRefFor: dataSet [
 	^ (self dataSetsFolder , dataSet dataFilePath) asFileReference
 ]
