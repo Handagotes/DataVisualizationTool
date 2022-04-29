@@ -250,8 +250,8 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 			ws nextPutAll: ({
 				#dict -> '{}'.
 				#array -> '[]'.
-				#arrayOfArrays -> '[[]]'.
-				#arrayOfDicts -> '[{}]'.
+				#arrayOfArrays -> '[[], []]'.
+				#arrayOfDicts -> '[{}, {}]'.
 			} asDictionary at: rootNodeType)
 		].
 	
@@ -307,7 +307,6 @@ DvtSampleEditorPresenter >> onRequestDropListSelectedItemChanged [
 { #category : #private }
 DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 	| sample sampleData |
-	self updateSampleFile.
 	sampleTable data: nil.
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
