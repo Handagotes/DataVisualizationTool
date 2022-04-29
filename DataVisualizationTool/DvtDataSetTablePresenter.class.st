@@ -304,7 +304,9 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
 	newValue := self class detectValueStringTypeAndConvert: newValue.
 	
-	self editCellAt: coord value: value newValue: newValue showDvtError: true.
+	self
+		editCellAt: coord value: value newValue: newValue showDvtError: true;
+		updateNode.
 	
 	cellEditedBlock ifNotNil: [ 
 		cellEditedBlock cull: newValue cull: value
@@ -563,9 +565,7 @@ DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
 
 { #category : #api }
 DvtDataSetTablePresenter >> putCellValue: newValue at: coord [
-	self
-		editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false;
-		updateNode
+	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false
 ]
 
 { #category : #private }
