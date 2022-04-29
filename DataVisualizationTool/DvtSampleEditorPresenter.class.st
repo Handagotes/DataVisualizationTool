@@ -215,7 +215,25 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onConvertButtonAction [
+	| type success |
+	sampleTable dataGrid hasSelection ifFalse: [ ^ self ].
+	(type := DvtPickValueTypeDialog open) ifNil: [ ^ self ].
+	success := false.
 	
+	sampleTable dataGrid selectedCellsDo: [ :value :coord |
+		(sampleTable isCellValueEditable: coord) ifTrue: [ 
+			(sampleTable convertCellValue: value at: coord toType: type) ifTrue: [ 
+				success := true
+			]
+		]
+	].
+	
+	success
+		ifFalse: [ DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования.' ]
+		ifTrue: [ 
+			sampleTable updateNode.
+			self updateSampleFile
+		]
 ]
 
 { #category : #private }

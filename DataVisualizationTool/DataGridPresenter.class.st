@@ -168,6 +168,11 @@ DataGridPresenter >> dataGridAdapter [
 	^ dataGridAdapter
 ]
 
+{ #category : #testing }
+DataGridPresenter >> hasSelection [
+	^ selectableInteraction hasSelection
+]
+
 { #category : #initialization }
 DataGridPresenter >> initialize [
 	data := nil.

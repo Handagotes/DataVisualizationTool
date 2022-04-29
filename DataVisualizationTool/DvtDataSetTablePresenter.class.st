@@ -18,6 +18,31 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
+{ #category : #api }
+DvtDataSetTablePresenter class >> canValue: value beConvertedToType: type [
+	type = #string ifTrue: [ ^ true ].
+	type = #number ifTrue: [ ^ value isNumber or: [ value isString and: [ NumberParser isNumber: value ] ] ].
+	type = #literal ifTrue: [ ^ #(true false nil #true #false #nil #null) includes: value ].
+	^ false
+]
+
+{ #category : #api }
+DvtDataSetTablePresenter class >> convertValue: value toType: type [
+	value isString ifTrue: [ ^ self convertValueString: value toType: type ].
+	type = #string ifTrue: [ ^ value asString ].
+	type = #number ifTrue: [ ^ value asNumber ].
+	type = #literal ifTrue: [ ^ Object readFromString: value ].
+	^ nil
+]
+
+{ #category : #api }
+DvtDataSetTablePresenter class >> convertValueString: aString toType: type [
+	type = #string ifTrue: [ ^ aString ].
+	type = #number ifTrue: [ ^ aString asNumber ].
+	type = #literal ifTrue: [ ^ Object readFromString: aString ].
+	^ nil
+]
+
 { #category : #specs }
 DvtDataSetTablePresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
@@ -35,13 +60,8 @@ DvtDataSetTablePresenter class >> defaultSpec [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter class >> detectValueTypeAndConvert: aString [
-	| type |
-	type := self resolveTypeForValueString: aString.
-	type = #string ifTrue: [ ^ aString ].
-	type = #number ifTrue: [ ^ aString asNumber ].
-	type = #literal ifTrue: [ ^ Object readFromString: aString ].
-	^ nil
+DvtDataSetTablePresenter class >> detectValueStringTypeAndConvert: aString [
+	^ self convertValueString: aString toType: (self resolveTypeForValueString: aString)
 ]
 
 { #category : #testing }
@@ -245,6 +265,20 @@ DvtDataSetTablePresenter >> cellTextColorForValue: value [
 	^ Color veryDarkGray
 ]
 
+{ #category : #api }
+DvtDataSetTablePresenter >> convertCellValue: value at: coord toType: type [
+	| newValue |
+	(self class canValue: value beConvertedToType: type) ifFalse: [ ^ false ].
+	newValue := self class convertValue: value toType: type.
+	self putCellValue: newValue at: coord.
+	^ true
+]
+
+{ #category : #api }
+DvtDataSetTablePresenter >> convertCellValueAt: coord toType: type [
+	self convertCellValue: (dataGrid cellValueAt: coord) at: coord toType: type
+]
+
 { #category : #accessing }
 DvtDataSetTablePresenter >> data [
 	^ data
@@ -268,7 +302,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
-	newValue := self class detectValueTypeAndConvert: newValue.
+	newValue := self class detectValueStringTypeAndConvert: newValue.
 	
 	self
 		editCellAt: coord value: value newValue: newValue showDvtError: true;
