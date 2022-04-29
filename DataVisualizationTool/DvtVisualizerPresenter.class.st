@@ -124,7 +124,13 @@ DvtVisualizerPresenter >> onCreateVisualizationButtonAction [
 
 { #category : #private }
 DvtVisualizerPresenter >> onDeleteVisualizationButtonAction [
-	
+	| visualization |
+	visualizationsDropList selectedIndex isZero ifTrue: [ ^ self ].
+	visualization := visualizationsDropList selectedItem.
+	(DvtYesNoDialog open: ('Визуализация {1} будет удалёна из базы данных и из файловой системы. Продолжить?' format: { visualization name })) ifFalse: [ ^ self ].
+	DvtAppDB deleteVisualization: visualization.
+	(DvtApp visualizationFileRefFor: visualization) delete.
+	self updateVisualizationDropList
 ]
 
 { #category : #private }

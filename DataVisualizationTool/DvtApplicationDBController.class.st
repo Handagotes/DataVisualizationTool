@@ -103,6 +103,11 @@ DvtApplicationDBController >> deleteSample: sample [
 	self deleteEntity: sample
 ]
 
+{ #category : #api }
+DvtApplicationDBController >> deleteVisualization: visualization [
+	self deleteEntity: visualization
+]
+
 { #category : #private }
 DvtApplicationDBController >> dropTableQueries [
 	^ { 
