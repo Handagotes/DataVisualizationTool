@@ -38,7 +38,7 @@ DvtApplicationController >> close [
 
 { #category : #api }
 DvtApplicationController >> colorForLiteralValue [
-	^ Color fromHexString: 'FFC84C'
+	^ Color fromHexString: 'E0A831'
 ]
 
 { #category : #api }

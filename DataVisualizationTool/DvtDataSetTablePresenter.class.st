@@ -34,9 +34,26 @@ DvtDataSetTablePresenter class >> defaultSpec [
 	yourself
 ]
 
+{ #category : #api }
+DvtDataSetTablePresenter class >> detectValueTypeAndConvert: aString [
+	| type |
+	type := self resolveTypeForValueString: aString.
+	type = #string ifTrue: [ ^ aString ].
+	type = #number ifTrue: [ ^ aString asNumber ].
+	type = #literal ifTrue: [ ^ Object readFromString: aString ].
+	^ nil
+]
+
 { #category : #testing }
 DvtDataSetTablePresenter class >> isNode: anObject [
 	^ anObject isArray or: [ anObject isDictionary ]
+]
+
+{ #category : #api }
+DvtDataSetTablePresenter class >> resolveTypeForValueString: aString [
+	(NumberParser isNumber: aString) ifTrue: [ ^ #number ].
+	(#(#true #false #nil #null) includes: aString) ifTrue: [ ^ #literal ].
+	^ #string
 ]
 
 { #category : #accessing }
@@ -251,7 +268,8 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
-	newValue := [ newValue asNumber ] on: Error do: [ newValue ].
+	newValue := self class detectValueTypeAndConvert: newValue.
+	
 	self
 		editCellAt: coord value: value newValue: newValue showDvtError: true;
 		updateNode.

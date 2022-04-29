@@ -23,6 +23,11 @@ ManifestDataVisualizationTool class >> ruleMissingSubclassResponsibilityRuleV1Fa
 ]
 
 { #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleRBLiteralArrayContainsSuspiciousTrueFalseOrNilRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#'DvtDataSetTablePresenter class' #resolveTypeForValueString: #true)) #'2022-04-29T22:19:32.965509+05:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRBLongMethodsRuleV1FalsePositive [
 	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-23T12:25:22.819456+05:00') )
 ]
