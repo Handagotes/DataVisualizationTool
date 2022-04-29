@@ -195,7 +195,9 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 		(sampleTable isCellValueEditable: coord) ifTrue: [ 
 			sampleTable putCellValue: nil at: coord
 		]
-	]
+	].
+	sampleTable updateNode.
+	self updateSampleFile
 ]
 
 { #category : #private }
@@ -214,18 +216,21 @@ DvtSampleEditorPresenter >> onCopyButtonAction [
 		start ifNil: [ start := coord ].
 		offset := start - coord.
 		sampleCoord := sampleSelectionEnd - offset.
-		(sampleTable isCellValueEditable: sampleCoord) ifTrue: [ | newValue |
-			newValue := dataSetTable dataGrid cellValueAt: coord.
-			newValue ifNotNil: [ 
-				sampleTable putCellValue: newValue at: sampleCoord.
+		(sampleTable isCellValueEditable: sampleCoord) ifTrue: [ 
+			value ifNotNil: [ 
+				sampleCoord traceCr.
+				sampleTable putCellValue: value at: sampleCoord.
 			].
 			success := true.
 		]
 	].
 	
-	success ifFalse: [ 
-		DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования или отсутствуют данные для копирования.'
-	]
+	success
+		ifFalse: [ DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования или отсутствуют данные для копирования.' ]
+		ifTrue: [ 
+			sampleTable updateNode.
+			self updateSampleFile
+		]
 ]
 
 { #category : #private }
@@ -296,12 +301,17 @@ DvtSampleEditorPresenter >> onNewNodeButtonAction [
 		DvtErrorDialog open: 'Нельзя создать узел в выделенной ячейке.'.
 		^ self
 	].
+	node := nil.
 	nodeType := self class openPickNodeTypeDialog.
 	(nodeType = #dict) ifTrue: [ node := Dictionary new ].
 	(nodeType = #array) ifTrue: [ node := {} ].
 	(nodeType = #arrayOfArrays) ifTrue: [ node := { { }. { } } ].
 	(nodeType = #arrayOfDicts) ifTrue: [ node := { Dictionary new. Dictionary new } ].
-	sampleTable putCellValue: node at: coord.
+	self assert: [ node isNotNil ].
+	sampleTable
+		putCellValue: node at: coord;
+		updateNode.
+	self updateSampleFile
 ]
 
 { #category : #private }

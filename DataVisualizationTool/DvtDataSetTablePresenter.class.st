@@ -241,8 +241,13 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
-	self editCellAt: coord value: value newValue: newValue showDvtError: true
+	self
+		editCellAt: coord value: value newValue: newValue showDvtError: true;
+		updateNode.
 	
+	cellEditedBlock ifNotNil: [ 
+		cellEditedBlock cull: newValue cull: value
+	]
 ]
 
 { #category : #api }
@@ -267,12 +272,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue sh
 		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row oldValue: value showDvtError: shouldShowDvtError ].
 	
 	nodeType = #dictOfArrays
-		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ].
-	
-	self updateNode.
-	cellEditedBlock ifNotNil: [ 
-		cellEditedBlock cull: newValue cull: value
-	]
+		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ]
 ]
 
 { #category : #accessing }
