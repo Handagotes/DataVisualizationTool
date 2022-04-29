@@ -21,7 +21,8 @@ DvtErrorDialog class >> defaultSpec [
 			] height: self labelHeight;
 			add: #errorText;
 			add: #okButton height: self buttonHeight
-	]
+	];
+	yourself
 ]
 
 { #category : #private }

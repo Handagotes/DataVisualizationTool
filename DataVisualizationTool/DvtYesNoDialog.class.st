@@ -24,7 +24,8 @@ DvtYesNoDialog class >> defaultSpec [
 					add: #yesButton;
 					add: #noButton
 			]
-	]
+	];
+	yourself
 ]
 
 { #category : #api }

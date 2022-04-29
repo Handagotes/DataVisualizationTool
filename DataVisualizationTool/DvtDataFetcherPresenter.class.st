@@ -51,7 +51,8 @@ DvtDataFetcherPresenter class >> defaultSpec [
 					] height: self buttonHeight;
 					add: #dataSetTable
 			]
-	]
+	];
+	yourself
 ]
 
 { #category : #accessing }

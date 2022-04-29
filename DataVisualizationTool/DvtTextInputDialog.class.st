@@ -21,7 +21,8 @@ DvtTextInputDialog class >> defaultSpec [
 					add: #okButton;
 					add: #cancelButton
 			] height: self buttonHeight
-	]
+	];
+	yourself
 ]
 
 { #category : #api }

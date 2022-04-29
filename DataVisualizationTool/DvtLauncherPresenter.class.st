@@ -33,7 +33,8 @@ DvtLauncherPresenter class >> defaultSpec [
 					add: #visualizerButton width: 71;
 					add: #visualizerText
 			] height: 75
-	]
+	];
+	yourself
 ]
 
 { #category : #accessing }
@@ -132,7 +133,7 @@ DvtLauncherPresenter >> onDataFetcherButtonAction [
 
 { #category : #private }
 DvtLauncherPresenter >> onExitMenuItemAction [
-	
+	DvtApp close
 ]
 
 { #category : #private }

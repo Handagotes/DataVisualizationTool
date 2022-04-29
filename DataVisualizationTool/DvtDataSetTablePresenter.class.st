@@ -30,7 +30,8 @@ DvtDataSetTablePresenter class >> defaultSpec [
 					add: #selectRowsButton;
 					add: #transposeCheckBox
 			] height: self buttonHeight
-	]
+	];
+	yourself
 ]
 
 { #category : #testing }

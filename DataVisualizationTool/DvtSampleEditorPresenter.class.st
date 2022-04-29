@@ -61,7 +61,8 @@ DvtSampleEditorPresenter class >> defaultSpec [
 					] height: self buttonHeight;
 					add: #sampleTable
 			]
-	]
+	];
+	yourself
 ]
 
 { #category : #private }

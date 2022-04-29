@@ -53,7 +53,8 @@ DvtEditRequestDialog class >> defaultSpec [
 					add: #okButton;
 					add: #cancelButton
 			] height: self buttonHeight
-	]
+	];
+	yourself
 ]
 
 { #category : #'instance creation' }
