@@ -15,9 +15,22 @@ DvtVisualizationEditor class >> defaultSpec [
 	yourself
 ]
 
-{ #category : #initialization }
-DvtVisualizationEditor >> initializeWidgets [
-	
+{ #category : #api }
+DvtVisualizationEditor >> generateScript [
+	self subclassResponsibility
+]
+
+{ #category : #api }
+DvtVisualizationEditor >> generateView [
+	| view |
+	[ 
+		view := Smalltalk compiler evaluate: self generateScript
+	] on: Error do: [ :e |
+		DvtErrorDialog open: ('Произошла ошибка выполнения сценария. "{1}"' format: { e messageText }).
+		^ self
+	].
+	self assert: [ view isKindOf: RTView ].
+	^ view
 ]
 
 { #category : #accessing }
