@@ -304,9 +304,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
 	newValue := self class detectValueStringTypeAndConvert: newValue.
 	
-	self
-		editCellAt: coord value: value newValue: newValue showDvtError: true;
-		updateNode.
+	self editCellAt: coord value: value newValue: newValue showDvtError: true.
 	
 	cellEditedBlock ifNotNil: [ 
 		cellEditedBlock cull: newValue cull: value
@@ -335,7 +333,9 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue sh
 		ifTrue: [ self putNewValue: newValue inDictAtColumn: column row: row oldValue: value showDvtError: shouldShowDvtError ].
 	
 	nodeType = #dictOfArrays
-		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ]
+		ifTrue: [ self putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: value showDvtError: shouldShowDvtError ].
+	
+	needResize ifTrue: [ self updateNode ]
 ]
 
 { #category : #accessing }
