@@ -23,6 +23,14 @@ DvtVisualizationEditorPanel class >> defaultSpec [
 	yourself
 ]
 
+{ #category : #api }
+DvtVisualizationEditorPanel >> closeEditor [
+	editor := self newNullPresenter.
+	self
+		needRebuild: false;
+		buildWithSpec
+]
+
 { #category : #accessing }
 DvtVisualizationEditorPanel >> editor [
 	^ editor

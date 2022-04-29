@@ -119,7 +119,36 @@ DvtVisualizerPresenter >> initializeWidgets [
 
 { #category : #private }
 DvtVisualizerPresenter >> onCreateVisualizationButtonAction [
+	| sample name visualizationType visualization basicConfig |
+	sampleDropList selectedIndex isZero ifTrue: [ 
+		^ DvtErrorDialog open: 'Перед тем как создать визуализацию, укажите выборку в выпадающем списке слева.'
+	].
+	sample := sampleDropList selectedItem.
+	name := ''.
+	[ 
+		(name := (DvtTextInputDialog open: 'Введите имя визуализации.' default: name)) ifNil: [ ^ self ].
+		(visualizationType := self class openPickVisualizationTypeDialog) ifNil: [ ^ self ].
+		
+		visualization := (DvtVisualization new
+			name: name;
+			configFilePath: name , '.json';
+			sampleId: sample id;
+			yourself).
+		[ 
+			DvtAppDB insertVisualization: visualization.
+			true
+		] on: SQLite3ConstraintViolation do: [ 
+			DvtErrorDialog open: ('Визуализация с именем "{1}" уже существует.' format: { name }).
+			false
+		]
+	] whileFalse.
 	
+	basicConfig := NeoJSONWriter toStringPretty: { 'type' -> visualizationType } asDictionary.
+	(DvtApp visualizationFileRefFor: visualization)
+		ensureCreateFile;
+		writeStreamDo: [ :ws | ws nextPutAll: basicConfig	].
+	
+	self updateVisualizationDropList
 ]
 
 { #category : #private }
@@ -183,8 +212,8 @@ DvtVisualizerPresenter >> updateVisualizationDropList [
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
 	visualizationsDropList
-		items: (DvtAppDB visualizationsOfSample: sample);
-		setIndex: 0.
+		setIndex: 0;
+		items: (DvtAppDB visualizationsOfSample: sample)
 ]
 
 { #category : #accessing }

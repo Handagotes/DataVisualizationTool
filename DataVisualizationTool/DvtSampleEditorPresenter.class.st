@@ -394,7 +394,7 @@ DvtSampleEditorPresenter >> updateSampleFile [
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sampleTable data ifNil: [ ^ self ].
 	sample := sampleDropList selectedItem.
-	json := NeoJSONWriter toString: sampleTable data.
+	json := NeoJSONWriter toStringPretty: sampleTable data.
 	(DvtApp sampleFileRefFor: sample)
 		writeStreamDo: [ :ws | ws nextPutAll: json	]
 ]
