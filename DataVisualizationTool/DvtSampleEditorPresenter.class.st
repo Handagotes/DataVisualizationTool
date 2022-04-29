@@ -191,6 +191,11 @@ DvtSampleEditorPresenter >> newNodeButton [
 DvtSampleEditorPresenter >> onClearButtonAction [
 	sampleTable data ifNil: [ ^ self ].
 	
+	sampleTable dataGrid selectedCellsReverseDo: [ :value :coord |
+		(sampleTable isCellValueEditable: coord) ifTrue: [ 
+			sampleTable putCellValue: nil at: coord
+		]
+	]
 ]
 
 { #category : #private }
