@@ -52,6 +52,7 @@ DvtVisualizationEditorPanel >> initializeWidgets [
 { #category : #private }
 DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 	| script path |
+	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	script := editor generateScript.
 	path := (FileDialogWindow onFileSystem: FileSystem disk)
 		openModal;
@@ -60,7 +61,20 @@ DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 
 { #category : #private }
 DvtVisualizationEditorPanel >> onOpenVisualizationButtonAction [
+	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	DvtVisualizationViewPresenter openForView: editor generateView
+]
+
+{ #category : #api }
+DvtVisualizationEditorPanel >> openEditorClass: aClass visualization: visualization sampleFilePath: sampleFilePath sampleData: sampleData [
+	self assert: [ aClass isKindOf: DvtVisualizationEditor ].
+	(editor := self instantiate: aClass)
+		visualization: visualization;
+		sampleFilePath: sampleFilePath;
+		sampleData: sampleData.
+	self
+		needRebuild: false;
+		buildWithSpec
 ]
 
 { #category : #accessing }

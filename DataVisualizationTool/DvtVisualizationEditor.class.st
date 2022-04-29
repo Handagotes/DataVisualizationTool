@@ -2,17 +2,22 @@ Class {
 	#name : #DvtVisualizationEditor,
 	#superclass : #ComposablePresenter,
 	#instVars : [
-		'sampleFilePath'
+		'visualization',
+		'sampleFilePath',
+		'sampleData',
+		'config'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #specs }
-DvtVisualizationEditor class >> defaultSpec [
-	^ SpecLayout composed newColumn: [ :column |
-		
-	];
-	yourself
+{ #category : #accessing }
+DvtVisualizationEditor >> config [
+	^ config
+]
+
+{ #category : #accessing }
+DvtVisualizationEditor >> config: aString [
+	config := aString
 ]
 
 { #category : #api }
@@ -34,6 +39,16 @@ DvtVisualizationEditor >> generateView [
 ]
 
 { #category : #accessing }
+DvtVisualizationEditor >> sampleData [
+	^ sampleData
+]
+
+{ #category : #accessing }
+DvtVisualizationEditor >> sampleData: anObject [
+	sampleData := anObject
+]
+
+{ #category : #accessing }
 DvtVisualizationEditor >> sampleFilePath [
 	^ sampleFilePath
 ]
@@ -41,4 +56,14 @@ DvtVisualizationEditor >> sampleFilePath [
 { #category : #accessing }
 DvtVisualizationEditor >> sampleFilePath: anObject [
 	sampleFilePath := anObject
+]
+
+{ #category : #accessing }
+DvtVisualizationEditor >> visualization [
+	^ visualization
+]
+
+{ #category : #accessing }
+DvtVisualizationEditor >> visualization: anObject [
+	visualization := anObject
 ]
