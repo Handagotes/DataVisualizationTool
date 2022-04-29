@@ -38,8 +38,14 @@ DvtGraphVisualizationEditor >> generateScript [
 			nextPutAll: 'data := RTData new.'; cr;
 			nextPutAll: self scriptSnippetForSampleLoad; cr;
 			nextPutAll: 'data points: sample.'; cr;
-			nextPutAll: 'data x: #'; nextPutAll: xKeyTextInput text; nextPut: $.; cr;
-			nextPutAll: 'data y: #'; nextPutAll: yKeyTextInput text; nextPut: $.; cr;
+			nextPutAll: 'data connectColor: Color red.'; cr.
+		xKeyTextInput text ifNotEmpty: [ 
+			ws nextPutAll: 'data x: #'; nextPutAll: xKeyTextInput text; nextPut: $.; cr.
+		].
+		yKeyTextInput text ifNotEmpty: [ 
+			ws nextPutAll: 'data y: #'; nextPutAll: yKeyTextInput text; nextPut: $.; cr
+		].
+		ws
 			nextPutAll: 'grapher add: data.'; cr;
 			nextPutAll: 'grapher build.'; cr;
 			nextPutAll: '^ grapher view'; cr
