@@ -75,7 +75,7 @@ DvtVisualizationEditorPanel >> onOpenVisualizationButtonAction [
 
 { #category : #api }
 DvtVisualizationEditorPanel >> openEditorClass: aClass visualization: visualization sampleFilePath: sampleFilePath sampleData: sampleData [
-	self assert: [ aClass isKindOf: DvtVisualizationEditor ].
+	self assert: [ aClass isKindOf: DvtVisualizationEditor class ].
 	(editor := self instantiate: aClass)
 		visualization: visualization;
 		sampleFilePath: sampleFilePath;
