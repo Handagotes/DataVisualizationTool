@@ -1,6 +1,6 @@
 Class {
 	#name : #DvtVisualizationEditor,
-	#superclass : #ComposablePresenter,
+	#superclass : #DynamicComposablePresenter,
 	#instVars : [
 		'visualization',
 		'sampleFilePath',
@@ -9,6 +9,28 @@ Class {
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
+
+{ #category : #private }
+DvtVisualizationEditor >> addColorPickButton: name label: label defaultColor: color [
+	| button form |
+	self instantiatePresenters: { name. #ButtonPresenter }.
+	form := color asFormOfExtent: 16 @ 16.
+	(button := widgets at: name)
+		label: ' ' , label;
+		icon: form;
+		action: [ | picker topWindow |
+			picker := ColorSelectorDialogWindow new.
+			topWindow := SystemWindow topWindow.
+			picker selectedColor: (form colorAt: 1 @ 1).
+			topWindow modalLockTo: picker.
+			picker openModal.
+			topWindow modalUnlockFrom: picker.
+			picker cancelled ifFalse: [ 
+				form fillColor: picker selectedColor.
+				button icon: form
+			].
+		]
+]
 
 { #category : #accessing }
 DvtVisualizationEditor >> config [
@@ -36,6 +58,11 @@ DvtVisualizationEditor >> generateView [
 	].
 	self assert: [ view isKindOf: RTView ].
 	^ view
+]
+
+{ #category : #api }
+DvtVisualizationEditor >> pickedColorFor: colorPickButtonName [
+	^ (widgets at: colorPickButtonName) icon colorAt: 1 @ 1
 ]
 
 { #category : #accessing }

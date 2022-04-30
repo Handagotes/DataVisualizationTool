@@ -9,7 +9,7 @@ DvtPieChartVisualizationEditor class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
 		column
 			newRow: [ :row |
-				
+				row add: #dotColorButton
 			]
 	];
 	yourself
@@ -23,4 +23,9 @@ DvtPieChartVisualizationEditor >> generateScript [
 			
 			nextPutAll: '^ view'
 	]
+]
+
+{ #category : #initialization }
+DvtPieChartVisualizationEditor >> initializeWidgets [
+	self addColorPickButton: #dotColorButton label: 'Цвет точек' defaultColor: Color red
 ]
