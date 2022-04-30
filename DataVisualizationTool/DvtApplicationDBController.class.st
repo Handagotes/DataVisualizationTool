@@ -14,13 +14,14 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 	^ { 
 		'CREATE TABLE IF NOT EXISTS dataset (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			fetch_date date NOT NULL, fetch_time time NOT NULL,
+			fetch_date date NOT NULL,
+			fetch_time time NOT NULL,
 			data_file_path varchar(255) NOT NULL,
 			request_id integer(10),
 			FOREIGN KEY(request_id)
 			REFERENCES request(id)
-		);
-		CREATE UNIQUE INDEX IF NOT EXISTS dataset_id ON dataset (id);'.
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS dataset_id ON dataset (id);'.
 		'CREATE TABLE IF NOT EXISTS dataset_sample (
 			id integer(10) NOT NULL,
 			dataset_id integer(10) NOT NULL,
@@ -28,8 +29,8 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 			PRIMARY KEY (id, dataset_id, sample_id),
 			FOREIGN KEY(sample_id) REFERENCES sample(id),
 			FOREIGN KEY(dataset_id) REFERENCES dataset(id)
-		);
-		CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);'.
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS dataset_sample_id ON dataset_sample (id);'.
 		'CREATE TABLE IF NOT EXISTS header_field (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			header varchar(255) NOT NULL,
@@ -37,27 +38,31 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 			"order" integer(10) NOT NULL,
 			request_id integer(10) NOT NULL,
 			FOREIGN KEY(request_id) REFERENCES request(id)
-		);
-		CREATE UNIQUE INDEX IF NOT EXISTS header_field_id ON header_field (id);'.
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS header_field_id ON header_field (id);'.
 		'CREATE TABLE IF NOT EXISTS request (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			name varchar(255) NOT NULL UNIQUE,
 			text varchar(255) NOT NULL
-		);
-		CREATE UNIQUE INDEX IF NOT EXISTS request_id ON request (id);'.
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS request_id ON request (id);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS request_name ON request (lower(name));'.
 		'CREATE TABLE IF NOT EXISTS sample (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			name varchar(255) NOT NULL UNIQUE,
 			sample_file_path varchar(255) NOT NULL
-		);
-		CREATE UNIQUE INDEX IF NOT EXISTS sample_id ON sample (id);'.
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS sample_id ON sample (id);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS sample_name ON sample (lower(name));'.
 		'CREATE TABLE IF NOT EXISTS visualization (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			name varchar(255) NOT NULL,
 			config_file_path varchar(255) NOT NULL,
 			sample_id integer(10) NOT NULL,
-			FOREIGN KEY(sample_id) REFERENCES sample(id));
-		CREATE UNIQUE INDEX IF NOT EXISTS visualization_id ON visualization (id);'.
+			FOREIGN KEY(sample_id) REFERENCES sample(id)
+		);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS visualization_id ON visualization (id);'.
+		'CREATE UNIQUE INDEX IF NOT EXISTS visualization_name ON visualization (lower(name));'.
 	}
 ]
 

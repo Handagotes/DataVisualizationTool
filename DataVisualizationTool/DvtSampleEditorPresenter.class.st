@@ -321,7 +321,7 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 	| sample |
 	sampleDropList selectedIndex isZero ifTrue: [ ^ self ].
 	sample := sampleDropList selectedItem.
-	(DvtYesNoDialog open: ('Выборка {1} будет удалёна из базы данных и из файловой системы. Продолжить?' format: { sample name })) ifFalse: [ ^ self ].
+	(DvtYesNoDialog open: ('Выборка "{1}" и её визуализации будут удалёны из базы данных и из файловой системы. Продолжить?' format: { sample name })) ifFalse: [ ^ self ].
 	DvtAppDB deleteSample: sample.
 	(DvtApp sampleFileRefFor: sample) delete.
 	self updateSampleDropList
