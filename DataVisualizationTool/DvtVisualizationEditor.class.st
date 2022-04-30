@@ -32,6 +32,18 @@ DvtVisualizationEditor >> addColorPickButton: name label: label defaultColor: co
 		]
 ]
 
+{ #category : #private }
+DvtVisualizationEditor >> addKeyTextInput: name label: label [
+	| labelName |
+	labelName := name , 'Label'.
+	self instantiatePresenters: { 
+		name. #TextInputFieldPresenter.
+		labelName. #LabelPresenter
+	}.
+	(widgets at: name)	autoAccept: true.
+	(widgets at: labelName) label: label
+]
+
 { #category : #accessing }
 DvtVisualizationEditor >> config [
 	^ config
@@ -61,8 +73,18 @@ DvtVisualizationEditor >> generateView [
 ]
 
 { #category : #api }
+DvtVisualizationEditor >> keyFor: keyTextInputName [
+	| key type |
+	key := (widgets at: keyTextInputName) text.
+	(key first = $' and: [ key last = $' ]) ifTrue: [ ^ key ].
+	type := DvtDataSetTablePresenter resolveTypeForValueString: key.
+	type = #string ifTrue: [ key := '''{1}''' format: { key } ].
+	^ key
+]
+
+{ #category : #api }
 DvtVisualizationEditor >> pickedColorFor: colorPickButtonName [
-	^ (widgets at: colorPickButtonName) icon colorAt: 1 @ 1
+	^ ((widgets at: colorPickButtonName) icon colorAt: 1 @ 1) storeString
 ]
 
 { #category : #accessing }

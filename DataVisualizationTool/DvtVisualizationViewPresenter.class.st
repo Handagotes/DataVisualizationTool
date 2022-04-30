@@ -28,7 +28,7 @@ DvtVisualizationViewPresenter class >> openForView: aView [
 
 { #category : #api }
 DvtVisualizationViewPresenter >> extent [
-	^ 640 @ 480
+	^ 500 @ 500
 ]
 
 { #category : #initialization }
@@ -99,10 +99,12 @@ DvtVisualizationViewPresenter >> view [
 { #category : #accessing }
 DvtVisualizationViewPresenter >> view: aView [
 	view := aView.
+	view canvas extent: self extent - (25 @ 25).
 	viewAdapter := view canvas buildMorph
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
-		asSpecAdapter
+		asSpecAdapter.
+	view canvas camera adjust
 ]
 
 { #category : #accessing }

@@ -1,12 +1,6 @@
 Class {
 	#name : #DvtGraphVisualizationEditor,
 	#superclass : #DvtGrapherVisualizationEditor,
-	#instVars : [
-		'xKeyLabel',
-		'xKeyTextInput',
-		'yKeyLabel',
-		'yKeyTextInput'
-	],
 	#category : #'DataVisualizationTool-Boundary'
 }
 
@@ -16,14 +10,16 @@ DvtGraphVisualizationEditor class >> defaultSpec [
 		column
 			newRow: [ :row |
 				row
-					add: #xKeyLabel;
-					add: #xKeyTextInput
+					add: #xKeyTextLabel width: 125;
+					add: #xKeyText
 			] height: self buttonHeight;
 			newRow: [ :row |
 				row
-					add: #yKeyLabel;
-					add: #yKeyTextInput
+					add: #yKeyTextLabel width: 125;
+					add: #yKeyText
 			] height: self buttonHeight;
+			add: #dotColorButton height: self buttonHeight;
+			add: #connectColorButton height: self buttonHeight;
 			add: #newNullPresenter
 	];
 	yourself
@@ -36,17 +32,15 @@ DvtGraphVisualizationEditor >> generateScript [
 			nextPutAll: '| grapher data sample |'; cr;
 			nextPutAll: 'grapher := RTGrapher new.'; cr;
 			nextPutAll: 'data := RTData new.'; cr;
+			nextPutAll: ('data dotShape size: 5; color: {1}.' format: { self pickedColorFor: #dotColorButton }); cr;
 			nextPutAll: self scriptSnippetForSampleLoad; cr;
 			nextPutAll: 'data points: sample.'; cr;
-			nextPutAll: 'data connectColor: Color red.'; cr.
-		xKeyTextInput text ifNotEmpty: [ 
-			ws nextPutAll: 'data x: #'; nextPutAll: xKeyTextInput text; nextPut: $.; cr.
-		].
-		yKeyTextInput text ifNotEmpty: [ 
-			ws nextPutAll: 'data y: #'; nextPutAll: yKeyTextInput text; nextPut: $.; cr
-		].
-		ws
+			nextPutAll: 'data connectColor: Color red.'; cr;
+			nextPutAll: ('data x: [ :e | e at: {1} ].' format: { self keyFor: #xKeyText }); cr;
+			nextPutAll: ('data y: [ :e | e at: {1} ].' format: { self keyFor: #yKeyText }); cr;
+			nextPutAll: ('data connectColor: {1}.' format: { self pickedColorFor: #connectColorButton }); cr;
 			nextPutAll: 'grapher add: data.'; cr;
+			nextPutAll: 'grapher extent: 350 @ 350.'; cr;
 			nextPutAll: 'grapher build.'; cr;
 			nextPutAll: '^ grapher view'; cr
 	]
@@ -54,33 +48,9 @@ DvtGraphVisualizationEditor >> generateScript [
 
 { #category : #initialization }
 DvtGraphVisualizationEditor >> initializeWidgets [
-	xKeyLabel := self newLabel.
-	yKeyLabel := self newLabel.
-	xKeyTextInput := self newTextInput.
-	yKeyTextInput := self newTextInput.
-	
-	xKeyLabel label: 'Ключ оси абсцисс:'.
-	yKeyLabel label: 'Ключ оси ординат:'.
-	xKeyTextInput autoAccept: true.
-	yKeyTextInput autoAccept: true
-]
-
-{ #category : #accessing }
-DvtGraphVisualizationEditor >> xKeyLabel [
-	^ xKeyLabel
-]
-
-{ #category : #accessing }
-DvtGraphVisualizationEditor >> xKeyTextInput [
-	^ xKeyTextInput
-]
-
-{ #category : #accessing }
-DvtGraphVisualizationEditor >> yKeyLabel [
-	^ yKeyLabel
-]
-
-{ #category : #accessing }
-DvtGraphVisualizationEditor >> yKeyTextInput [
-	^ yKeyTextInput
+	self
+		addKeyTextInput: #xKeyText label: 'Ключ оси абсцисс:';
+		addKeyTextInput: #yKeyText label: 'Ключ оси ординат:';
+		addColorPickButton: #dotColorButton label: 'Цвет точек' defaultColor: Color red;
+		addColorPickButton: #connectColorButton label: 'Цвет линий' defaultColor: Color red.
 ]
