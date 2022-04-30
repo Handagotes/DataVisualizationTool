@@ -229,7 +229,7 @@ DvtSampleEditorPresenter >> onConvertButtonAction [
 	].
 	
 	success
-		ifFalse: [ DvtErrorDialog open: 'Выделенные ячейки не являются доступными для редактирования.' ]
+		ifFalse: [ DvtErrorDialog open: 'Невозможно конвертировать данные в выделенных ячейках.' ]
 		ifTrue: [ 
 			sampleTable updateNode.
 			self updateSampleFile
