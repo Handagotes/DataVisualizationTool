@@ -23,7 +23,6 @@ DvtDialog class >> openDialogConfiguredAs: aBlock [
 		containingWindow removeBoxes.
 	aBlock cull: dialog cull: window.
 	window modalRelativeTo: topMorph.
-	"Поток останавливается до закрытия модального окна"
 	^ dialog result
 ]
 
