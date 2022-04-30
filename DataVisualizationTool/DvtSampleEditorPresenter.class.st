@@ -337,7 +337,7 @@ DvtSampleEditorPresenter >> onNewNodeButtonAction [
 		^ self
 	].
 	node := nil.
-	nodeType := self class openPickNodeTypeDialog.
+	(nodeType := self class openPickNodeTypeDialog) ifNil: [ ^ self ].
 	(nodeType = #dict) ifTrue: [ node := Dictionary new ].
 	(nodeType = #array) ifTrue: [ node := {} ].
 	(nodeType = #arrayOfArrays) ifTrue: [ node := { { }. { } } ].

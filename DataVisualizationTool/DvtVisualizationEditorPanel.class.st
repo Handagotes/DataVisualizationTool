@@ -59,13 +59,10 @@ DvtVisualizationEditorPanel >> initializeWidgets [
 
 { #category : #private }
 DvtVisualizationEditorPanel >> onExportScriptButtonAction [
-	| script path |
+	| script |
 	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	script := editor generateScript.
-	Clipboard clipboardText: script
-	"path := (FileDialogWindow onFileSystem: FileSystem disk)
-		openModal;
-		answer"
+	GTPlayground openContents: script
 ]
 
 { #category : #private }

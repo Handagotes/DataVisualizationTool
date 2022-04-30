@@ -37,15 +37,7 @@ DvtBase64ImageStorage >> initialize [
 		#moveIcon -> self moveIconBase64.
 		#newNodeIcon -> self newNodeIconBase64.
 		#convertIcon -> self convertIconBase64.
-		#stringValueTypeIcon -> self stringValueTypeIconBase64.
-		#numberValueTypeIcon -> self numberValueTypeIconBase64.
-		#literalValueTypeIcon -> self literalValueTypeIconBase64.
 	} asDictionary
-]
-
-{ #category : #api }
-DvtBase64ImageStorage >> literalValueTypeIconBase64 [
-	^ 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExUReCoMTmY26EAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAOSURBVCjPYxgFQMDAAAABCAABT9OJZAAAAABJRU5ErkJggg=='
 ]
 
 { #category : #api }
@@ -66,11 +58,6 @@ DvtBase64ImageStorage >> newNodeIconBase64 [
 ]
 
 { #category : #api }
-DvtBase64ImageStorage >> numberValueTypeIconBase64 [
-	^ 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExURS945jrkiLQAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAOSURBVCjPYxgFQMDAAAABCAABT9OJZAAAAABJRU5ErkJggg=='
-]
-
-{ #category : #api }
 DvtBase64ImageStorage >> requestIconBase64 [
 	^ 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAGUExURTMzMwAAACOWWdUAAAACdFJOU/8A5bcwSgAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAQhJREFUWEftVFsOwzAIa+9/6QEGQiJosz6mfcQqELCxukXbtt/EMvg/g+3ED3Qnyg24JmaYDCtagQcMCFoIrQcbsqNvTT0EF2ZDdvTtsOgBMuSGvs+WOUCG3ND32TIFl2K/NJAvkMNGcwYjZBMo9t82mMD7BmeCZbAMGK8YyI+4gEoaUgOtCZbBjwzov7iyyKjEIL1uQUYl0nI/pTJtuZ9RB+I5PGdQf/BjPGdwFd0byC3hrjmP5kZQ8KNDrT7kpGfpG5w2XuAaGVKnYccAaU3jnGtA+KaWCLRwCHvIaqm1FYeOcKJwyofycEdZJAgD+qDBmI5aO/U3sLWr++0NrmIZLAPGTYN9/wAXdg6n5Nf9YgAAAABJRU5ErkJggg=='
 ]
@@ -78,9 +65,4 @@ DvtBase64ImageStorage >> requestIconBase64 [
 { #category : #api }
 DvtBase64ImageStorage >> sampleIconBase64 [
 	^ 'iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAPUExURTMzM8bGxuDg4AAAAAAAAMayKxMAAAAFdFJOU/////8A+7YOUwAAAAlwSFlzAAAOwwAADsMBx2+oZAAAANhJREFUWEftlYEORDAMhrl5/2e+bq2uWzeKniPZlyD+1KdlYVou8gzBZEMVegrmCp1AFAs/GS0ItAE6sQigNlenQ0cQ0r4h4GI3wRyCiPYFagRACcAZMT7E3ICpg4xOdgQm/ARIIaA2me0RkHOCAm8BvDJeCCmRAQpaHOqgxb0Cmn3FU2CiupOvgDKmOwKdRB4oUCsxnfInZRXgBwlS/w4kLxSYcBEUCAFJme4IBccFLRwFct3p5I4OJC8UmMALapwE9MPdYgiGIDIEPxeYwAtqXASX+LdgWb71jB951puvNQAAAABJRU5ErkJggg=='
-]
-
-{ #category : #api }
-DvtBase64ImageStorage >> stringValueTypeIconBase64 [
-	^ 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAWBAMAAAA2mnEIAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExURZg3xFh0cg8AAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAOSURBVCjPYxgFQMDAAAABCAABT9OJZAAAAABJRU5ErkJggg=='
 ]

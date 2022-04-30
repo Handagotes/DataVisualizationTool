@@ -61,13 +61,13 @@ DvtPickValueTypeDialog >> initializeWidgets [
 	label label: 'Выберите тип значения ячеек:'.
 	stringButton
 		label: ' Строка';
-		icon: (DvtImages loadImageNamed: #stringValueTypeIcon).
+		icon: (DvtApp colorForStringValue asFormOfExtent: 22 @ 22).
 	numberButton
 		label: ' Число';
-		icon: (DvtImages loadImageNamed: #numberValueTypeIcon).
+		icon: (DvtApp colorForNumberValue asFormOfExtent: 22 @ 22).
 	literalButton
 		label: ' Литерал';
-		icon: (DvtImages loadImageNamed: #literalValueTypeIcon).
+		icon: (DvtApp colorForLiteralValue asFormOfExtent: 22 @ 22).
 	
 	cancelButton label: 'Отмена'.
 	
