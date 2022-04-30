@@ -76,6 +76,7 @@ DvtVisualizationEditor >> generateView [
 DvtVisualizationEditor >> keyFor: keyTextInputName [
 	| key type |
 	key := (widgets at: keyTextInputName) text.
+	key ifEmpty: [ ^ key ].
 	(key first = $' and: [ key last = $' ]) ifTrue: [ ^ key ].
 	type := DvtDataSetTablePresenter resolveTypeForValueString: key.
 	type = #string ifTrue: [ key := '''{1}''' format: { key } ].

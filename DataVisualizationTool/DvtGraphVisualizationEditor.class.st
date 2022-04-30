@@ -27,7 +27,9 @@ DvtGraphVisualizationEditor class >> defaultSpec [
 
 { #category : #api }
 DvtGraphVisualizationEditor >> generateScript [
-	^ String streamContents: [ :ws |
+	^ String streamContents: [ :ws | | xKey yKey |
+		xKey := self keyFor: #xKeyText.
+		yKey := self keyFor: #yKeyText.
 		ws
 			nextPutAll: '| grapher data sample |'; cr;
 			nextPutAll: 'grapher := RTGrapher new.'; cr;
@@ -35,9 +37,10 @@ DvtGraphVisualizationEditor >> generateScript [
 			nextPutAll: ('data dotShape size: 5; color: {1}.' format: { self pickedColorFor: #dotColorButton }); cr;
 			nextPutAll: self scriptSnippetForSampleLoad; cr;
 			nextPutAll: 'data points: sample.'; cr;
-			nextPutAll: 'data connectColor: Color red.'; cr;
-			nextPutAll: ('data x: [ :e | e at: {1} ].' format: { self keyFor: #xKeyText }); cr;
-			nextPutAll: ('data y: [ :e | e at: {1} ].' format: { self keyFor: #yKeyText }); cr;
+			nextPutAll: 'data connectColor: Color red.'; cr.
+		xKey ifNotEmpty: [ ws nextPutAll: ('data x: [ :e | e at: {1} ].' format: { xKey }); cr ].
+		yKey ifNotEmpty: [ ws nextPutAll: ('data y: [ :e | e at: {1} ].' format: { yKey }); cr ].
+		ws
 			nextPutAll: ('data connectColor: {1}.' format: { self pickedColorFor: #connectColorButton }); cr;
 			nextPutAll: 'grapher add: data.'; cr;
 			nextPutAll: 'grapher extent: 350 @ 350.'; cr;
