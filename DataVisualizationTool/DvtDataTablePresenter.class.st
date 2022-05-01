@@ -286,6 +286,7 @@ DvtDataTablePresenter >> data [
 
 { #category : #accessing }
 DvtDataTablePresenter >> data: aCollectionOfCollections [
+	data = aCollectionOfCollections ifTrue: [ ^ self ].
 	data := aCollectionOfCollections.
 	parentStack removeAll.
 	self node: data

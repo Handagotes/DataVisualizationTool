@@ -249,7 +249,8 @@ DataGridPresenter >> removeLabelAt: aPoint [
 	| label |
 	label := labelsByCoord at: aPoint ifAbsent: [ ^ self ].
 	labelsByCoord removeKey: aPoint.
-	label remove
+	dataGridView removeElement: label.
+	label view: nil
 ]
 
 { #category : #api }
@@ -371,20 +372,29 @@ DataGridPresenter >> updateCellAt: aPoint [
 
 { #category : #updating }
 DataGridPresenter >> updateCells [
-	labelsByCoord
-		do: [ :label |
-			dataGridView removeElement: label.
-			label view: nil
-		];
-		removeAll.
-	
-	1 to: columnCount do: [ :column |
-		1 to: rowCount do: [ :row |
-			self updateCellAt: column @ row
-		]
-	].
-	
-	dataGridView canvas signalUpdate
+	[ :job | | cell cellCount |
+		labelsByCoord
+			do: [ :label |
+				dataGridView removeElement: label.
+				label view: nil
+			];
+			removeAll.
+		
+		cell := 1.
+		cellCount := columnCount * rowCount.
+		
+		1 to: columnCount do: [ :column |
+			1 to: rowCount do: [ :row |
+				job
+					progress: (cell / cellCount) asFloat;
+					title: ('Обрабатывается ячейка {1} из {2}' format: { cell . cellCount }).
+				self updateCellAt: column @ row.
+				cell := cell + 1
+			]
+		].
+		
+		dataGridView canvas signalUpdate
+	] asJob run
 ]
 
 { #category : #api }

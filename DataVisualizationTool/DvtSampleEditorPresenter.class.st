@@ -369,7 +369,6 @@ DvtSampleEditorPresenter >> onSampleDropListSelectedItemChanged [
 DvtSampleEditorPresenter >> onWindowOpened [
 	self
 		updateRequestDropList;
-		updateDataSetDropList;
 		updateSampleDropList
 ]
 

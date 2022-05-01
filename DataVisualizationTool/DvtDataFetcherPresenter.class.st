@@ -266,9 +266,7 @@ DvtDataFetcherPresenter >> onRequestDropListSelectedItemChanged [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onWindowOpened [
-	self
-		updateRequestDropList;
-		updateDataSetDropList
+	self updateRequestDropList
 ]
 
 { #category : #private }

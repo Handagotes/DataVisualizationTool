@@ -33,6 +33,11 @@ ManifestDataVisualizationTool class >> ruleRBLongMethodsRuleV1FalsePositive [
 ]
 
 { #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleRBToDoWithIncrementRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#DataGridPresenter #updateCells #false)) #'2022-05-02T01:33:25.569504+05:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRTInvocationSequenceRuleV1FalsePositive [
 	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-21T17:27:02.580795+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateVisibleCells #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateCellAt: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #selectFrom:to: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #processDragStart: #false)) #'2022-04-22T23:52:21.871938+05:00') )
 ]
