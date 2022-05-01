@@ -43,7 +43,7 @@ DvtGraphVisualizationEditor >> generateScript [
 		ws
 			nextPutAll: ('data connectColor: {1}.' format: { self pickedColorFor: #connectColorButton }); cr;
 			nextPutAll: 'grapher add: data.'; cr;
-			nextPutAll: 'grapher extent: 350 @ 350.'; cr;
+			nextPutAll: 'grapher extent: 650 @ 650.'; cr;
 			nextPutAll: 'grapher build.'; cr;
 			nextPutAll: '^ grapher view'; cr
 	]

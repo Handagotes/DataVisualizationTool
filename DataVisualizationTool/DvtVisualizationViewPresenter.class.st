@@ -9,6 +9,20 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
+{ #category : #private }
+DvtVisualizationViewPresenter class >> askForFilePathToSaveWithExtensions: extensions [
+	| fileDialog topWindow |
+	(fileDialog := FileDialogWindow new)
+		validExtensions: extensions;
+		answerSaveFile.
+	topWindow := SystemWindow topWindow.
+	topWindow modalLockTo: fileDialog.
+	fileDialog openModal.
+	topWindow modalUnlockFrom: fileDialog. 
+	fileDialog cancelled ifTrue: [ ^ nil ].
+	^ fileDialog answer pathString
+]
+
 { #category : #specs }
 DvtVisualizationViewPresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
@@ -28,7 +42,7 @@ DvtVisualizationViewPresenter class >> openForView: aView [
 
 { #category : #api }
 DvtVisualizationViewPresenter >> extent [
-	^ 500 @ 500
+	^ 800 @ 800
 ]
 
 { #category : #initialization }
@@ -73,17 +87,24 @@ DvtVisualizationViewPresenter >> menu [
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
-	
+	(RTCanvasExporter canvas: view canvas)
+		fileName: (self class askForFilePathToSaveWithExtensions: #('jpeg'));
+		format: #jpeg;
+		whole;
+		export
 ]
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToPNGMenuItemAction [
-	
+	RTPNGExporter new
+		builder: view;
+		fileName: (self class askForFilePathToSaveWithExtensions: #('png'));
+		exportToFile
 ]
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToSVGMenuItemAction [
-	
+	RTSVGExporter exportViewAsSVG: view filename: (self class askForFilePathToSaveWithExtensions: #('svg'))
 ]
 
 { #category : #api }
