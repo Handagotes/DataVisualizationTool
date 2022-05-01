@@ -156,7 +156,7 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	requestDropList := self newDropList.
 	dataSetLabel := self newLabel.
 	dataSetDropList := self newDropList.
-	dataSetTable := self newDvtDataSetTable.
+	dataSetTable := self newDvtDataTable.
 	
 	newNodeButton := self newButton.
 	convertButton := self newButton.
@@ -167,7 +167,7 @@ DvtSampleEditorPresenter >> initializeWidgets [
 	sampleDropList := self newDropList.
 	createSampleButton := self newButton.
 	deleteSampleButton := self newButton.
-	sampleTable := self newDvtDataSetTable.
+	sampleTable := self newDvtDataTable.
 	
 	requestLabel label: 'Запрос:'.
 	requestDropList displayBlock: self class requestDropListDisplayBlock.

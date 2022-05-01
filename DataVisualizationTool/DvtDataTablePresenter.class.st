@@ -1,5 +1,5 @@
 Class {
-	#name : #DvtDataSetTablePresenter,
+	#name : #DvtDataTablePresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
 		'dataGrid',
@@ -19,7 +19,7 @@ Class {
 }
 
 { #category : #api }
-DvtDataSetTablePresenter class >> canValue: value beConvertedToType: type [
+DvtDataTablePresenter class >> canValue: value beConvertedToType: type [
 	type = #string ifTrue: [ ^ true ].
 	type = #number ifTrue: [ ^ value isNumber or: [ value isString and: [ NumberParser isNumber: value ] ] ].
 	type = #literal ifTrue: [ ^ #(true false nil #true #false #nil #null) includes: value ].
@@ -27,7 +27,7 @@ DvtDataSetTablePresenter class >> canValue: value beConvertedToType: type [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter class >> convertValue: value toType: type [
+DvtDataTablePresenter class >> convertValue: value toType: type [
 	value isString ifTrue: [ ^ self convertValueString: value toType: type ].
 	type = #string ifTrue: [ ^ value asString ].
 	type = #number ifTrue: [ ^ value asNumber ].
@@ -36,7 +36,7 @@ DvtDataSetTablePresenter class >> convertValue: value toType: type [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter class >> convertValueString: aString toType: type [
+DvtDataTablePresenter class >> convertValueString: aString toType: type [
 	type = #string ifTrue: [ ^ aString ].
 	type = #number ifTrue: [ ^ aString asNumber ].
 	type = #literal ifTrue: [ ^ Object readFromString: aString ].
@@ -44,7 +44,7 @@ DvtDataSetTablePresenter class >> convertValueString: aString toType: type [
 ]
 
 { #category : #specs }
-DvtDataSetTablePresenter class >> defaultSpec [
+DvtDataTablePresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
 		column
 			add: #dataGrid;
@@ -60,34 +60,34 @@ DvtDataSetTablePresenter class >> defaultSpec [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter class >> detectValueStringTypeAndConvert: aString [
+DvtDataTablePresenter class >> detectValueStringTypeAndConvert: aString [
 	^ self convertValueString: aString toType: (self resolveTypeForValueString: aString)
 ]
 
 { #category : #testing }
-DvtDataSetTablePresenter class >> isNode: anObject [
+DvtDataTablePresenter class >> isNode: anObject [
 	^ anObject isArray or: [ anObject isDictionary ]
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter class >> resolveTypeForValueString: aString [
+DvtDataTablePresenter class >> resolveTypeForValueString: aString [
 	(NumberParser isNumber: aString) ifTrue: [ ^ #number ].
 	(#(#true #false #nil #null) includes: aString) ifTrue: [ ^ #literal ].
 	^ #string
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> allowCellEdit [
+DvtDataTablePresenter >> allowCellEdit [
 	^ allowCellEdit
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> allowCellEdit: aBoolean [
+DvtDataTablePresenter >> allowCellEdit: aBoolean [
 	allowCellEdit := aBoolean
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyArrayBlock [
+DvtDataTablePresenter >> applyArrayBlock [
 	| columns rows |
 	
 	columns := 2.
@@ -107,7 +107,7 @@ DvtDataSetTablePresenter >> applyArrayBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
+DvtDataTablePresenter >> applyArrayOfArraysBlock [
 	| columns rows |
 	
 	columns := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
@@ -119,7 +119,7 @@ DvtDataSetTablePresenter >> applyArrayOfArraysBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
+DvtDataTablePresenter >> applyArrayOfDictsBlock [
 	| columns rows |
 	
 	columns := node ifNotEmpty: [ node first keys size ] ifEmpty: [ 0 ].
@@ -134,7 +134,7 @@ DvtDataSetTablePresenter >> applyArrayOfDictsBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyDictBlock [
+DvtDataTablePresenter >> applyDictBlock [
 	| columns rows |
 	
 	columns := node keys size.
@@ -149,7 +149,7 @@ DvtDataSetTablePresenter >> applyDictBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyDictOfArraysBlock [
+DvtDataTablePresenter >> applyDictOfArraysBlock [
 	| columns rows |
 	
 	columns := node keys size.
@@ -164,7 +164,7 @@ DvtDataSetTablePresenter >> applyDictOfArraysBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyTransposedArrayBlock [
+DvtDataTablePresenter >> applyTransposedArrayBlock [
 	| columns rows |
 	
 	columns := node size.
@@ -182,7 +182,7 @@ DvtDataSetTablePresenter >> applyTransposedArrayBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
+DvtDataTablePresenter >> applyTransposedArrayOfArraysBlock [
 	| columns rows |
 	
 	columns := node size.
@@ -194,7 +194,7 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfArraysBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
+DvtDataTablePresenter >> applyTransposedArrayOfDictsBlock [
 	| columns rows |
 	
 	columns := node size + 1.
@@ -215,7 +215,7 @@ DvtDataSetTablePresenter >> applyTransposedArrayOfDictsBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyTransposedDictBlock [
+DvtDataTablePresenter >> applyTransposedDictBlock [
 	| columns rows |
 	
 	columns := 2.
@@ -236,7 +236,7 @@ DvtDataSetTablePresenter >> applyTransposedDictBlock [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
+DvtDataTablePresenter >> applyTransposedDictOfArraysBlock [
 	| columns rows |
 	
 	columns := node ifNotEmpty: [ (node maxValue: [ :e | e size ]) + 1 ] ifEmpty: [ 1 ].
@@ -257,7 +257,7 @@ DvtDataSetTablePresenter >> applyTransposedDictOfArraysBlock [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter >> cellTextColorForValue: value [
+DvtDataTablePresenter >> cellTextColorForValue: value [
 	value isString ifTrue: [ ^ DvtApp colorForStringValue ].
 	value isNumber ifTrue: [ ^ DvtApp colorForNumberValue ].
 	value isLiteral ifTrue: [ ^ DvtApp colorForLiteralValue ].
@@ -266,7 +266,7 @@ DvtDataSetTablePresenter >> cellTextColorForValue: value [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter >> convertCellValue: value at: coord toType: type [
+DvtDataTablePresenter >> convertCellValue: value at: coord toType: type [
 	| newValue |
 	(self class canValue: value beConvertedToType: type) ifFalse: [ ^ false ].
 	newValue := self class convertValue: value toType: type.
@@ -275,29 +275,29 @@ DvtDataSetTablePresenter >> convertCellValue: value at: coord toType: type [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter >> convertCellValueAt: coord toType: type [
+DvtDataTablePresenter >> convertCellValueAt: coord toType: type [
 	self convertCellValue: (dataGrid cellValueAt: coord) at: coord toType: type
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> data [
+DvtDataTablePresenter >> data [
 	^ data
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> data: aCollectionOfCollections [
+DvtDataTablePresenter >> data: aCollectionOfCollections [
 	data := aCollectionOfCollections.
 	parentStack removeAll.
 	self node: data
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> dataGrid [
+DvtDataTablePresenter >> dataGrid [
 	^ dataGrid
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> editCellAt: coord value: value [
+DvtDataTablePresenter >> editCellAt: coord value: value [
 	| newValue |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
@@ -314,7 +314,7 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value [
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue showDvtError: shouldShowDvtError [
+DvtDataTablePresenter >> editCellAt: coord value: value newValue: newValue showDvtError: shouldShowDvtError [
 	| column row needResize  |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue = value ifTrue: [ ^ self ].
@@ -341,12 +341,12 @@ DvtDataSetTablePresenter >> editCellAt: coord value: value newValue: newValue sh
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> goBackButton [
+DvtDataTablePresenter >> goBackButton [
 	^ goBackButton
 ]
 
 { #category : #initialization }
-DvtDataSetTablePresenter >> initialize [
+DvtDataTablePresenter >> initialize [
 	super initialize.
 	data := nil.
 	node := nil.
@@ -356,7 +356,7 @@ DvtDataSetTablePresenter >> initialize [
 ]
 
 { #category : #initialization }
-DvtDataSetTablePresenter >> initializeDataGrid [
+DvtDataTablePresenter >> initializeDataGrid [
 	(dataGrid := self instantiate: DataGridPresenter)
 		cellDisplayBlock: [ :value |
 			value ifNil: [ '' ] ifNotNil: [ 
@@ -381,7 +381,7 @@ DvtDataSetTablePresenter >> initializeDataGrid [
 ]
 
 { #category : #initialization }
-DvtDataSetTablePresenter >> initializePresenter [
+DvtDataTablePresenter >> initializePresenter [
 	goBackButton action: [ 
 		self onGoBackButtonAction
 	].
@@ -398,7 +398,7 @@ DvtDataSetTablePresenter >> initializePresenter [
 ]
 
 { #category : #initialization }
-DvtDataSetTablePresenter >> initializeWidgets [
+DvtDataTablePresenter >> initializeWidgets [
 	self initializeDataGrid.
 	goBackButton := self newButton.
 	selectColumnsButton := self newButton.
@@ -418,12 +418,12 @@ DvtDataSetTablePresenter >> initializeWidgets [
 ]
 
 { #category : #testing }
-DvtDataSetTablePresenter >> isCellEditable: coord [
+DvtDataTablePresenter >> isCellEditable: coord [
 	^ (self isCellKeyEditable: coord) or: [ self isCellValueEditable: coord ]
 ]
 
 { #category : #testing }
-DvtDataSetTablePresenter >> isCellKeyEditable: coord [
+DvtDataTablePresenter >> isCellKeyEditable: coord [
 	| column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
 	column := coord x.
@@ -441,7 +441,7 @@ DvtDataSetTablePresenter >> isCellKeyEditable: coord [
 ]
 
 { #category : #testing }
-DvtDataSetTablePresenter >> isCellValueEditable: coord [
+DvtDataTablePresenter >> isCellValueEditable: coord [
 	| transposed column row columnCount rowCount |
 	nodeType ifNil: [ ^ false ].
 	column := coord x.
@@ -470,12 +470,12 @@ DvtDataSetTablePresenter >> isCellValueEditable: coord [
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> node [
+DvtDataTablePresenter >> node [
 	^ node
 ]
 
 { #category : #'private - accessing' }
-DvtDataSetTablePresenter >> node: aNode [
+DvtDataTablePresenter >> node: aNode [
 	| transpose |
 	
 	node := aNode.
@@ -529,19 +529,19 @@ DvtDataSetTablePresenter >> node: aNode [
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> nodeType [
+DvtDataTablePresenter >> nodeType [
 	^ nodeType
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> onGoBackButtonAction [
+DvtDataTablePresenter >> onGoBackButtonAction [
 	parentStack ifEmpty: [ ^ self ].
 	nodeAccessKeysStack pop.
 	self node: parentStack pop
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> onSelectColumnsButtonAction [
+DvtDataTablePresenter >> onSelectColumnsButtonAction [
 	| selectableInteraction rect |
 	selectableInteraction := dataGrid selectableInteraction.
 	(selectableInteraction hasSelection) ifFalse: [ ^ self ].
@@ -550,7 +550,7 @@ DvtDataSetTablePresenter >> onSelectColumnsButtonAction [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> onSelectRowsButtonAction [
+DvtDataTablePresenter >> onSelectRowsButtonAction [
 	| selectableInteraction rect|
 	selectableInteraction := dataGrid selectableInteraction.
 	(selectableInteraction hasSelection) ifFalse: [ ^ self ].
@@ -559,17 +559,17 @@ DvtDataSetTablePresenter >> onSelectRowsButtonAction [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> onTransposeCheckBoxStateChanged [
+DvtDataTablePresenter >> onTransposeCheckBoxStateChanged [
 	self updateNode
 ]
 
 { #category : #api }
-DvtDataSetTablePresenter >> putCellValue: newValue at: coord [
+DvtDataTablePresenter >> putCellValue: newValue at: coord [
 	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inArrayAtColumn: column row: row needResize: needResize [
+DvtDataTablePresenter >> putNewValue: newValue inArrayAtColumn: column row: row needResize: needResize [
 	transposeCheckBox state ifFalse: [ 
 		needResize ifTrue: [ self resizeArrayNode: row - 1 ].
 		node at: row - 1 put: newValue
@@ -580,7 +580,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayAtColumn: column row: r
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfArraysAtColumn: column row: row needResize: needResize [
+DvtDataTablePresenter >> putNewValue: newValue inArrayOfArraysAtColumn: column row: row needResize: needResize [
 	| c r |
 	c := column.
 	r := row.
@@ -595,7 +595,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfArraysAtColumn: colum
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
+DvtDataTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
@@ -637,7 +637,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inArrayOfDictsAtColumn: column
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row oldValue: oldValue showDvtError: shouldShowDvtError [
+DvtDataTablePresenter >> putNewValue: newValue inDictAtColumn: column row: row oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
@@ -661,7 +661,7 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictAtColumn: column row: ro
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
+DvtDataTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column row: row needResize: needResize oldValue: oldValue showDvtError: shouldShowDvtError [
 	| keyEdit |
 	keyEdit := transposeCheckBox state ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit ifTrue: [ 
@@ -693,12 +693,12 @@ DvtDataSetTablePresenter >> putNewValue: newValue inDictOfArraysAtColumn: column
 ]
 
 { #category : #removing }
-DvtDataSetTablePresenter >> removeCellValueAt: coord [
+DvtDataTablePresenter >> removeCellValueAt: coord [
 	
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> replaceResizedArrayNode: newNode [
+DvtDataTablePresenter >> replaceResizedArrayNode: newNode [
 	| parent keys |
 	parentStack ifEmpty: [ 
 		data := newNode.
@@ -715,36 +715,36 @@ DvtDataSetTablePresenter >> replaceResizedArrayNode: newNode [
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> resizeArrayNode: newSize [
+DvtDataTablePresenter >> resizeArrayNode: newSize [
 	self replaceResizedArrayNode: (node resizeCopy: newSize)
 ]
 
 { #category : #private }
-DvtDataSetTablePresenter >> resizeArrayOfArraysNode: newSize [
+DvtDataTablePresenter >> resizeArrayOfArraysNode: newSize [
 	self replaceResizedArrayNode: (node resizeCopyColumns: newSize x rows: newSize y)
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> selectColumnsButton [
+DvtDataTablePresenter >> selectColumnsButton [
 	^ selectColumnsButton
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> selectRowsButton [
+DvtDataTablePresenter >> selectRowsButton [
 	^ selectRowsButton
 ]
 
 { #category : #accessing }
-DvtDataSetTablePresenter >> transposeCheckBox [
+DvtDataTablePresenter >> transposeCheckBox [
 	^ transposeCheckBox
 ]
 
 { #category : #updating }
-DvtDataSetTablePresenter >> updateNode [
+DvtDataTablePresenter >> updateNode [
 	self node: node
 ]
 
 { #category : #enumerating }
-DvtDataSetTablePresenter >> whenCellEditedDo: aBlock [
+DvtDataTablePresenter >> whenCellEditedDo: aBlock [
 	cellEditedBlock := aBlock
 ]

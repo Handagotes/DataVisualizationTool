@@ -10,6 +10,6 @@ ComposablePresenter >> newDataTable [
 ]
 
 { #category : #'*DataVisualizationTool' }
-ComposablePresenter >> newDvtDataSetTable [
-	^ self instantiate: DvtDataSetTablePresenter
+ComposablePresenter >> newDvtDataTable [
+	^ self instantiate: DvtDataTablePresenter
 ]

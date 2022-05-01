@@ -152,7 +152,7 @@ DvtDataFetcherPresenter >> initializeWidgets [
 	fetchDataSetButton := self newButton.
 	deleteDataSetButton := self newButton.
 	dataSetText := self newText.
-	dataSetTable := self newDvtDataSetTable.
+	dataSetTable := self newDvtDataTable.
 	
 	requestDropList displayBlock: [ :request | '{1} | {2}' format: { request name. request text } ].
 	dataSetDropList displayBlock: [ :dataSet | '{1} {2} | {3}' format: { dataSet fetchDate. dataSet fetchTime. dataSet dataFilePath } ].

@@ -102,7 +102,7 @@ DvtVisualizerPresenter >> initializeWidgets [
 	'sampleLabel sampleDropList sampleTable visualizationLabel visualizationsDropList createVisualizationButton deleteVisualizationButton'.
 	sampleLabel := self newLabel.
 	sampleDropList := self newDropList.
-	sampleTable := self newDvtDataSetTable.
+	sampleTable := self newDvtDataTable.
 	visualizationLabel := self newLabel.
 	visualizationDropList := self newDropList.
 	createVisualizationButton := self newButton.
