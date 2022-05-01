@@ -43,6 +43,7 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 		'CREATE TABLE IF NOT EXISTS request (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 			name varchar(255) NOT NULL UNIQUE,
+			data_type varchar(10) NOT NULL,
 			text varchar(255) NOT NULL
 		);'.
 		'CREATE UNIQUE INDEX IF NOT EXISTS request_id ON request (id);'.

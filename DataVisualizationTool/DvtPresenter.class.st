@@ -9,21 +9,41 @@ DvtPresenter class >> dataSetDropListDisplayBlock [
 	^ [ :dataSet | '{1} {2} | {3}' format: { dataSet fetchDate. dataSet fetchTime. dataSet dataFilePath } ]
 ]
 
-{ #category : #private }
-DvtPresenter class >> parseDataString: dataString [
+{ #category : #api }
+DvtPresenter class >> parseDataString: dataString dataType: dataType [
 	| data |
 	
-	(data := self tryParseJSON: dataString)
-		ifNotNil: [ ^ data ].
+	dataType = #auto ifTrue: [ 
+		(data := self tryParseJSON: dataString)
+			ifNotNil: [ ^ data ].
+		
+		(data := self tryParseTSV: dataString)
+			ifNotNil: [ ^ data ].
+		
+		DvtErrorDialog open: 'Формат данных не поддерживается.'.
+		^ nil
+	].
 	
-	(data := self tryParseTSV: dataString)
-		ifNotNil: [ ^ data ].
+	dataType = #json ifTrue: [ 
+		(data := self tryParseJSON: dataString)
+			ifNotNil: [ ^ data ].
+	].
 	
-	DvtErrorDialog open: 'Формат данных не поддерживается.'.
+	dataType = #csv ifTrue: [ 
+		(data := self tryParseTSV: dataString usingDelimiter: $,)
+			ifNotNil: [ ^ data ].
+	].
+	
+	dataType = #tsv ifTrue: [ 
+		(data := self tryParseTSV: dataString usingDelimiter: Character tab)
+			ifNotNil: [ ^ data ].
+	].
+	
+	DvtErrorDialog open: ('Не удалось обработать данные в формате {1}.' format: { dataType }).
 	^ nil
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtPresenter class >> readJSONDataFromFileRef: fileRef [
 	| dataString data |
 	dataString := nil.
@@ -50,7 +70,7 @@ DvtPresenter class >> sampleDropListDisplayBlock [
 	^ [ :sample | '{1} | {2}' format: { sample name. sample sampleFilePath } ]
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtPresenter class >> tryParseJSON: dataString [
 	[ | data |
 		data := NeoJSONReader fromString: dataString.
@@ -59,11 +79,20 @@ DvtPresenter class >> tryParseJSON: dataString [
 	] on: Error do: [ ^ nil ]
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtPresenter class >> tryParseTSV: dataString [
 	[ 
 		^ RTTabTable new
 			input: dataString;
+			values
+	] on: Error do: [ ^ nil ]
+]
+
+{ #category : #api }
+DvtPresenter class >> tryParseTSV: dataString usingDelimiter: aCharacter [
+	[ 
+		^ RTTabTable new
+			input: dataString usingDelimiter: aCharacter;
 			values
 	] on: Error do: [ ^ nil ]
 ]

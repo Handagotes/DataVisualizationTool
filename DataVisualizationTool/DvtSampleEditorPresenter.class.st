@@ -305,14 +305,15 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 
 { #category : #private }
 DvtSampleEditorPresenter >> onDataSetDropListSelectedItemChanged [
-	| dataSet dataString data |
+	| dataSet dataString data request |
 	dataSetDropList selectedIndex isZero ifTrue: [ 
 		dataSetTable data: nil.
 		^ self
 	].
+	request := requestDropList selectedItem.
 	dataSet := dataSetDropList selectedItem.
 	dataString := (DvtApp dataSetFileRefFor: dataSet) contents.
-	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
+	(data := self class parseDataString: dataString dataType: request dataType) ifNil: [ ^ self ].
 	dataSetTable data: data
 ]
 

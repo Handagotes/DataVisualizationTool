@@ -178,15 +178,16 @@ DvtDataFetcherPresenter >> onCreateRequestButtonAction [
 
 { #category : #private }
 DvtDataFetcherPresenter >> onDataSetDropListSelectedItemChanged [
-	| dataSet dataString data |
+	| dataSet dataString data request |
 	dataSetDropList selectedIndex isZero ifTrue: [ 
 		dataSetText text: String empty.
 		dataSetTable data: nil.
 		^ self
 	].
+	request := requestDropList selectedItem.
 	dataSet := dataSetDropList selectedItem.
 	dataString := (DvtApp dataSetFileRefFor: dataSet) contents.
-	(data := self class parseDataString: dataString) ifNil: [ ^ self ].
+	(data := self class parseDataString: dataString dataType: request dataType) ifNil: [ ^ self ].
 	dataSetText text: dataString.
 	dataSetTable data: data
 ]
@@ -272,11 +273,11 @@ DvtDataFetcherPresenter >> onWindowOpened [
 
 { #category : #private }
 DvtDataFetcherPresenter >> processNewDataSet: dataString [
-	| request filePath date time dataSet |
-	
-	(self class parseDataString: dataString) ifNil: [ ^ self ].
-	
+	| request dataType filePath date time dataSet |
 	request := requestDropList selectedItem.
+	dataType := request dataType.
+	(self class parseDataString: dataString dataType: dataType) ifNil: [ ^ self ].
+	
 	date := Date today.
 	time := Time now.
 	filePath := String streamContents: [ :ws |
@@ -286,7 +287,8 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 			nextPutAll: date yyyymmdd;
 			nextPut: $_;
 			nextPutAll: (time print24 replaceAll: $: with: $-);
-			nextPutAll: '.txt'
+			nextPut: $.;
+			nextPutAll: (dataType = #auto ifTrue: [ 'txt' ] ifFalse: [ dataType ])
 	].
 	
 	dataSet := DvtDataSet new

@@ -75,7 +75,8 @@ DvtDBController >> dropTableQueries [
 { #category : #api }
 DvtDBController >> dropTables [
 	connection ifNil: [ ^ self ].
-	self dropTableQueries do: [ :q | connection execute: q ]
+	self dropTableQueries do: [ :q | connection execute: q ].
+	attrDict removeAll
 ]
 
 { #category : #initialization }

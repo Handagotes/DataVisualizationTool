@@ -3,6 +3,7 @@ Class {
 	#superclass : #DvtEntity,
 	#instVars : [
 		'name',
+		'dataType',
 		'text'
 	],
 	#category : #'DataVisualizationTool-Entity'
@@ -13,12 +14,23 @@ DvtRequest class >> default [
 	^ self new
 		name: '';
 		text: 'http://';
+		dataType: #auto;
 		yourself
 ]
 
 { #category : #api }
 DvtRequest class >> tableName [
 	^ 'request'
+]
+
+{ #category : #accessing }
+DvtRequest >> dataType [
+	^ dataType
+]
+
+{ #category : #accessing }
+DvtRequest >> dataType: anObject [
+	dataType := anObject
 ]
 
 { #category : #accessing }

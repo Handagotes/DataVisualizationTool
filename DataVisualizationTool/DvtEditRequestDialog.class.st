@@ -6,6 +6,8 @@ Class {
 		'nameTextInput',
 		'requestLabel',
 		'requestTextInput',
+		'dataTypeLabel',
+		'dataTypeDropList',
 		'headerFieldsDataTable',
 		'headerTextInput',
 		'fieldTextInput',
@@ -34,6 +36,11 @@ DvtEditRequestDialog class >> defaultSpec [
 				row
 					add: #requestLabel width: 125;
 					add: #requestTextInput
+			] height: self buttonHeight;
+			newRow: [ :row |
+				row
+					add: #dataTypeLabel width: 125;
+					add: #dataTypeDropList
 			] height: self buttonHeight;
 			add: #headerFieldsDataTable;
 			newRow: [ :row |
@@ -87,6 +94,16 @@ DvtEditRequestDialog >> cancelButton [
 ]
 
 { #category : #accessing }
+DvtEditRequestDialog >> dataTypeDropList [
+	^ dataTypeDropList
+]
+
+{ #category : #accessing }
+DvtEditRequestDialog >> dataTypeLabel [
+	^ dataTypeLabel
+]
+
+{ #category : #accessing }
 DvtEditRequestDialog >> dvtRequest [
 	^ dvtRequest
 ]
@@ -100,7 +117,7 @@ DvtEditRequestDialog >> dvtRequest: aDvtRequest [
 
 { #category : #api }
 DvtEditRequestDialog >> extent [
-	^ 400 @ 400
+	^ 500 @ 400
 ]
 
 { #category : #accessing }
@@ -134,49 +151,18 @@ DvtEditRequestDialog >> headerTextInput [
 
 { #category : #initialization }
 DvtEditRequestDialog >> initializePresenter [
-	nameTextInput whenTextChanged: [ 
-		self updateOkButton
-	].
-	
-	requestTextInput whenTextChanged: [ 
-		self updateOkButton
-	].
-	
-	headerTextInput whenTextChanged: [ 
-		self onHeaderTextInputTextChanged
-	].
-	
-	fieldTextInput whenTextChanged: [ 
-		self onFieldTextInputTextChanged
-	].
-	
-	headerFieldsDataTable when: FTSelectionChanged do: [ 
-		self onHeaderFieldsDataTableSelectionChanged
-	].
-	
-	addButton action: [ 
-		self onAddButtonAction
-	].
-	
-	removeButton action: [ 
-		self onRemoveButtonAction
-	].
-	
-	moveUpButton action: [ 
-		self onMoveUpButtonAction
-	].
-	
-	moveDownButton action: [ 
-		self onMoveDownButtonAction
-	].
-	
-	okButton action: [ 
-		self onOkButtonAction
-	].
-	
-	cancelButton action: [ 
-		self onCancelButtonAction
-	]
+	nameTextInput whenTextChanged: [ self updateOkButton ].
+	requestTextInput whenTextChanged: [ self onRequestTextInputTextChanged ].
+	headerTextInput whenTextChanged: [ self onHeaderTextInputTextChanged ].
+	fieldTextInput whenTextChanged: [ self onFieldTextInputTextChanged ].
+	headerFieldsDataTable when: FTSelectionChanged do: [ self onHeaderFieldsDataTableSelectionChanged ].
+	addButton action: [ self onAddButtonAction ].
+	removeButton action: [ self onRemoveButtonAction ].
+	moveUpButton action: [ self onMoveUpButtonAction ].
+	moveDownButton action: [ self onMoveDownButtonAction ].
+	okButton action: [ self onOkButtonAction ].
+	cancelButton action: [ self onCancelButtonAction ].
+	self whenBuiltDo: [ self window containingWindow beUnresizeable ]
 ]
 
 { #category : #initialization }
@@ -185,6 +171,8 @@ DvtEditRequestDialog >> initializeWidgets [
 	nameTextInput := self newTextInput.
 	requestLabel := self newLabel.
 	requestTextInput := self newTextInput.
+	dataTypeLabel := self newLabel.
+	dataTypeDropList := self newDropList.
 	headerFieldsDataTable := self newDataTable.
 	headerTextInput := self newTextInput.
 	fieldTextInput := self newTextInput.
@@ -199,6 +187,17 @@ DvtEditRequestDialog >> initializeWidgets [
 	nameTextInput autoAccept: true.
 	requestLabel label: 'Текст запроса:'.
 	requestTextInput autoAccept: true.
+	dataTypeLabel label: 'Тип данных:'.
+	dataTypeDropList
+		displayBlock: [ :i |
+			{ 
+				#auto -> 'Определить автоматически'.
+				#json -> 'JSON'.
+				#csv -> 'CSV (значения, разделенные запятой)'.
+				#tsv -> 'TSV (значения, разделенные табуляцией)'.
+			} asDictionary at: i
+		];
+		items: #(auto json csv tsv).
 	headerFieldsDataTable widget beSingleSelection.
 	headerTextInput autoAccept: true.
 	fieldTextInput autoAccept: true.
@@ -220,6 +219,7 @@ DvtEditRequestDialog >> initializeWidgets [
 	self focusOrder
 		add: nameTextInput;
 		add: requestTextInput;
+		add: dataTypeDropList;
 		add: headerFieldsDataTable;
 		add: headerTextInput;
 		add: fieldTextInput;
@@ -342,6 +342,7 @@ DvtEditRequestDialog >> onMoveUpButtonAction [
 DvtEditRequestDialog >> onOkButtonAction [
 	dvtRequest
 		name: nameTextInput text;
+		dataType: dataTypeDropList selectedItem asString;
 		text: requestTextInput text.
 	
 	headerFields doWithIndex: [ :headerField :i |
@@ -358,6 +359,17 @@ DvtEditRequestDialog >> onRemoveButtonAction [
 	headerTextInput text: String empty.
 	fieldTextInput text: String empty.
 	self updateHeadersDataTable
+]
+
+{ #category : #private }
+DvtEditRequestDialog >> onRequestTextInputTextChanged [
+	| text |
+	self updateOkButton.
+	text := requestTextInput text.
+	(text endsWith: '.json') ifTrue: [ ^ dataTypeDropList setSelectedItem: #json ].
+	(text endsWith: '.csv') ifTrue: [ ^ dataTypeDropList setSelectedItem: #csv ].
+	(text endsWith: '.tsv') ifTrue: [ ^ dataTypeDropList setSelectedItem: #tsv ].
+	dataTypeDropList setSelectedItem: #auto
 ]
 
 { #category : #accessing }
