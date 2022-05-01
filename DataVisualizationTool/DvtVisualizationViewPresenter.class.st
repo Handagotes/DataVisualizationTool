@@ -92,19 +92,21 @@ DvtVisualizationViewPresenter >> menu [
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToHTMLMenuItemAction [
-	| filePath |
-	filePath := (self class askForFileRefToSaveWithExtensions: #('html')) path.
+	| fileRef |
+	(fileRef := (self class askForFileRefToSaveWithExtensions: #('html'))) ifNil: [ ^ self ].
 	RTHTML5Exporter new
-		directory: filePath parent asFileReference;
-		fileName: filePath segments last;
+		directory: fileRef path parent asFileReference;
+		fileName: fileRef path segments last;
 		export: view;
 		createJS
 ]
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
+	| fileRef |
+	(fileRef := self class askForFileRefToSaveWithExtensions: #('jpeg')) ifNil: [ ^ self ].
 	(RTCanvasExporter canvas: view canvas)
-		fileName: (self class askForFileRefToSaveWithExtensions: #('jpeg')) fullName;
+		fileName: fileRef fullName;
 		format: #jpeg;
 		whole;
 		export
@@ -112,17 +114,19 @@ DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToPNGMenuItemAction [
+	| fileRef |
+	(fileRef := self class askForFileRefToSaveWithExtensions: #('png')) ifNil: [ ^ self ].
 	RTPNGExporter new
 		builder: view;
-		fileName: (self class askForFileRefToSaveWithExtensions: #('png')) fullName;
+		fileName: fileRef fullName;
 		exportToFile
 ]
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToSVGMenuItemAction [
-	| fileName |
-	fileName := (self class askForFileRefToSaveWithExtensions: #('svg')) fullName.
-	RTSVGExporter exportViewAsSVG: view filename: fileName
+	| fileRef |
+	(fileRef := (self class askForFileRefToSaveWithExtensions: #('svg'))) ifNil: [ ^ self ].
+	RTSVGExporter exportViewAsSVG: view filename: fileRef fullName
 ]
 
 { #category : #api }

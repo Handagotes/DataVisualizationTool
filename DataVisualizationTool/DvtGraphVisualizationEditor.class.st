@@ -27,21 +27,24 @@ DvtGraphVisualizationEditor class >> defaultSpec [
 
 { #category : #api }
 DvtGraphVisualizationEditor >> generateScript [
-	^ String streamContents: [ :ws | | xKey yKey |
+	^ String streamContents: [ :ws | | xKey yKey dotColor connectColor |
 		xKey := self keyFor: #xKeyText.
 		yKey := self keyFor: #yKeyText.
+		dotColor := self pickedColorFor: #dotColorButton.
+		connectColor := self pickedColorFor: #connectColorButton.
 		ws
 			nextPutAll: '| grapher data sample |'; cr;
 			nextPutAll: 'grapher := RTGrapher new.'; cr;
-			nextPutAll: 'data := RTData new.'; cr;
-			nextPutAll: ('data dotShape size: 5; color: {1}.' format: { self pickedColorFor: #dotColorButton }); cr;
+			nextPutAll: 'data := RTData new.'; cr.
+		dotColor = Color transparent ifFalse: [ ws nextPutAll: ('data dotShape size: 5; color: {1}.' format: { dotColor }); cr ].
+		ws
 			nextPutAll: self scriptSnippetForSampleLoad; cr;
 			nextPutAll: 'data points: sample.'; cr;
 			nextPutAll: 'data connectColor: Color red.'; cr.
 		xKey ifNotEmpty: [ ws nextPutAll: ('data x: [ :e | e at: {1} ].' format: { xKey }); cr ].
 		yKey ifNotEmpty: [ ws nextPutAll: ('data y: [ :e | e at: {1} ].' format: { yKey }); cr ].
+		connectColor = Color transparent ifFalse: [ ws nextPutAll: ('data connectColor: {1}.' format: { connectColor }); cr ].
 		ws
-			nextPutAll: ('data connectColor: {1}.' format: { self pickedColorFor: #connectColorButton }); cr;
 			nextPutAll: 'grapher add: data.'; cr;
 			nextPutAll: 'grapher extent: 650 @ 650.'; cr;
 			nextPutAll: 'grapher build.'; cr;
