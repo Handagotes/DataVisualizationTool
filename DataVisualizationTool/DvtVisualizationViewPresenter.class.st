@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #private }
-DvtVisualizationViewPresenter class >> askForFilePathToSaveWithExtensions: extensions [
+DvtVisualizationViewPresenter class >> askForFileRefToSaveWithExtensions: extensions [
 	| fileDialog topWindow |
 	(fileDialog := FileDialogWindow new)
 		validExtensions: extensions;
@@ -20,7 +20,7 @@ DvtVisualizationViewPresenter class >> askForFilePathToSaveWithExtensions: exten
 	fileDialog openModal.
 	topWindow modalUnlockFrom: fileDialog. 
 	fileDialog cancelled ifTrue: [ ^ nil ].
-	^ fileDialog answer pathString
+	^ fileDialog answer
 ]
 
 { #category : #specs }
@@ -65,6 +65,11 @@ DvtVisualizationViewPresenter >> initializeMenu [
 						item
 							name: 'в SVG';
 							action: [ self onExportToSVGMenuItemAction ]
+					];
+					addItem: [ :item |
+						item
+							name: 'в HTML';
+							action: [ self onExportToHTMLMenuItemAction ]
 					]
 			].
 			appMenuItem
@@ -86,9 +91,20 @@ DvtVisualizationViewPresenter >> menu [
 ]
 
 { #category : #private }
+DvtVisualizationViewPresenter >> onExportToHTMLMenuItemAction [
+	| filePath |
+	filePath := (self class askForFileRefToSaveWithExtensions: #('html')) path.
+	RTHTML5Exporter new
+		directory: filePath parent asFileReference;
+		fileName: filePath segments last;
+		export: view;
+		createJS
+]
+
+{ #category : #private }
 DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
 	(RTCanvasExporter canvas: view canvas)
-		fileName: (self class askForFilePathToSaveWithExtensions: #('jpeg'));
+		fileName: (self class askForFileRefToSaveWithExtensions: #('jpeg')) fullName;
 		format: #jpeg;
 		whole;
 		export
@@ -98,13 +114,15 @@ DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
 DvtVisualizationViewPresenter >> onExportToPNGMenuItemAction [
 	RTPNGExporter new
 		builder: view;
-		fileName: (self class askForFilePathToSaveWithExtensions: #('png'));
+		fileName: (self class askForFileRefToSaveWithExtensions: #('png')) fullName;
 		exportToFile
 ]
 
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToSVGMenuItemAction [
-	RTSVGExporter exportViewAsSVG: view filename: (self class askForFilePathToSaveWithExtensions: #('svg'))
+	| fileName |
+	fileName := (self class askForFileRefToSaveWithExtensions: #('svg')) fullName.
+	RTSVGExporter exportViewAsSVG: view filename: fileName
 ]
 
 { #category : #api }
