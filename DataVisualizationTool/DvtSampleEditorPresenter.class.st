@@ -206,7 +206,7 @@ DvtSampleEditorPresenter >> onClearButtonAction [
 	
 	sampleTable dataGrid selectedCellsReverseDo: [ :value :coord |
 		(sampleTable isCellValueEditable: coord) ifTrue: [ 
-			sampleTable putCellValue: nil at: coord
+			sampleTable removeCellValueAt: coord
 		]
 	].
 	sampleTable updateNode.
@@ -222,7 +222,7 @@ DvtSampleEditorPresenter >> onConvertButtonAction [
 	
 	sampleTable dataGrid selectedCellsDo: [ :value :coord |
 		(sampleTable isCellValueEditable: coord) ifTrue: [ 
-			(sampleTable convertCellValue: value at: coord toType: type) ifTrue: [ 
+			(sampleTable tryConvertCellValue: value at: coord toType: type) ifTrue: [ 
 				success := true
 			]
 		]

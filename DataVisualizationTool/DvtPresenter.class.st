@@ -73,27 +73,30 @@ DvtPresenter class >> sampleDropListDisplayBlock [
 { #category : #api }
 DvtPresenter class >> tryParseJSON: dataString [
 	[ | data |
-		data := NeoJSONReader fromString: dataString.
-		(data isArray or: [ data isDictionary ]) ifFalse: [ self error ].
+		data := (NeoJSONReader on: dataString readStream)
+			listClass: OrderedCollection;
+			next.
+		(DvtDataTableProcessor isNode: data) ifFalse: [ self error ].
 		^ data
 	] on: Error do: [ ^ nil ]
 ]
 
 { #category : #api }
 DvtPresenter class >> tryParseTSV: dataString [
-	[ 
-		^ RTTabTable new
-			input: dataString;
-			values
-	] on: Error do: [ ^ nil ]
+	^ self tryParseTSV: dataString usingDelimiter: (RTTabTable new detectDelimiterIn: dataString)
 ]
 
 { #category : #api }
 DvtPresenter class >> tryParseTSV: dataString usingDelimiter: aCharacter [
-	[ 
-		^ RTTabTable new
+	[ | values |
+		values := RTTabTable new
 			input: dataString usingDelimiter: aCharacter;
-			values
+			values.
+		values := values asOrderedCollection.
+		values withIndexDo: [ :row :i |
+			values at: i put: row asOrderedCollection
+		].
+		^ values
 	] on: Error do: [ ^ nil ]
 ]
 
