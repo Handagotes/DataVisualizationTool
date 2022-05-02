@@ -14,7 +14,7 @@ DvtDataTableListProcessor >> apply [
 					ifFalse: [ columnIndex = 2 ifTrue: [ 'Значение' ] ifFalse: [ nil ] ]
 			] ifFalse: [ 
 				columnIndex = 1
-					ifTrue: [ { (rowIndex - 1) asString } ]
+					ifTrue: [ (rowIndex - 1) asString ]
 					ifFalse: [ columnIndex = 2 ifTrue: [ { rowIndex - 1 } ] ifFalse: [ nil ] ]
 			]
 		] cellCountBlock: [ 2 @ (node size + 1) ]
