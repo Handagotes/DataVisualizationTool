@@ -362,7 +362,7 @@ DvtDataTablePresenter >> initializeDataGrid [
 		cellDisplayBlock: [ :value |
 			value ifNil: [ '' ] ifNotNil: [ 
 				(self class isNode: value)
-					ifTrue: [ value isArray ifTrue: [ '<массив>' ] ifFalse: [ '<объект>' ] ]
+					ifTrue: [ value isArray ifTrue: [ '<список>' ] ifFalse: [ '<словарь>' ] ]
 					ifFalse: [ value asString ]
 			]
 		];

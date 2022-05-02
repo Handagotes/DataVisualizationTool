@@ -39,6 +39,18 @@ DvtDataTableListProcessor >> apply [
 	]
 ]
 
+{ #category : #private }
+DvtDataTableListProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	^ false
+]
+
+{ #category : #private }
+DvtDataTableListProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	dataTable isTransposed
+		ifFalse: [ ^ row ~= 1 and: [ column = 2 ] ]
+		ifTrue: [ ^ row = 2 ]
+]
+
 { #category : #api }
 DvtDataTableListProcessor >> putCellValue: newValue at: coord [
 	

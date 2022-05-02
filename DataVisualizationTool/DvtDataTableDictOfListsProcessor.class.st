@@ -28,6 +28,20 @@ DvtDataTableDictOfListsProcessor >> apply [
 	]
 ]
 
+{ #category : #private }
+DvtDataTableDictOfListsProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	dataTable isTransposed
+		ifFalse: [ ^ row = 1 and: [ ^ column <= (columnCount + 1) ] ]
+		ifTrue: [ ^ column = 1 and: [ row between: 2 and: rowCount + 1 ]	]
+]
+
+{ #category : #private }
+DvtDataTableDictOfListsProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	dataTable isTransposed
+		ifFalse: [ ^ row >= 2 and: [ column <= columnCount ] ]
+		ifTrue: [ ^ column >= 2 and: [ row between: 2 and: rowCount ] ]
+]
+
 { #category : #api }
 DvtDataTableDictOfListsProcessor >> putCellValue: newValue at: coord [
 	

@@ -38,6 +38,20 @@ DvtDataTableDictProcessor >> apply [
 	
 ]
 
+{ #category : #private }
+DvtDataTableDictProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	dataTable isTransposed
+		ifFalse: [ ^ row = 1 and: [ ^ column <= (columnCount + 1) ] ]
+		ifTrue: [ ^ column = 1 and: [ row between: 2 and: rowCount + 1 ]	]
+]
+
+{ #category : #private }
+DvtDataTableDictProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	dataTable isTransposed
+		ifFalse: [ ^ row = 2 and: [ column <= columnCount ] ]
+		ifTrue: [ ^ column = 2 and: [ row between: 2 and: rowCount ] ]
+]
+
 { #category : #api }
 DvtDataTableDictProcessor >> putCellValue: newValue at: coord [
 	

@@ -28,8 +28,13 @@ ManifestDataVisualizationTool class >> ruleMissingSubclassResponsibilityRuleV1Fa
 ]
 
 { #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleRBBadMessageRuleV1FalsePositive [
+	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-05-02T13:45:17.750928+05:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRBLiteralArrayContainsSuspiciousTrueFalseOrNilRuleV1FalsePositive [
-	^ #(#(#(#RGMethodDefinition #(#'DvtDataSetTablePresenter class' #resolveTypeForValueString: #true)) #'2022-04-29T22:19:32.965509+05:00') #(#(#RGMethodDefinition #(#'DvtDataSetTablePresenter class' #canValue:beConvertedToType: #true)) #'2022-04-29T23:21:21.227509+05:00') )
+	^ #(#(#(#RGMethodDefinition #(#'DvtDataSetTablePresenter class' #resolveTypeForValueString: #true)) #'2022-04-29T22:19:32.965509+05:00') #(#(#RGMethodDefinition #(#'DvtDataSetTablePresenter class' #canValue:beConvertedToType: #true)) #'2022-04-29T23:21:21.227509+05:00') #(#(#RGMethodDefinition #(#'DvtDataTableProcessor class' #resolveTypeForValueString: #true)) #'2022-05-02T13:45:09.365928+05:00') #(#(#RGPackage #(#DataVisualizationTool)) #'2022-05-02T13:45:34.254928+05:00') )
 ]
 
 { #category : #'code-critics' }

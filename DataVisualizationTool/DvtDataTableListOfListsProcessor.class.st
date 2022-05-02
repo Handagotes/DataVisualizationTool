@@ -25,6 +25,16 @@ DvtDataTableListOfListsProcessor >> apply [
 	]
 ]
 
+{ #category : #private }
+DvtDataTableListOfListsProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	^ false
+]
+
+{ #category : #private }
+DvtDataTableListOfListsProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+	^ true
+]
+
 { #category : #api }
 DvtDataTableListOfListsProcessor >> putCellValue: newValue at: coord [
 	
