@@ -82,8 +82,8 @@ DvtDataTableListOfListsProcessor >> removeCellValueAtColumn: c row: r [
 	(node size < row or: [ node first size < column ]) ifTrue: [ ^ self ].
 	(node at: row) at: column put: nil.
 	
-	"trim rows"
-	[ rowCount > 0 and: [ (node at: rowCount) allSatisfy: [ :e | e isNil ] ] ] whileTrue: [ 
+	"trim rows, leave at least 2 rows"
+	[ rowCount > 2 and: [ (node at: rowCount) allSatisfy: [ :e | e isNil ] ] ] whileTrue: [ 
 		node removeAt: rowCount.
 		rowCount := rowCount - 1
 	].
