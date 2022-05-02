@@ -26,21 +26,21 @@ DvtDataTableListOfListsProcessor >> apply [
 ]
 
 { #category : #private }
-DvtDataTableListOfListsProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListOfListsProcessor >> isCellKeyEditableAtColumn: column row: row [
 	^ false
 ]
 
 { #category : #private }
-DvtDataTableListOfListsProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListOfListsProcessor >> isCellValueEditableAtColumn: column row: row [
 	^ true
 ]
 
 { #category : #api }
-DvtDataTableListOfListsProcessor >> putCellValue: newValue at: coord [
+DvtDataTableListOfListsProcessor >> putCellValue: newValue atColumn: column row: row [
 	
 ]
 
 { #category : #api }
-DvtDataTableListOfListsProcessor >> removeCellValueAt: coord [
+DvtDataTableListOfListsProcessor >> removeCellValueAtColumn: column row: row [
 	
 ]

@@ -38,25 +38,25 @@ DvtDataTableListOfDictsProcessor >> apply [
 ]
 
 { #category : #private }
-DvtDataTableListOfDictsProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListOfDictsProcessor >> isCellKeyEditableAtColumn: column row: row [
 	dataTable isTransposed
-		ifFalse: [ ^ row = 1 and: [ ^ column <= (columnCount + 1) ] ]
-		ifTrue: [ ^ column = 1 and: [ row between: 2 and: rowCount + 1 ]	]
+		ifFalse: [ ^ row = 1 and: [ ^ column <= (dataGrid columnCount + 1) ] ]
+		ifTrue: [ ^ column = 1 and: [ row between: 2 and: dataGrid rowCount + 1 ]	]
 ]
 
 { #category : #private }
-DvtDataTableListOfDictsProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListOfDictsProcessor >> isCellValueEditableAtColumn: column row: row [
 	dataTable isTransposed
-		ifFalse: [ ^ row >= 2 and: [ column <= columnCount ] ]
-		ifTrue: [ ^ column >= 2 and: [ row between: 2 and: rowCount ] ]
+		ifFalse: [ ^ row >= 2 and: [ column <= dataGrid columnCount ] ]
+		ifTrue: [ ^ column >= 2 and: [ row between: 2 and: dataGrid rowCount ] ]
 ]
 
 { #category : #api }
-DvtDataTableListOfDictsProcessor >> putCellValue: newValue at: coord [
+DvtDataTableListOfDictsProcessor >> putCellValue: newValue atColumn: column row: row [
 	
 ]
 
 { #category : #api }
-DvtDataTableListOfDictsProcessor >> removeCellValueAt: coord [
+DvtDataTableListOfDictsProcessor >> removeCellValueAtColumn: column row: row [
 	
 ]

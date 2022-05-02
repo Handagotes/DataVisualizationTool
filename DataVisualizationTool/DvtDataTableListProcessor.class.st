@@ -40,23 +40,23 @@ DvtDataTableListProcessor >> apply [
 ]
 
 { #category : #private }
-DvtDataTableListProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListProcessor >> isCellKeyEditableAtColumn: column row: row [
 	^ false
 ]
 
 { #category : #private }
-DvtDataTableListProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableListProcessor >> isCellValueEditableAtColumn: column row: row [
 	dataTable isTransposed
 		ifFalse: [ ^ row ~= 1 and: [ column = 2 ] ]
 		ifTrue: [ ^ row = 2 ]
 ]
 
 { #category : #api }
-DvtDataTableListProcessor >> putCellValue: newValue at: coord [
+DvtDataTableListProcessor >> putCellValue: newValue atColumn: column row: row [
 	
 ]
 
 { #category : #api }
-DvtDataTableListProcessor >> removeCellValueAt: coord [
+DvtDataTableListProcessor >> removeCellValueAtColumn: column row: row [
 	
 ]

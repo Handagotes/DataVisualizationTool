@@ -83,43 +83,47 @@ DvtDataTableProcessor >> isCellEditable: coord [
 
 { #category : #testing }
 DvtDataTableProcessor >> isCellKeyEditable: coord [
-	| column row columnCount rowCount |
+	| column row |
 	column := coord x.
 	row := coord y.
-	(column <= 0 or: [ row <= 0 ]) ifTrue: [ ^ false ].
-	columnCount := dataGrid columnCount.
-	rowCount := dataGrid rowCount.
-	^ self isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount
+	^ column > 0 and: [ row > 0 and: [ self isCellKeyEditableAtColumn: column row: row ] ]
 ]
 
 { #category : #private }
-DvtDataTableProcessor >> isCellKeyEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableProcessor >> isCellKeyEditableAtColumn: column row: row [
 	self subclassResponsibility
 ]
 
 { #category : #testing }
 DvtDataTableProcessor >> isCellValueEditable: coord [
-	| column row columnCount rowCount |
+	| column row |
 	column := coord x.
 	row := coord y.
-	(column <= 0 or: [ row <= 0 ]) ifTrue: [ ^ false ].
-	columnCount := dataGrid columnCount.
-	rowCount := dataGrid rowCount.
-	^ self isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount
+	^ column > 0 and: [ row > 0 and: [ self isCellValueEditableAtColumn: column row: row ] ]
 ]
 
 { #category : #private }
-DvtDataTableProcessor >> isCellValueEditableAtColumn: column row: row columnCount: columnCount rowCount: rowCount [
+DvtDataTableProcessor >> isCellValueEditableAtColumn: column row: row [
 	self subclassResponsibility
 ]
 
 { #category : #api }
 DvtDataTableProcessor >> putCellValue: newValue at: coord [
+	self putCellValue: newValue atColumn: coord x row: coord y
+]
+
+{ #category : #api }
+DvtDataTableProcessor >> putCellValue: newValue atColumn: column row: row [
 	self subclassResponsibility
 ]
 
 { #category : #api }
 DvtDataTableProcessor >> removeCellValueAt: coord [
+	self removeCellValueAtColumn: coord x row: coord y
+]
+
+{ #category : #api }
+DvtDataTableProcessor >> removeCellValueAtColumn: column row: row [
 	self subclassResponsibility
 ]
 
