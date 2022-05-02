@@ -22,7 +22,7 @@ DvtDataTableListOfDictsProcessor >> apply [
 			rowIndex = 1 ifTrue: [ 
 				columnIndex = 1
 					ifTrue: [ 'Ключ' ]
-					ifFalse: [ (columnIndex - 1) asString ]
+					ifFalse: [ { (columnIndex - 1) asString } ]
 			] ifFalse: [ 
 				key := node first keys at: rowIndex - 1 ifAbsent: [ nil ].
 				columnIndex = 1
@@ -90,17 +90,18 @@ DvtDataTableListOfDictsProcessor >> putCellValue: newValue atColumn: column row:
 
 { #category : #api }
 DvtDataTableListOfDictsProcessor >> removeCellValueAtColumn: column row: row [
-	| keyEdit keys key |
-	keys := dataGrid keysForCellCoord: column @ row.
-	key := keys second.
-	(node first includesKey: key) ifFalse: [ ^ self ].
+	| keyEdit |
 	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
-	keyEdit ifTrue: [ 
+	keyEdit ifTrue: [ | key |
+		key := dataGrid cellValueAt: column @ row.
+		(node first includesKey: key) ifFalse: [ ^ self ].
 		node do: [ :dict |
 			dict removeKey: key
 		]
-	] ifFalse: [ | index |
+	] ifFalse: [ | keys key index |
+		keys := dataGrid keysForCellCoord: column @ row.
 		index := keys first.
+		key := keys second.
 		index > node size ifTrue: [ ^ self ].
 		(node at: index) at: key put: nil.
 		[ index > 0 and: [ (node at: index) allSatisfy: [ :e | e isNil ] ] ] whileTrue: [ 

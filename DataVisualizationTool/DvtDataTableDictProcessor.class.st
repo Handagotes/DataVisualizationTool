@@ -7,8 +7,6 @@ Class {
 { #category : #api }
 DvtDataTableDictProcessor >> apply [
 	dataTable isTransposed ifFalse: [ 
-		
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex | | key |
 			key := node keys at: columnIndex ifAbsent: [ nil ].
 			rowIndex = 1
@@ -71,12 +69,16 @@ DvtDataTableDictProcessor >> putCellValue: newValue atColumn: column row: row [
 
 { #category : #api }
 DvtDataTableDictProcessor >> removeCellValueAtColumn: column row: row [
-	| keyEdit key |
-	key := (dataGrid keysForCellCoord: column @ row) first.
-	(node includesKey: key) ifFalse: [ ^ self ].
+	| keyEdit |
 	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit
-		ifTrue: [ node removeKey: key ]
-		ifFalse: [ node at: key put: nil ].
+		ifTrue: [ | key |
+			key := dataGrid cellValueAt: column @ row.
+			node removeKey: key ifAbsent: [  ]
+		]
+		ifFalse: [ | key |
+			key := (dataGrid keysForCellCoord: column @ row) first.
+			node at: key put: nil
+		].
 	dataGrid updateCellCount
 ]

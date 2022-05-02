@@ -75,15 +75,16 @@ DvtDataTableDictOfListsProcessor >> putCellValue: newValue atColumn: column row:
 
 { #category : #api }
 DvtDataTableDictOfListsProcessor >> removeCellValueAtColumn: column row: row [
-	| keyEdit keys key |
-	keys := dataGrid keysForCellCoord: column @ row.
-	key := keys first.
-	(node includesKey: key) ifFalse: [ ^ self ].
+	| keyEdit  |
 	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
-	keyEdit ifTrue: [ 
-		node removeKey: key
-	] ifFalse: [ | index |
+	keyEdit ifTrue: [ | key |
+		key := dataGrid cellValueAt: column @ row.
+		node removeKey: key ifAbsent: [  ]
+	] ifFalse: [ | keys key index |
+		keys := dataGrid keysForCellCoord: column @ row.
+		key := keys first.
 		index := keys second.
+		(node includesKey: key) ifFalse: [ ^ self ].
 		index > node anyOne size ifTrue: [ ^ self ].
 		(node at: key) at: index put: nil.
 		[ index > 0 and: [ node allSatisfy: [ :nodeColumn | (nodeColumn at: index) isNil ] ] ] whileTrue: [ 
