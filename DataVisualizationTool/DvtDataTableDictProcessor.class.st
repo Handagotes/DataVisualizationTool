@@ -54,10 +54,36 @@ DvtDataTableDictProcessor >> isCellValueEditableAtColumn: column row: row [
 
 { #category : #api }
 DvtDataTableDictProcessor >> putCellValue: newValue atColumn: column row: row [
-	
+	| keyEdit |
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ | oldValue |
+		(node includesKey: newValue) ifTrue: [ 
+			silent ifFalse: [ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue }) ].
+			^ self
+		].
+		oldValue := dataGrid cellValueAtColumnIndex: column rowIndex: row.
+		oldValue ifNil: [ 
+			node at: newValue put: nil
+		] ifNotNil: [ | v |
+			v := node at: oldValue.
+			node removeKey: oldValue.
+			node at: newValue put: v
+		]
+	] ifFalse: [ | key |
+		key := (dataGrid keysForCellCoord: column @ row) first.
+		node at: key put: newValue
+	]
 ]
 
 { #category : #api }
 DvtDataTableDictProcessor >> removeCellValueAtColumn: column row: row [
-	
+	| keyEdit key |
+	key := (dataGrid keysForCellCoord: column @ row) first.
+	(node includesKey: key) ifFalse: [ ^ self ].
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ 
+		node removeKey: key
+	] ifFalse: [ 
+		node at: key put: nil
+	]
 ]

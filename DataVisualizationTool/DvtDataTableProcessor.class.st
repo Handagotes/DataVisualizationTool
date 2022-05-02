@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'dataTable',
 		'dataGrid',
-		'node'
+		'node',
+		'silent'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -125,6 +126,16 @@ DvtDataTableProcessor >> removeCellValueAt: coord [
 { #category : #api }
 DvtDataTableProcessor >> removeCellValueAtColumn: column row: row [
 	self subclassResponsibility
+]
+
+{ #category : #accessing }
+DvtDataTableProcessor >> silent [
+	^ silent
+]
+
+{ #category : #accessing }
+DvtDataTableProcessor >> silent: aBoolean [
+	silent := aBoolean
 ]
 
 { #category : #api }

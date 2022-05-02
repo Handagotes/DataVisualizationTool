@@ -53,10 +53,20 @@ DvtDataTableListProcessor >> isCellValueEditableAtColumn: column row: row [
 
 { #category : #api }
 DvtDataTableListProcessor >> putCellValue: newValue atColumn: column row: row [
-	
+	dataTable isTransposed
+		ifFalse: [ node at: row - 1 growPut: newValue ]
+		ifTrue: [ node at: column growPut: newValue ]
 ]
 
 { #category : #api }
 DvtDataTableListProcessor >> removeCellValueAtColumn: column row: row [
-	
+	dataTable isTransposed
+		ifFalse: [ 
+			node size < row - 1 ifTrue: [ ^ self ].
+			node removeAt: row - 1
+		]
+		ifTrue: [ 
+			node size < column ifTrue: [ ^ self ].
+			node removeAt: column
+		]
 ]
