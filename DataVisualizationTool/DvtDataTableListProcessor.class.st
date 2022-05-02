@@ -39,8 +39,8 @@ DvtDataTableListProcessor >> isCellKeyEditableAtColumn: column row: row [
 { #category : #private }
 DvtDataTableListProcessor >> isCellValueEditableAtColumn: column row: row [
 	dataTable isTransposed
-		ifFalse: [ ^ row = 2 ]
-		ifTrue: [ ^ row ~= 1 and: [ column = 2 ] ]
+		ifFalse: [ ^ row ~= 1 and: [ column = 2 ] ]
+		ifTrue: [ ^ row = 2 ]
 ]
 
 { #category : #api }
