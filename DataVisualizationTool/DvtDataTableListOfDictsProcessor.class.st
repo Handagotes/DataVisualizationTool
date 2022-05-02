@@ -53,10 +53,59 @@ DvtDataTableListOfDictsProcessor >> isCellValueEditableAtColumn: column row: row
 
 { #category : #api }
 DvtDataTableListOfDictsProcessor >> putCellValue: newValue atColumn: column row: row [
-	
+	| keyEdit |
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ | oldValue |
+		(node first includesKey: newValue) ifTrue: [ 
+			silent ifFalse: [ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue }) ].
+			^ self
+		].
+		oldValue := dataGrid cellValueAtColumnIndex: column rowIndex: row.
+		oldValue ifNil: [ 
+			node do: [ :dict |
+				dict at: newValue put: nil
+			]
+		] ifNotNil: [ 
+			node do: [ :dict | | v |
+				v := dict at: oldValue.
+				dict removeKey: oldValue.
+				dict at: newValue put: v
+			]
+		]
+	] ifFalse: [ | keys index |
+		keys := dataGrid keysForCellCoord: column @ row.
+		index := keys first.
+		index > node size ifTrue: [ 
+			node size + 1 to: index do: [ :i | | dict |
+				dict := Dictionary new.
+				node first keysDo: [ :key |
+					dict add: key -> nil
+				].
+				node at: i growPut: dict
+			]
+		].
+		(node at: index) at: keys second put: newValue
+	]
 ]
 
 { #category : #api }
 DvtDataTableListOfDictsProcessor >> removeCellValueAtColumn: column row: row [
-	
+	| keyEdit keys key |
+	keys := dataGrid keysForCellCoord: column @ row.
+	key := keys second.
+	(node first includesKey: key) ifFalse: [ ^ self ].
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ 
+		node do: [ :dict |
+			dict removeKey: key
+		]
+	] ifFalse: [ | index |
+		index := keys first.
+		index > node size ifTrue: [ ^ self ].
+		(node at: index) at: key put: nil.
+		[ index > 0 and: [ (node at: index) allSatisfy: [ :e | e isNil ] ] ] whileTrue: [ 
+			node removeAt: index.
+			index := index - 1
+		]
+	]
 ]
