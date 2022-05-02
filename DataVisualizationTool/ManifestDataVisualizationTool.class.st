@@ -18,6 +18,11 @@ ManifestDataVisualizationTool class >> ruleGRVariableAssignedLiteralRuleV1FalseP
 ]
 
 { #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleLiteralArrayContainsSuspiciousTrueFalseOrNilRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #canValue:beConvertedToType: #true)) #'2022-05-02T11:58:00.366928+05:00') #(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #resolveTypeForValueString: #true)) #'2022-05-02T11:58:00.366928+05:00') )
+]
+
+{ #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleMissingSubclassResponsibilityRuleV1FalsePositive [
 	^ #(#(#(#RGMetaclassDefinition #(#'DvtDialog class' #DvtDialog)) #'2022-04-22T23:52:21.249938+05:00') )
 ]
@@ -39,7 +44,7 @@ ManifestDataVisualizationTool class >> ruleRBToDoWithIncrementRuleV1FalsePositiv
 
 { #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRTInvocationSequenceRuleV1FalsePositive [
-	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-21T17:27:02.580795+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateVisibleCells #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateCellAt: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #selectFrom:to: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #processDragStart: #false)) #'2022-04-22T23:52:21.871938+05:00') )
+	^ #(#(#(#RGPackage #(#DataVisualizationTool)) #'2022-04-21T17:27:02.580795+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateVisibleCells #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #updateCellAt: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #selectFrom:to: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#RTGridViewCellSelectable #processDragStart: #false)) #'2022-04-22T23:52:21.871938+05:00') #(#(#RGMethodDefinition #(#DataGridPresenter #createLabelAt:text: #false)) #'2022-05-02T11:57:59.885928+05:00') )
 ]
 
 { #category : #'code-critics' }
