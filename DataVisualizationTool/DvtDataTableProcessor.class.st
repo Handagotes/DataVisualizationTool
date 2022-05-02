@@ -10,9 +10,9 @@ Class {
 }
 
 { #category : #api }
-DvtDataTableProcessor class >> forDataTable: dataTable [
+DvtDataTableProcessor class >> forDataTable: aDvtDataTablePresenter [
 	^ self new
-		dataTable: dataTable
+		dataTable: aDvtDataTablePresenter
 		yourself
 ]
 
