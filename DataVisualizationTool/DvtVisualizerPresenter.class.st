@@ -51,7 +51,7 @@ DvtVisualizerPresenter class >> defaultSpec [
 DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
 	^ DvtDropListDialog
 		open: 'Выберите тип визуализации'
-		items: #(graph scatterPlot barChart pieChart radar tree)
+		items: #(graph barChart pieChart radar tree)
 		displayBlock: [ :option | 
 			{
 				#graph -> 'График'.

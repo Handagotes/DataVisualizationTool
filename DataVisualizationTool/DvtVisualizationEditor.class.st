@@ -50,8 +50,8 @@ DvtVisualizationEditor >> config [
 ]
 
 { #category : #accessing }
-DvtVisualizationEditor >> config: aCollectionOfCollections [
-	config := aCollectionOfCollections
+DvtVisualizationEditor >> config: aDictionary [
+	config := aDictionary
 ]
 
 { #category : #api }
@@ -62,6 +62,7 @@ DvtVisualizationEditor >> generateScript [
 { #category : #api }
 DvtVisualizationEditor >> generateView [
 	| view |
+	self updateConfig.
 	[ 
 		view := Smalltalk compiler evaluate: self generateScript
 	] on: Error do: [ :e |
@@ -83,9 +84,14 @@ DvtVisualizationEditor >> keyFor: keyTextInputName [
 	^ key
 ]
 
+{ #category : #private }
+DvtVisualizationEditor >> loadConfigToWidgets [
+	self subclassResponsibility
+]
+
 { #category : #api }
 DvtVisualizationEditor >> pickedColorFor: colorPickButtonName [
-	^ ((widgets at: colorPickButtonName) icon colorAt: 1 @ 1) storeString
+	^ (widgets at: colorPickButtonName) icon colorAt: 1 @ 1
 ]
 
 { #category : #accessing }
@@ -110,16 +116,29 @@ DvtVisualizationEditor >> sampleFilePath: anObject [
 
 { #category : #private }
 DvtVisualizationEditor >> scriptSnippetForSampleLoad [
-	^ 'sample := NeoJSONReader fromString: (''{1}'' asFileReference readStreamDo: [ :rs | rs upToEnd ]).' format: { sampleFilePath }
+	^ 'sample := NeoJSONReader fromString: (''{1}'' asFileReference readStreamDo: [ :rs | rs upToEnd ]).{2}' format: { sampleFilePath. String cr }
+]
+
+{ #category : #initialization }
+DvtVisualizationEditor >> setPickedColor: aColor for: colorPickButtonName [
+	| button |
+	button := widgets at: colorPickButtonName.
+	button icon fillColor: aColor.
+	button icon: button icon
+]
+
+{ #category : #api }
+DvtVisualizationEditor >> updateConfig [
+	self subclassResponsibility
 ]
 
 { #category : #api }
 DvtVisualizationEditor >> updateConfigFile [
 	| json |
 	config ifNil: [ ^ self ].
-	json := NeoJSONWriter toString: config.
+	json := NeoJSONWriter toStringPretty: config.
 	(DvtApp visualizationFileRefFor: visualization)
-		ensureCreateFile;
+		ensureDelete;
 		writeStreamDo: [ :ws | ws nextPutAll: json	]
 ]
 
@@ -129,6 +148,8 @@ DvtVisualizationEditor >> visualization [
 ]
 
 { #category : #accessing }
-DvtVisualizationEditor >> visualization: anObject [
-	visualization := anObject
+DvtVisualizationEditor >> visualization: aDvtVisualization [
+	visualization := aDvtVisualization.
+	config := DvtPresenter readJSONDataFromFileRef: (DvtApp visualizationFileRefFor: visualization).
+	self loadConfigToWidgets
 ]

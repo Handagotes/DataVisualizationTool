@@ -67,6 +67,7 @@ DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 	| script fileRef |
 	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #(st txt)) ifNil: [ ^ self ].
+	editor updateConfig.
 	script := editor generateScript.
 	fileRef
 		ensureCreateFile;
@@ -77,6 +78,7 @@ DvtVisualizationEditorPanel >> onExportScriptButtonAction [
 DvtVisualizationEditorPanel >> onOpenScriptInPlaygroundButtonAction [
 	| script |
 	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
+	editor updateConfig.
 	script := editor generateScript.
 	GTPlayground openContents: script
 ]
@@ -126,5 +128,9 @@ DvtVisualizationEditorPanel >> sampleFilePath: aString [
 
 { #category : #api }
 DvtVisualizationEditorPanel >> updateVisualizationConfigFile [
-	(editor isKindOf: DvtVisualizationEditor) ifTrue: [ editor updateConfigFile ]
+	(editor isKindOf: DvtVisualizationEditor) ifTrue: [ 
+		editor
+			updateConfig;
+			updateConfigFile
+	]
 ]
