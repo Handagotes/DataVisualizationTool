@@ -470,6 +470,11 @@ DvtDataTablePresenter >> isCellValueEditable: coord [
 	^ false
 ]
 
+{ #category : #testing }
+DvtDataTablePresenter >> isTransposed [
+	^ transposeCheckBox state
+]
+
 { #category : #accessing }
 DvtDataTablePresenter >> node [
 	^ node
