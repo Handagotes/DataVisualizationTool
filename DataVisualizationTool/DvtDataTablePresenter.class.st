@@ -222,7 +222,7 @@ DvtDataTablePresenter >> node: aNode [
 		processor := (node size > 1 and: [ node allSatisfy: [ :e | e isDictionary and: [ e areKeysCompatibleWith: node first ] ] ])
 			ifTrue: [ DvtDataTableListOfDictsProcessor forDataTable: self ]
 			ifFalse: [ 
-				(node size > 1 and: [ node allSatisfy: [ :e | e isArray ] ])
+				(node size > 1 and: [ node allSatisfy: [ :e | e isKindOf: OrderedCollection ] ])
 					ifTrue: [ DvtDataTableListOfListsProcessor forDataTable: self ]
 					ifFalse: [ DvtDataTableListProcessor forDataTable: self ]
 			].
@@ -263,7 +263,7 @@ DvtDataTablePresenter >> onTransposeCheckBoxStateChanged [
 
 { #category : #api }
 DvtDataTablePresenter >> putCellValue: newValue at: coord [
-	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue showDvtError: false
+	self editCellAt: coord value: (dataGrid cellValueAt: coord) newValue: newValue silent: true
 ]
 
 { #category : #removing }

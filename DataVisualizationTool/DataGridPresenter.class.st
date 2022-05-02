@@ -89,9 +89,8 @@ DataGridPresenter >> columnCount [
 ]
 
 { #category : #accessing }
-DataGridPresenter >> columnCount: anObject [
-	columnCount := anObject.
-	self updateCells
+DataGridPresenter >> columnCount: anInteger [
+	columnCount := anInteger
 ]
 
 { #category : #accessing }
@@ -271,9 +270,8 @@ DataGridPresenter >> rowCount [
 ]
 
 { #category : #accessing }
-DataGridPresenter >> rowCount: anObject [
-	rowCount := anObject.
-	self updateCells
+DataGridPresenter >> rowCount: anInteger [
+	rowCount := anInteger
 ]
 
 { #category : #accessing }

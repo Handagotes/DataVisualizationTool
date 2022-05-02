@@ -49,7 +49,7 @@ DvtDataTableListOfListsProcessor >> putCellValue: newValue atColumn: c row: r [
 	].
 	
 	column > columnCount ifTrue: [ 
-		columnCount := column
+		columnCount := column.
 		node do: [ :nodeRow |
 			nodeRow at: columnCount growPut: nil
 		]

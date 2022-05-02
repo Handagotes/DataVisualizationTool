@@ -71,21 +71,21 @@ DvtSampleEditorPresenter class >> defaultSpec [
 DvtSampleEditorPresenter class >> openPickNodeTypeDialog [
 	^ DvtDropListDialog
 		open: 'Выберите тип узла'
-		items: #(dict array arrayOfArrays arrayOfDicts)
+		items: #(dict list listOfLists listOfDicts)
 		displayBlock: [ :option | 
 			{
-				#dict -> 'Объект'.
-				#array -> 'Массив'.
-				#arrayOfArrays -> 'Двумерный массив'.
-				#arrayOfDicts -> 'Массив объектов'.
+				#dict -> 'Словарь'.
+				#list -> 'Список'.
+				#listOfLists -> 'Двумерный список'.
+				#listOfDicts -> 'Массив словарей'.
 			} asDictionary at: option
 		]
 		descriptionBlock: [ :option |
 			{ 
 				#dict -> 'Множество пар ключ - значение. Первая строка - ключи, вторая - соответствующие значения.'.
-				#array -> 'Упорядоченное множество значений. Первый столбец - индекс, второй - значения.'.
-				#arrayOfArrays -> 'Таблица со свободным редактированием ячеек.'.
-				#arrayOfDicts -> 'Таблица объектов с одинаковыми наборами ключей. Первая строка - ключи, вторая - значения первого объекта, третья - второго, и т.д.'.
+				#list -> 'Упорядоченное множество значений. Первый столбец - индекс, второй - значения.'.
+				#listOfLists -> 'Таблица со свободным редактированием ячеек.'.
+				#listOfDicts -> 'Таблица словарей с одинаковыми наборами ключей. Первая строка - ключи, вторая - значения первого словаря, третья - второго, и т.д.'.
 			} asDictionary at: option
 		]
 ]
@@ -294,9 +294,9 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 		writeStreamDo: [ :ws |
 			ws nextPutAll: ({
 				#dict -> '{}'.
-				#array -> '[]'.
-				#arrayOfArrays -> '[[], []]'.
-				#arrayOfDicts -> '[{}, {}]'.
+				#list -> '[]'.
+				#listOfLists -> '[[], []]'.
+				#listOfDicts -> '[{}, {}]'.
 			} asDictionary at: rootNodeType)
 		].
 	
@@ -340,9 +340,9 @@ DvtSampleEditorPresenter >> onNewNodeButtonAction [
 	node := nil.
 	(nodeType := self class openPickNodeTypeDialog) ifNil: [ ^ self ].
 	(nodeType = #dict) ifTrue: [ node := Dictionary new ].
-	(nodeType = #array) ifTrue: [ node := {} ].
-	(nodeType = #arrayOfArrays) ifTrue: [ node := { { }. { } } ].
-	(nodeType = #arrayOfDicts) ifTrue: [ node := { Dictionary new. Dictionary new } ].
+	(nodeType = #list) ifTrue: [ node := OrderedCollection new ].
+	(nodeType = #listOfLists) ifTrue: [ node := { OrderedCollection new. OrderedCollection new } asOrderedCollection ].
+	(nodeType = #listOfDicts) ifTrue: [ node := { Dictionary new. Dictionary new } asOrderedCollection ].
 	self assert: [ node isNotNil ].
 	sampleTable
 		putCellValue: node at: coord;
