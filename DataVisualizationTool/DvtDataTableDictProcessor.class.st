@@ -81,9 +81,7 @@ DvtDataTableDictProcessor >> removeCellValueAtColumn: column row: row [
 	key := (dataGrid keysForCellCoord: column @ row) first.
 	(node includesKey: key) ifFalse: [ ^ self ].
 	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
-	keyEdit ifTrue: [ 
-		node removeKey: key
-	] ifFalse: [ 
-		node at: key put: nil
-	]
+	keyEdit
+		ifTrue: [ node removeKey: key ]
+		ifFalse: [ node at: key put: nil ]
 ]

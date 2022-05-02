@@ -4,7 +4,7 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTableDictOfListsProcessor >> apply [
 	| columns rows |
 	
@@ -44,10 +44,53 @@ DvtDataTableDictOfListsProcessor >> isCellValueEditableAtColumn: column row: row
 
 { #category : #api }
 DvtDataTableDictOfListsProcessor >> putCellValue: newValue atColumn: column row: row [
-	
+	| keyEdit |
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ | oldValue |
+		(node includesKey: newValue) ifTrue: [ 
+			silent ifFalse: [ DvtErrorDialog open: ('Ключ "{1}" уже существует.' format: { newValue }) ].
+			^ self
+		].
+		oldValue := dataGrid cellValueAtColumnIndex: column rowIndex: row.
+		oldValue ifNil: [ | size |
+			size := node anyOne size.
+			node at: newValue put: (node anyOne species ofSize: size)
+		] ifNotNil: [ | v |
+			v := node at: oldValue.
+			node removeKey: oldValue.
+			node at: newValue put: v
+		]
+	] ifFalse: [ 
+		| keys index |
+		keys := dataGrid keysForCellCoord: column @ row.
+		index := keys second.
+		index > node anyOne size ifTrue: [ 
+			node do: [ :nodeColumn |
+				nodeColumn at: index growPut: nil
+			]
+		].
+		(node at: keys first) at: index put: newValue
+	]
 ]
 
 { #category : #api }
 DvtDataTableDictOfListsProcessor >> removeCellValueAtColumn: column row: row [
-	
+	| keyEdit keys key |
+	keys := dataGrid keysForCellCoord: column @ row.
+	key := keys first.
+	(node includesKey: key) ifFalse: [ ^ self ].
+	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
+	keyEdit ifTrue: [ 
+		node removeKey: key
+	] ifFalse: [ | index |
+		index := keys second.
+		index > node anyOne size ifTrue: [ ^ self ].
+		(node at: key) at: index put: nil.
+		[ index > 0 and: [ node allSatisfy: [ :nodeColumn | (nodeColumn at: index) isNil ] ] ] whileTrue: [ 
+			node do: [ :nodeColumn |
+				nodeColumn removeAt: index
+			].
+			index := index - 1
+		]
+	]
 ]

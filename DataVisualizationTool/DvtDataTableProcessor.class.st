@@ -77,6 +77,11 @@ DvtDataTableProcessor >> dataTable: aDvtDataTablePresenter [
 	self apply
 ]
 
+{ #category : #initialization }
+DvtDataTableProcessor >> initialize [
+	silent := true
+]
+
 { #category : #testing }
 DvtDataTableProcessor >> isCellEditable: coord [
 	^ (self isCellValueEditable: coord) or: [ self isCellKeyEditable: coord ]
