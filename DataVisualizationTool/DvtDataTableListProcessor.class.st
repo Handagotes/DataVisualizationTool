@@ -60,13 +60,11 @@ DvtDataTableListProcessor >> putCellValue: newValue atColumn: column row: row [
 
 { #category : #api }
 DvtDataTableListProcessor >> removeCellValueAtColumn: column row: row [
-	dataTable isTransposed
-		ifFalse: [ 
-			node size < row - 1 ifTrue: [ ^ self ].
-			node removeAt: row - 1
-		]
-		ifTrue: [ 
-			node size < column ifTrue: [ ^ self ].
-			node removeAt: column
-		]
+	dataTable isTransposed ifFalse: [ 
+		node size < row - 1 ifTrue: [ ^ self ].
+		node removeAt: row - 1
+	] ifTrue: [ 
+		node size < column ifTrue: [ ^ self ].
+		node removeAt: column
+	]
 ]
