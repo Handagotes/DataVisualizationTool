@@ -54,7 +54,6 @@ DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
 		displayBlock: [ :option | 
 			{
 				#graph -> 'График'.
-				#scatterPlot -> 'Точечная диаграмма'.
 				#barChart -> 'Столбчатая диаграмма'.
 				#pieChart -> 'Круговая диаграмма'.
 				#radar -> 'Радиальная диаграмма'.
@@ -64,7 +63,6 @@ DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
 		descriptionBlock: [ :option |
 			{ 
 				#graph -> 'График зависимости одного значения от другого.'.
-				#scatterPlot -> 'График, отображающий зависимость двух переменных друг от друга для каждого объекта выборки.'.
 				#barChart -> 'Диаграмма сравнения нескольких дискретных категорий.'.
 				#pieChart -> 'Секторная диаграмма, отображающая доли величин в общем объёме.'.
 				#radar -> 'Диаграмма с несколькими осями для одновременного отображения нескольких независимых величин.'.
@@ -182,7 +180,6 @@ DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
 	(configData := self class readJSONDataFromFileRef: (DvtApp visualizationFileRefFor: visualization)) ifNil: [ ^ self ].
 	editorClass := { 
 		#graph -> DvtGraphVisualizationEditor.
-		#scatterPlot -> DvtScatterPlotVisualizationEditor.
 		#barChart -> DvtBarChartVisualizationEditor.
 		#pieChart -> DvtPieChartVisualizationEditor.
 		#radar -> DvtRadarVisualizationEditor.
