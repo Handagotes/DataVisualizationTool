@@ -11,6 +11,14 @@ Class {
 }
 
 { #category : #private }
+DvtVisualizationEditor >> addCheckBox: name label: label checked: checked [
+	self instantiatePresenters: { name. #CheckBoxPresenter }.
+	(widgets at: name)
+		label: label;
+		state: checked
+]
+
+{ #category : #private }
 DvtVisualizationEditor >> addColorPickButton: name label: label defaultColor: color [
 	| button form |
 	self instantiatePresenters: { name. #ButtonPresenter }.
@@ -71,6 +79,11 @@ DvtVisualizationEditor >> generateView [
 	].
 	self assert: [ view isKindOf: RTView ].
 	^ view
+]
+
+{ #category : #testing }
+DvtVisualizationEditor >> isChecked: checkBoxName [
+	^ (widgets at: checkBoxName) state
 ]
 
 { #category : #api }
