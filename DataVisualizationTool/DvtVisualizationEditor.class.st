@@ -89,7 +89,7 @@ DvtVisualizationEditor >> isChecked: checkBoxName [
 { #category : #api }
 DvtVisualizationEditor >> keyFor: keyTextInputName [
 	| key type |
-	key := (widgets at: keyTextInputName) text.
+	key := self textOf: keyTextInputName.
 	key ifEmpty: [ ^ key ].
 	(key first = $' and: [ key last = $' ]) ifTrue: [ ^ key ].
 	type := DvtDataTableProcessor resolveTypeForValueString: key.
@@ -138,6 +138,11 @@ DvtVisualizationEditor >> setPickedColor: aColor for: colorPickButtonName [
 	button := widgets at: colorPickButtonName.
 	button icon fillColor: aColor.
 	button icon: button icon
+]
+
+{ #category : #private }
+DvtVisualizationEditor >> textOf: textInputName [
+	^ (widgets at: textInputName) text
 ]
 
 { #category : #api }
