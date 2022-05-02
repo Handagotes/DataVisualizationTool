@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'editor',
 		'openVisualizationButton',
+		'openScriptInPlaygroundButton',
 		'exportScriptButton'
 	],
 	#category : #'DataVisualizationTool-Boundary'
@@ -17,6 +18,7 @@ DvtVisualizationEditorPanel class >> defaultSpec [
 			newRow: [ :row |
 				row
 					add: #openVisualizationButton;
+					add: #openScriptInPlaygroundButton;
 					add: #exportScriptButton
 			] height: self buttonHeight
 	];
@@ -44,6 +46,7 @@ DvtVisualizationEditorPanel >> exportScriptButton [
 { #category : #initialization }
 DvtVisualizationEditorPanel >> initializePresenter [
 	openVisualizationButton action: [ self onOpenVisualizationButtonAction ].
+	openScriptInPlaygroundButton action: [ self onOpenScriptInPlaygroundButtonAction ].
 	exportScriptButton action: [ self onExportScriptButtonAction ]
 ]
 
@@ -51,14 +54,27 @@ DvtVisualizationEditorPanel >> initializePresenter [
 DvtVisualizationEditorPanel >> initializeWidgets [
 	editor := self newNullPresenter.
 	openVisualizationButton := self newButton.
+	openScriptInPlaygroundButton := self newButton.
 	exportScriptButton := self newButton.
 	
 	openVisualizationButton label: 'Открыть визуализацию'.
+	openScriptInPlaygroundButton label: 'Открыть сценарий в Playground'.
 	exportScriptButton label: 'Экспортировать сценарий...'
 ]
 
 { #category : #private }
 DvtVisualizationEditorPanel >> onExportScriptButtonAction [
+	| script fileRef |
+	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
+	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #(st txt)) ifNil: [ ^ self ].
+	script := editor generateScript.
+	fileRef
+		ensureCreateFile;
+		writeStreamDo: [ :ws | ws nextPutAll: script ]
+]
+
+{ #category : #private }
+DvtVisualizationEditorPanel >> onOpenScriptInPlaygroundButtonAction [
 	| script |
 	(editor isKindOf: NullPresenter) ifTrue: [ ^ nil ].
 	script := editor generateScript.
@@ -84,6 +100,11 @@ DvtVisualizationEditorPanel >> openEditorClass: aClass visualization: visualizat
 	self
 		needRebuild: false;
 		buildWithSpec
+]
+
+{ #category : #accessing }
+DvtVisualizationEditorPanel >> openScriptInPlaygroundButton [
+	^ openScriptInPlaygroundButton
 ]
 
 { #category : #accessing }

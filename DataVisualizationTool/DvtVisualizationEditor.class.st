@@ -33,7 +33,7 @@ DvtVisualizationEditor >> addColorPickButton: name label: label defaultColor: co
 ]
 
 { #category : #private }
-DvtVisualizationEditor >> addKeyTextInput: name label: label [
+DvtVisualizationEditor >> addTextInput: name label: label [
 	| labelName |
 	labelName := name , 'Label'.
 	self instantiatePresenters: { 

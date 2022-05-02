@@ -53,8 +53,8 @@ DvtGraphVisualizationEditor >> generateScript [
 { #category : #initialization }
 DvtGraphVisualizationEditor >> initializeWidgets [
 	self
-		addKeyTextInput: #xKeyText label: 'Ключ оси абсцисс:';
-		addKeyTextInput: #yKeyText label: 'Ключ оси ординат:';
+		addTextInput: #xKeyText label: 'Ключ оси абсцисс:';
+		addTextInput: #yKeyText label: 'Ключ оси ординат:';
 		addColorPickButton: #dotColorButton label: 'Цвет точек' defaultColor: Color red;
 		addColorPickButton: #connectColorButton label: 'Цвет линий' defaultColor: Color red.
 ]

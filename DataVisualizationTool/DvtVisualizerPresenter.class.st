@@ -28,6 +28,7 @@ DvtVisualizerPresenter class >> defaultSpec [
 					]  height: self toolbarHeight;
 					add: #sampleTable
 			];
+			addSplitter;
 			newColumn: [ :column |
 				column
 					newRow: [ :visualizationRow |
@@ -83,7 +84,7 @@ DvtVisualizerPresenter >> deleteVisualizationButton [
 
 { #category : #api }
 DvtVisualizerPresenter >> extent [
-	^ 1050 @ 600
+	^ 1200 @ 600
 ]
 
 { #category : #initialization }
@@ -92,7 +93,7 @@ DvtVisualizerPresenter >> initializePresenter [
 	sampleDropList whenSelectedItemChanged: [ self onSampleDropListSelectedItemChanged ].
 	visualizationDropList whenSelectedItemChanged: [ self onVisualizationDropListSelectedItemChanged ].
 	createVisualizationButton action: [ self onCreateVisualizationButtonAction ].
-	deleteVisualizationButton action: [ self onDeleteVisualizationButtonAction ].
+	deleteVisualizationButton action: [ self onDeleteVisualizationButtonAction ]
 ]
 
 { #category : #initialization }

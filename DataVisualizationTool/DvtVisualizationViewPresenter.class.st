@@ -9,20 +9,6 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #private }
-DvtVisualizationViewPresenter class >> askForFileRefToSaveWithExtensions: extensions [
-	| fileDialog topWindow |
-	(fileDialog := FileDialogWindow new)
-		validExtensions: extensions;
-		answerSaveFile.
-	topWindow := SystemWindow topWindow.
-	topWindow modalLockTo: fileDialog.
-	fileDialog openModal.
-	topWindow modalUnlockFrom: fileDialog. 
-	fileDialog cancelled ifTrue: [ ^ nil ].
-	^ fileDialog answer
-]
-
 { #category : #specs }
 DvtVisualizationViewPresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
@@ -93,7 +79,7 @@ DvtVisualizationViewPresenter >> menu [
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToHTMLMenuItemAction [
 	| fileRef |
-	(fileRef := (self class askForFileRefToSaveWithExtensions: #('html'))) ifNil: [ ^ self ].
+	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #('html')) ifNil: [ ^ self ].
 	RTHTML5Exporter new
 		directory: fileRef path parent asFileReference;
 		fileName: fileRef path segments last;
@@ -104,7 +90,7 @@ DvtVisualizationViewPresenter >> onExportToHTMLMenuItemAction [
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
 	| fileRef |
-	(fileRef := self class askForFileRefToSaveWithExtensions: #('jpeg')) ifNil: [ ^ self ].
+	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #('jpeg')) ifNil: [ ^ self ].
 	(RTCanvasExporter canvas: view canvas)
 		fileName: fileRef fullName;
 		format: #jpeg;
@@ -115,7 +101,7 @@ DvtVisualizationViewPresenter >> onExportToJPEGMenuItemAction [
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToPNGMenuItemAction [
 	| fileRef |
-	(fileRef := self class askForFileRefToSaveWithExtensions: #('png')) ifNil: [ ^ self ].
+	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #('png')) ifNil: [ ^ self ].
 	RTPNGExporter new
 		builder: view;
 		fileName: fileRef fullName;
@@ -125,7 +111,7 @@ DvtVisualizationViewPresenter >> onExportToPNGMenuItemAction [
 { #category : #private }
 DvtVisualizationViewPresenter >> onExportToSVGMenuItemAction [
 	| fileRef |
-	(fileRef := (self class askForFileRefToSaveWithExtensions: #('svg'))) ifNil: [ ^ self ].
+	(fileRef := FileDialogWindow askForFileRefToSaveWithExtensions: #('svg')) ifNil: [ ^ self ].
 	RTSVGExporter exportViewAsSVG: view filename: fileRef fullName
 ]
 
