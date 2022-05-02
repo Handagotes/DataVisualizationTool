@@ -22,7 +22,7 @@ DvtDataTableListOfDictsProcessor >> apply [
 			rowIndex = 1 ifTrue: [ 
 				columnIndex = 1
 					ifTrue: [ 'Ключ' ]
-					ifFalse: [ { (columnIndex - 1) asString } ]
+					ifFalse: [ (columnIndex - 1) asString ]
 			] ifFalse: [ 
 				key := node first keys at: rowIndex - 1 ifAbsent: [ nil ].
 				columnIndex = 1

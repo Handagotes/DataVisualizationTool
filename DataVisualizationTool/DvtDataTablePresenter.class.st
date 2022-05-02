@@ -70,7 +70,7 @@ DvtDataTablePresenter >> dataGrid [
 	^ dataGrid
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTablePresenter >> editCellAt: coord value: value [
 	| newValue |
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
@@ -87,16 +87,14 @@ DvtDataTablePresenter >> editCellAt: coord value: value [
 	]
 ]
 
-{ #category : #api }
+{ #category : #private }
 DvtDataTablePresenter >> editCellAt: coord value: value newValue: newValue silent: silent [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	processor ifNil: [ ^ self ].
 	newValue = value ifTrue: [ ^ self ].
 	processor
 		silent: silent;
-		putCellValue: newValue at: coord.
-	
-	self updateNode
+		putCellValue: newValue at: coord
 ]
 
 { #category : #accessing }
