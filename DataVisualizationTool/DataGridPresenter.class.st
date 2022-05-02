@@ -9,6 +9,7 @@ Class {
 		'draggableViewInteraction',
 		'data',
 		'cellKeysBlock',
+		'cellCountBlock',
 		'columnCount',
 		'rowCount',
 		'cellDisplayBlock',
@@ -89,18 +90,6 @@ DataGridPresenter >> columnCount [
 ]
 
 { #category : #accessing }
-DataGridPresenter >> columnCount: anInteger [
-	columnCount := anInteger
-]
-
-{ #category : #accessing }
-DataGridPresenter >> columnCount: columns rowCount: rows [
-	columnCount := columns.
-	rowCount := rows.
-	self updateCells
-]
-
-{ #category : #accessing }
 DataGridPresenter >> columnWidth [
 	^ gridInteraction gridSize x
 ]
@@ -146,7 +135,7 @@ DataGridPresenter >> createLabelAt: coord text: text [
 ]
 
 { #category : #api }
-DataGridPresenter >> data: aCollectionOfCollections cellKeysBlock: aBlock columnCount: columns rowCount: rows [
+DataGridPresenter >> data: aCollectionOfCollections cellKeysBlock: aCellKeysBlock cellCountBlock:  aCellCountBlock [
 	"
 	The data must be a collection of collections which accept message at:ifAbsent:.
 	The cell path block must accept coordinate of cell and return array of keys to access it's value in data or nil if there is no value.
@@ -154,9 +143,8 @@ DataGridPresenter >> data: aCollectionOfCollections cellKeysBlock: aBlock column
 	"
 	
 	data := aCollectionOfCollections.
-	cellKeysBlock := aBlock.
-	columnCount := columns.
-	rowCount := rows.
+	cellKeysBlock := aCellKeysBlock.
+	cellCountBlock := aCellCountBlock.
 	
 	self
 		updateCells;
@@ -254,7 +242,7 @@ DataGridPresenter >> removeLabelAt: aPoint [
 
 { #category : #api }
 DataGridPresenter >> reset [
-	self data: nil cellKeysBlock: nil columnCount: 0 rowCount: 0
+	self data: nil cellKeysBlock: nil cellCountBlock: nil
 ]
 
 { #category : #api }
@@ -267,11 +255,6 @@ DataGridPresenter >> resetCamera [
 { #category : #accessing }
 DataGridPresenter >> rowCount [
 	^ rowCount
-]
-
-{ #category : #accessing }
-DataGridPresenter >> rowCount: anInteger [
-	rowCount := anInteger
 ]
 
 { #category : #accessing }
@@ -369,7 +352,18 @@ DataGridPresenter >> updateCellAt: aPoint [
 ]
 
 { #category : #updating }
+DataGridPresenter >> updateCellCount [
+	| cellCount |
+	cellCountBlock ifNil: [ ^ self ].
+	cellCount := cellCountBlock value.
+	columnCount := cellCount x.
+	rowCount := cellCount y
+]
+
+{ #category : #updating }
 DataGridPresenter >> updateCells [
+	self updateCellCount.
+	
 	[ :job | | cell cellCount |
 		labelsByCoord
 			do: [ :label |

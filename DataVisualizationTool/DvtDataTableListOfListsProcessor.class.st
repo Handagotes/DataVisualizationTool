@@ -4,24 +4,24 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTableListOfListsProcessor >> apply [
-	| columns rows |
-	
 	dataTable isTransposed ifFalse: [ 
-		columns := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
-		rows := node size.
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex |
 			{ rowIndex. columnIndex }
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ | columns rows |
+			columns := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
+			rows := node size.
+			columns @ rows
+		]
 	] ifTrue: [ 
-		columns := node size.
-		rows := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex |
 			{ columnIndex. rowIndex }
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ | columns rows |
+			columns := node size.
+			rows := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
+			columns @ rows
+		]
 	]
 ]
 
@@ -92,5 +92,7 @@ DvtDataTableListOfListsProcessor >> removeCellValueAtColumn: c row: r [
 	[ columnCount > 0 and: [ node allSatisfy: [ :nodeRow | (nodeRow at: columnCount) isNil ] ] ] whileTrue: [ 
 		node do: [ :nodeRow | nodeRow removeAt: columnCount ].
 		columnCount := columnCount - 1
-	]
+	].
+	
+	dataGrid updateCellCount
 ]

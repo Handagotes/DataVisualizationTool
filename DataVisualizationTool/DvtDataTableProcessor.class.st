@@ -59,7 +59,7 @@ DvtDataTableProcessor class >> resolveTypeForValueString: aString [
 	^ #string
 ]
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTableProcessor >> apply [
 	self subclassResponsibility
 ]

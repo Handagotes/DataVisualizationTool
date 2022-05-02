@@ -4,14 +4,9 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTableListProcessor >> apply [
-	| columns rows |
-	
 	dataTable isTransposed ifFalse: [ 
-		columns := 2.
-		rows := node size + 1.
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex |
 			rowIndex = 1 ifTrue: [ 
 				columnIndex = 1
@@ -22,11 +17,8 @@ DvtDataTableListProcessor >> apply [
 					ifTrue: [ (rowIndex - 1) asString ]
 					ifFalse: [ columnIndex = 2 ifTrue: [ { rowIndex - 1 } ] ifFalse: [ nil ] ]
 			]
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ 2 @ (node size + 1) ]
 	] ifTrue: [ 
-		columns := node size.
-		rows := 2.
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex |
 			rowIndex = 1 ifTrue: [ 
 				columnIndex asString
@@ -35,7 +27,7 @@ DvtDataTableListProcessor >> apply [
 					ifTrue: [ { columnIndex } ]
 					ifFalse: [ nil ]
 			]
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ node size @ 2 ]
 	]
 ]
 
@@ -66,5 +58,6 @@ DvtDataTableListProcessor >> removeCellValueAtColumn: column row: row [
 	] ifTrue: [ 
 		node size < column ifTrue: [ ^ self ].
 		node removeAt: column
-	]
+	].
+	dataGrid updateCellCount
 ]

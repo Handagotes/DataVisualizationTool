@@ -6,25 +6,25 @@ Class {
 
 { #category : #api }
 DvtDataTableDictOfListsProcessor >> apply [
-	| columns rows |
-	
 	dataTable isTransposed ifFalse: [ 
-		columns := node keys size.
-		rows := node ifNotEmpty: [ (node maxValue: [ :e | e size ]) + 1 ] ifEmpty: [ 1 ].
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex | | key |
 			key := node keys at: columnIndex ifAbsent: [ nil ].
 			rowIndex = 1
 				ifTrue: [ key ifNotNil: [ key asString ] ]
 				ifFalse: [ { key. rowIndex - 1 } ]
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ | columns rows |
+			columns := node keys size.
+			rows := node ifNotEmpty: [ (node maxValue: [ :e | e size ]) + 1 ] ifEmpty: [ 1 ].
+			columns @ rows
+		]
 	] ifTrue: [ 
-		columns := node size.
-		rows := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex |
 			{ columnIndex. rowIndex }
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ | columns rows |
+			columns := node size.
+			rows := node ifNotEmpty: [ node first size ] ifEmpty: [ 0 ].
+			columns @ rows
+		]
 	]
 ]
 
@@ -90,5 +90,6 @@ DvtDataTableDictOfListsProcessor >> removeCellValueAtColumn: column row: row [
 			node do: [ :nodeColumn | nodeColumn removeAt: index ].
 			index := index - 1
 		]
-	]
+	].
+	dataGrid updateCellCount
 ]

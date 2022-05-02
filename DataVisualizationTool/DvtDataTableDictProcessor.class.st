@@ -4,24 +4,18 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
-{ #category : #private }
+{ #category : #api }
 DvtDataTableDictProcessor >> apply [
-	| columns rows |
-	
 	dataTable isTransposed ifFalse: [ 
-		columns := node keys size.
-		rows := 2.
+		
 		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex | | key |
 			key := node keys at: columnIndex ifAbsent: [ nil ].
 			rowIndex = 1
 				ifTrue: [ key ifNotNil: [ key asString ] ]
 				ifFalse: [ rowIndex = 2 ifTrue: [ { key } ] ifFalse: [ nil ] ]
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ node keys size @ 2 ]
 	] ifTrue: [ 
-		columns := 2.
-		rows := node size + 1.
-		
 		dataGrid data: node cellKeysBlock: [ :columnIndex :rowIndex | | key |
 			rowIndex = 1 ifTrue: [ 
 				columnIndex = 1
@@ -33,7 +27,7 @@ DvtDataTableDictProcessor >> apply [
 					ifTrue: [ key ifNotNil: [ key asString ] ]
 					ifFalse: [ columnIndex = 2 ifTrue: [ { key } ] ifFalse: [ nil ] ]
 			]
-		] columnCount: columns rowCount: rows
+		] cellCountBlock: [ 2 @ (node size + 1) ]
 	]
 	
 ]
@@ -83,5 +77,6 @@ DvtDataTableDictProcessor >> removeCellValueAtColumn: column row: row [
 	keyEdit := dataTable isTransposed ifFalse: [ row = 1 ] ifTrue: [ column = 1 ].
 	keyEdit
 		ifTrue: [ node removeKey: key ]
-		ifFalse: [ node at: key put: nil ]
+		ifFalse: [ node at: key put: nil ].
+	dataGrid updateCellCount
 ]
