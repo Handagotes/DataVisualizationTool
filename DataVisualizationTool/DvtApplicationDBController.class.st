@@ -57,7 +57,7 @@ DvtApplicationDBController >> createTableIfNotExistsQueries [
 		'CREATE UNIQUE INDEX IF NOT EXISTS sample_name ON sample (lower(name));'.
 		'CREATE TABLE IF NOT EXISTS visualization (
 			id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-			name varchar(255) NOT NULL,
+			name varchar(255) NOT NULL UNIQUE,
 			config_file_path varchar(255) NOT NULL,
 			sample_id integer(10) NOT NULL,
 			FOREIGN KEY(sample_id) REFERENCES sample(id)
