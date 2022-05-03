@@ -88,7 +88,7 @@ DvtDataTableDictOfListsProcessor >> removeCellValueAtColumn: column row: row [
 		index > node anyOne size ifTrue: [ ^ self ].
 		(node at: key) at: index put: nil.
 		"trim rows, leave at least two"
-		[ index > 2 and: [ node allSatisfy: [ :nodeColumn | (nodeColumn at: index) isNil ] ] ] whileTrue: [ 
+		[ node anyOne size > 2 and: [ index > 0 and: [ node allSatisfy: [ :nodeColumn | (nodeColumn at: index) isNil ] ] ] ] whileTrue: [ 
 			node do: [ :nodeColumn | nodeColumn removeAt: index ].
 			index := index - 1
 		]
