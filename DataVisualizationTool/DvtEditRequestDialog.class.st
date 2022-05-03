@@ -18,7 +18,8 @@ Class {
 		'okButton',
 		'cancelButton',
 		'dvtRequest',
-		'headerFields'
+		'headerFields',
+		'lastSelectedHeaderField'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -153,8 +154,6 @@ DvtEditRequestDialog >> headerTextInput [
 DvtEditRequestDialog >> initializePresenter [
 	nameTextInput whenTextChanged: [ self updateOkButton ].
 	requestTextInput whenTextChanged: [ self onRequestTextInputTextChanged ].
-	headerTextInput whenTextChanged: [ self onHeaderTextInputTextChanged ].
-	fieldTextInput whenTextChanged: [ self onFieldTextInputTextChanged ].
 	headerFieldsDataTable when: FTSelectionChanged do: [ self onHeaderFieldsDataTableSelectionChanged ].
 	addButton action: [ self onAddButtonAction ].
 	removeButton action: [ self onRemoveButtonAction ].
@@ -281,16 +280,13 @@ DvtEditRequestDialog >> onCancelButtonAction [
 ]
 
 { #category : #private }
-DvtEditRequestDialog >> onFieldTextInputTextChanged [
-	self isHeaderFieldSelectionValid ifFalse: [ ^ self ].
-	self selectedHeaderField field: fieldTextInput text.
-	self updateHeadersDataTable
-]
-
-{ #category : #private }
 DvtEditRequestDialog >> onHeaderFieldsDataTableSelectionChanged [
 	| headerField i |
-	(headerField := self selectedHeaderField) ifNil: [ 
+	headerField := self selectedHeaderField.
+	self saveLastSelectedHeaderFieldChanges.
+	lastSelectedHeaderField := headerField.
+	
+	headerField ifNil: [ 
 		headerTextInput text: String empty.
 		fieldTextInput text: String empty.
 		moveUpButton disable.
@@ -307,15 +303,6 @@ DvtEditRequestDialog >> onHeaderFieldsDataTableSelectionChanged [
 	moveDownButton enabled: i < headerFields size.
 	removeButton enable.
 	addButton disable
-]
-
-{ #category : #private }
-DvtEditRequestDialog >> onHeaderTextInputTextChanged [
-	| text |
-	self isHeaderFieldSelectionValid ifFalse: [ ^ self ].
-	text := headerTextInput text.
-	self selectedHeaderField header: (text ifNotEmpty: [ text ] ifEmpty: [ '-' ]).
-	self updateHeadersDataTable
 ]
 
 { #category : #private }
@@ -340,6 +327,8 @@ DvtEditRequestDialog >> onMoveUpButtonAction [
 
 { #category : #private }
 DvtEditRequestDialog >> onOkButtonAction [
+	self saveLastSelectedHeaderFieldChanges.
+	
 	dvtRequest
 		name: nameTextInput text;
 		dataType: dataTypeDropList selectedItem asString;
@@ -385,6 +374,18 @@ DvtEditRequestDialog >> requestLabel [
 { #category : #accessing }
 DvtEditRequestDialog >> requestTextInput [
 	^ requestTextInput
+]
+
+{ #category : #private }
+DvtEditRequestDialog >> saveLastSelectedHeaderFieldChanges [
+	| header field |
+	lastSelectedHeaderField ifNil: [ ^ self ].
+	header := headerTextInput text.
+	field := fieldTextInput text.
+	header ifEmpty: [ ^ self ].
+	lastSelectedHeaderField
+		header: header;
+		field: field
 ]
 
 { #category : #private }
