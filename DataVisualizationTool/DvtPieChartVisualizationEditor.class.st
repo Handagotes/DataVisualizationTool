@@ -18,15 +18,22 @@ DvtPieChartVisualizationEditor class >> defaultSpec [
 					add: #labelKeyTextLabel width: 100;
 					add: #labelKeyText
 			] height: self buttonHeight;
+			newRow: [ :row |
+				row
+					add: #legendTitleTextLabel width: 100;
+					add: #legendTitleText
+			] height: self buttonHeight;
 			add: #newNullPresenter
 	]
 ]
 
 { #category : #api }
 DvtPieChartVisualizationEditor >> generateScript [
+	| legendTextLine |
+	legendTextLine := self legendTextLine.
 	^ String streamContents: [ :ws |
 		ws
-			nextPutAll: '| pie sample |'; cr;
+			nextPutAll: ('| pie sample {1}|' format: { legendTextLine ifNotEmpty: [ 'legend ' ] ifEmpty: [ '' ] }); cr;
 			nextPutAll: 'pie := RTPieBuilder new.'; cr;
 			nextPutAll: 'pie interaction popup.'; cr;
 			nextPutAll: self scriptSnippetForSampleLoad;
@@ -35,6 +42,7 @@ DvtPieChartVisualizationEditor >> generateScript [
 			nextPutAll: 'pie normalizer distinctColor.'; cr;
 			nextPutAll: self labelKeyLine;
 			nextPutAll: 'pie build.'; cr;
+			nextPutAll: legendTextLine;
 			nextPutAll: '^ pie view'
 	]
 ]
@@ -43,7 +51,8 @@ DvtPieChartVisualizationEditor >> generateScript [
 DvtPieChartVisualizationEditor >> initializeWidgets [
 	self
 		addTextInput: #sliceKeyText label: 'Ключ сектора:';
-		addTextInput: #labelKeyText label: 'Ключ надписи:'
+		addTextInput: #labelKeyText label: 'Ключ надписи:';
+		addTextInput: #legendTitleText label: 'Текст легенды:'
 ]
 
 { #category : #private }
@@ -56,9 +65,31 @@ DvtPieChartVisualizationEditor >> labelKeyLine [
 ]
 
 { #category : #private }
+DvtPieChartVisualizationEditor >> legendTextLine [
+	| text label |
+	(text := self textOf: #legendTitleText) ifEmpty: [ ^ '' ].
+	label := self keyFor: #labelKeyText.
+	label := label
+		ifNotEmpty: [ '(e at: {1})' format: { label } ]
+		ifEmpty: [ 'e asString' ].
+	^ String streamContents: [ :ws |
+		ws
+			nextPutAll: 'legend := RTLegendBuilder new.'; cr;
+			nextPutAll: 'legend view: pie view.'; cr;
+			nextPutAll: ('legend addText: {1}.' format: { text storeString }); cr;
+			nextPutAll: 'sample do: [ :e | | color |'; cr;
+			nextPutAll: '	color := (pie view elementFromModel: e) trachelShape color.'; cr;
+			nextPutAll: ('	legend addColor: color text: {1}.' format: { label }); cr;
+			nextPutAll: '].'; cr;
+			nextPutAll: 'legend build.'; cr
+	]
+]
+
+{ #category : #private }
 DvtPieChartVisualizationEditor >> loadConfigToWidgets [
 	(widgets at: #sliceKeyText) text: (config at: #sliceKeyText ifAbsent: [ '' ]).
-	(widgets at: #labelKeyText) text: (config at: #labelKeyText ifAbsent: [ '' ])
+	(widgets at: #labelKeyText) text: (config at: #labelKeyText ifAbsent: [ '' ]).
+	(widgets at: #legendTitleText) text: (config at: #legendTitleText ifAbsent: [ '' ])
 ]
 
 { #category : #private }
@@ -73,5 +104,6 @@ DvtPieChartVisualizationEditor >> sliceKeyLine [
 { #category : #api }
 DvtPieChartVisualizationEditor >> updateConfig [
 	config at: #sliceKeyText put: (self keyFor: #sliceKeyText).
-	config at: #labelKeyText put: (self keyFor: #labelKeyText)
+	config at: #labelKeyText put: (self keyFor: #labelKeyText).
+	config at: #legendTitleText put: (self textOf: #legendTitleText)
 ]
