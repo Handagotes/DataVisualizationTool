@@ -138,7 +138,7 @@ DataGridPresenter >> createLabelAt: coord text: text [
 DataGridPresenter >> data: aCollectionOfCollections cellKeysBlock: aCellKeysBlock cellCountBlock:  aCellCountBlock [
 	"
 	The data must be a collection of collections which accept message at:ifAbsent:.
-	The cell path block must accept coordinate of cell and return array of keys to access it's value in data or nil if there is no value.
+	The cell key block must accept column and row indices of cell and return array of keys to access it's value in data or nil if there is no value.
 	Additionaly, this block can return string instead of keys array which will be used as content for cell.
 	"
 	
