@@ -128,12 +128,14 @@ DvtVisualizationViewPresenter >> view [
 { #category : #accessing }
 DvtVisualizationViewPresenter >> view: aView [
 	view := aView.
-	view canvas extent: self extent - (25 @ 25).
 	viewAdapter := view canvas buildMorph
 		hResizing: #spaceFill;
 		vResizing: #spaceFill;
 		asSpecAdapter.
-	view canvas camera adjust
+	view canvas when: TRResizeCanvasEvent do: [ 
+		view canvas focusOnCenterScaled
+	].
+	view canvas extent: self extent - (30 @ 30)
 ]
 
 { #category : #accessing }
