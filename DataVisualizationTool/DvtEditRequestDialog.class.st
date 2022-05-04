@@ -161,7 +161,7 @@ DvtEditRequestDialog >> initializePresenter [
 	moveDownButton action: [ self onMoveDownButtonAction ].
 	okButton action: [ self onOkButtonAction ].
 	cancelButton action: [ self onCancelButtonAction ].
-	self whenBuiltDo: [ self window containingWindow beUnresizeable ]
+	self makeWindowUnresizeable
 ]
 
 { #category : #initialization }

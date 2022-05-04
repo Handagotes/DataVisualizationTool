@@ -67,7 +67,7 @@ DvtGraphVisualizationEditor >> generateScript [
 			nextPutAll: 'grapher add: data.'; cr;
 			nextPutAll: self xTitleLine;
 			nextPutAll: self yTitleLine;
-			nextPutAll: 'grapher extent: 650 @ 650.'; cr;
+			"nextPutAll: 'grapher extent: 650 @ 650.'; cr;"
 			nextPutAll: 'grapher build.'; cr;
 			nextPutAll: '^ grapher view'; cr
 	]

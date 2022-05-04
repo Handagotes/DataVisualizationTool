@@ -1,6 +1,11 @@
 Extension { #name : #ComposablePresenter }
 
 { #category : #'*DataVisualizationTool' }
+ComposablePresenter >> makeWindowUnresizeable [
+	self whenBuiltDo: [ self window containingWindow beUnresizeable ]
+]
+
+{ #category : #'*DataVisualizationTool' }
 ComposablePresenter >> newDataTable [
 	^ FTTableMorph new
 		hResizing: #spaceFill;
