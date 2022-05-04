@@ -10,9 +10,9 @@ Class {
 		'connectColorButton',
 		'addButton',
 		'removeButton',
-		'okButton',
-		'cancelButton',
-		'settings'
+		'closeButton',
+		'settings',
+		'lastSelectedSetting'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -35,11 +35,7 @@ DvtRTDataTableEditor class >> defaultSpec [
 					add: #addButton;
 					add: #removeButton
 			] height: self buttonHeight;
-			newRow: [ :row |
-				row
-					add: #okButton;
-					add: #cancelButton
-			] height: self buttonHeight
+			add: #closeButton height: self buttonHeight
 	]
 ]
 
@@ -61,8 +57,8 @@ DvtRTDataTableEditor >> addButton [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> cancelButton [
-	^ cancelButton
+DvtRTDataTableEditor >> closeButton [
+	^ closeButton
 ]
 
 { #category : #accessing }
@@ -83,12 +79,10 @@ DvtRTDataTableEditor >> extent [
 { #category : #initialization }
 DvtRTDataTableEditor >> initializePresenter [
 	settingsDataTable when: FTSelectionChanged do: [ self onSettingsDataTableSelectionChanged ].
-	dotColorButton action: [ self onDotColorButtonAction ].
-	connectColorButton action: [ self onConnectColorButtonAction ].
+	nameTextinput whenTextChanged: [ self onNameTextInputTextChanged ].
 	addButton action: [ self onAddButtonAction ].
 	removeButton action: [ self onRemoveButtonAction ].
-	okButton action: [ self onOkButtonAction ].
-	cancelButton action: [ self onCancelButtonAction ].
+	closeButton action: [ self onCloseButtonAction ].
 	self makeWindowUnresizeable
 ]
 
@@ -98,22 +92,29 @@ DvtRTDataTableEditor >> initializeWidgets [
 	nameTextinput := self newTextInput.
 	xKeyTextInput := self newTextInput.
 	yKeyTextInput := self newTextInput.
-	dotColorButton := self newButton.
-	connectColorButton := self newButton.
+	dotColorButton := self newColorPickerButton.
+	connectColorButton := self newColorPickerButton.
 	addButton := self newButton.
 	removeButton := self newButton.
-	okButton := self newButton.
-	cancelButton := self newButton.
+	closeButton := self newButton.
 	
+	settingsDataTable widget beSingleSelection.
 	nameTextinput autoAccept: true.
 	xKeyTextInput autoAccept: true.
 	yKeyTextInput autoAccept: true.
-	dotColorButton label: 'Цвет точек'.
-	connectColorButton label: 'Цвет соединений'.
-	addButton label: 'Добавить данные графика'.
-	removeButton label: 'Удалить данные графика'.
-	okButton label: 'Ок'.
-	cancelButton label: 'Отмена'.
+	dotColorButton
+		label: 'Цвет точек';
+		pickedColor: Color red.
+	connectColorButton
+		label: 'Цвет соединений';
+		pickedColor: Color red.
+	addButton label:
+		'Добавить данные графика';
+		disable.
+	removeButton
+		label: 'Удалить данные графика';
+		disable.
+	closeButton label: 'Закрыть'.
 	
 	self focusOrder
 		add: settingsDataTable;
@@ -123,8 +124,7 @@ DvtRTDataTableEditor >> initializeWidgets [
 		add: connectColorButton;
 		add: addButton;
 		add: removeButton;
-		add: okButton;
-		add: cancelButton
+		add: closeButton
 ]
 
 { #category : #accessing }
@@ -132,34 +132,22 @@ DvtRTDataTableEditor >> nameTextInput [
 	^ nameTextinput
 ]
 
-{ #category : #accessing }
-DvtRTDataTableEditor >> okButton [
-	^ okButton
-]
-
 { #category : #private }
 DvtRTDataTableEditor >> onAddButtonAction [
-	
+	.
+	self updateSettingsDataTable
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onCancelButtonAction [
+DvtRTDataTableEditor >> onCloseButtonAction [
 	self closeDialog
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onConnectColorButtonAction [
-	
-]
-
-{ #category : #private }
-DvtRTDataTableEditor >> onDotColorButtonAction [
-	
-]
-
-{ #category : #private }
-DvtRTDataTableEditor >> onOkButtonAction [
-	
+DvtRTDataTableEditor >> onNameTextInputTextChanged [
+	| name |
+	name := nameTextinput text.
+	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | (s at: #name) ~= name ] ])
 ]
 
 { #category : #private }
@@ -169,12 +157,51 @@ DvtRTDataTableEditor >> onRemoveButtonAction [
 
 { #category : #private }
 DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
+	| setting |
+	setting := self selectedSetting.
+	self saveLastSelectedSetting.
+	lastSelectedSetting := setting.
 	
+	setting ifNil: [ 
+		nameTextinput text: String empty.
+		xKeyTextInput text: String empty.
+		yKeyTextInput text: String empty.
+		dotColorButton disable.
+		connectColorButton disable.
+		removeButton disable.
+		addButton enable.
+		^ self
+	].
+	
+	nameTextinput text: (setting at: #name).
+	xKeyTextInput text: (setting at: #xKey).
+	yKeyTextInput text: (setting at: #yKey).
+	dotColorButton enable.
+	connectColorButton enable.
+	removeButton enable.
+	addButton disable
 ]
 
 { #category : #accessing }
 DvtRTDataTableEditor >> removeButton [
 	^ removeButton
+]
+
+{ #category : #private }
+DvtRTDataTableEditor >> saveLastSelectedSetting [
+	
+]
+
+{ #category : #private }
+DvtRTDataTableEditor >> selectedSetting [
+	| i |
+	(i := self selectedSettingIndex) ifNil: [ ^ self ].
+	^ settingsDataTable widget dataSource elementAt: i
+]
+
+{ #category : #private }
+DvtRTDataTableEditor >> selectedSettingIndex [
+	^ settingsDataTable widget selectedRowIndex
 ]
 
 { #category : #accessing }
@@ -194,6 +221,11 @@ DvtRTDataTableEditor >> settings: aSetOfDictionaries [
 { #category : #accessing }
 DvtRTDataTableEditor >> settingsDataTable [
 	^ settingsDataTable
+]
+
+{ #category : #private }
+DvtRTDataTableEditor >> updateSettingsDataTable [
+	settingsDataTable widget refresh
 ]
 
 { #category : #accessing }

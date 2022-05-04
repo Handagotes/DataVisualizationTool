@@ -6,6 +6,11 @@ ComposablePresenter >> makeWindowUnresizeable [
 ]
 
 { #category : #'*DataVisualizationTool' }
+ComposablePresenter >> newColorPickerButton [
+	^ self instantiate: ColorPickerButtonPresenter
+]
+
+{ #category : #'*DataVisualizationTool' }
 ComposablePresenter >> newDataTable [
 	^ FTTableMorph new
 		hResizing: #spaceFill;

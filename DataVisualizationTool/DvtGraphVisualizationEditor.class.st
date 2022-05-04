@@ -88,8 +88,8 @@ DvtGraphVisualizationEditor >> initializeWidgets [
 DvtGraphVisualizationEditor >> loadConfigToWidgets [
 	(widgets at: #xKeyText) text: (config at: #xKeyText ifAbsent: [ '' ]).
 	(widgets at: #yKeyText) text: (config at: #yKeyText ifAbsent: [ '' ]).
-	self setPickedColor: (Color fromArray: (config at: #dotColor ifAbsent: [ #(1 0 0) ])) for: #dotColorButton.
-	self setPickedColor: (Color fromArray: (config at: #connectColor ifAbsent: [ #(1 0 0) ])) for: #connectColorButton.
+	(widgets at: #dotColorButton) pickedColor: (Color fromArray: (config at: #dotColor ifAbsent: [ #(1 0 0) ])).
+	(widgets at: #connectColorButton) pickedColor: (Color fromArray: (config at: #connectColor ifAbsent: [ #(1 0 0) ])).
 	(widgets at: #xTitleText) text: (config at: #xTitleText ifAbsent: [ '' ]).
 	(widgets at: #yTitleText) text: (config at: #yTitleText ifAbsent: [ '' ])
 ]

@@ -20,24 +20,10 @@ DvtVisualizationEditor >> addCheckBox: name label: label checked: checked [
 
 { #category : #private }
 DvtVisualizationEditor >> addColorPickButton: name label: label defaultColor: color [
-	| button form |
-	self instantiatePresenters: { name. #ButtonPresenter }.
-	form := color asFormOfExtent: 16 @ 16.
-	(button := widgets at: name)
-		label: ' ' , label;
-		icon: form;
-		action: [ | picker topWindow |
-			picker := ColorSelectorDialogWindow new.
-			topWindow := SystemWindow topWindow.
-			picker selectedColor: (form colorAt: 1 @ 1).
-			topWindow modalLockTo: picker.
-			picker openModal.
-			topWindow modalUnlockFrom: picker.
-			picker cancelled ifFalse: [ 
-				form fillColor: picker selectedColor.
-				button icon: form
-			].
-		]
+	self instantiatePresenters: { name. #ColorPickerButtonPresenter }.
+	(widgets at: name)
+		label: label;
+		pickedColor: color
 ]
 
 { #category : #private }
@@ -104,7 +90,7 @@ DvtVisualizationEditor >> loadConfigToWidgets [
 
 { #category : #api }
 DvtVisualizationEditor >> pickedColorFor: colorPickButtonName [
-	^ (widgets at: colorPickButtonName) icon colorAt: 1 @ 1
+	^ (widgets at: colorPickButtonName) pickedColor
 ]
 
 { #category : #accessing }
@@ -130,14 +116,6 @@ DvtVisualizationEditor >> sampleFilePath: anObject [
 { #category : #private }
 DvtVisualizationEditor >> scriptSnippetForSampleLoad [
 	^ 'sample := NeoJSONReader fromString: (''{1}'' asFileReference readStreamDo: [ :rs | rs upToEnd ]).{2}' format: { sampleFilePath. String cr }
-]
-
-{ #category : #initialization }
-DvtVisualizationEditor >> setPickedColor: aColor for: colorPickButtonName [
-	| button |
-	button := widgets at: colorPickButtonName.
-	button icon fillColor: aColor.
-	button icon: button icon
 ]
 
 { #category : #private }
