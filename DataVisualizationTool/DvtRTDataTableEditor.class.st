@@ -41,13 +41,13 @@ DvtRTDataTableEditor class >> defaultSpec [
 
 { #category : #'instance creation' }
 DvtRTDataTableEditor class >> open [
-	^ self openForSettings: Set new
+	^ self openForSettings: OrderedCollection new
 ]
 
 { #category : #'instance creation' }
-DvtRTDataTableEditor class >> openForSettings: aSetOfDictionaries [
+DvtRTDataTableEditor class >> openForSettings: anOrderedCollectionOfDictionaries [
 	^ self openDialogConfiguredAs: [ :dialog |
-		dialog settings: aSetOfDictionaries
+		dialog settings: anOrderedCollectionOfDictionaries
 	]
 ]
 
@@ -134,13 +134,23 @@ DvtRTDataTableEditor >> nameTextInput [
 
 { #category : #private }
 DvtRTDataTableEditor >> onAddButtonAction [
-	.
-	self updateSettingsDataTable
+	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
+	nameTextinput text ifEmpty: [ ^ self ].
+	settings add: {
+		#name -> nameTextinput text.
+		#xKey -> xKeyTextInput text.
+		#yKey -> yKeyTextInput text.
+		#dotColor -> dotColorButton pickedColor.
+		#connectColor -> connectColorButton pickedColor.
+	} asDictionary.
+	self
+		resetInputs;
+		updateSettingsDataTable
 ]
 
 { #category : #private }
 DvtRTDataTableEditor >> onCloseButtonAction [
-	self closeDialog
+	self closeDialog: settings
 ]
 
 { #category : #private }
@@ -152,7 +162,13 @@ DvtRTDataTableEditor >> onNameTextInputTextChanged [
 
 { #category : #private }
 DvtRTDataTableEditor >> onRemoveButtonAction [
-	
+	| setting |
+	(setting := self selectedSetting) ifNil: [ ^ self ].
+	settings remove: setting.
+	self
+		resetInputs;
+		updateSettingsDataTable.
+	settingsDataTable widget selectRowIndex: 0
 ]
 
 { #category : #private }
@@ -163,11 +179,7 @@ DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
 	lastSelectedSetting := setting.
 	
 	setting ifNil: [ 
-		nameTextinput text: String empty.
-		xKeyTextInput text: String empty.
-		yKeyTextInput text: String empty.
-		dotColorButton disable.
-		connectColorButton disable.
+		self resetInputs.
 		removeButton disable.
 		addButton enable.
 		^ self
@@ -176,8 +188,12 @@ DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
 	nameTextinput text: (setting at: #name).
 	xKeyTextInput text: (setting at: #xKey).
 	yKeyTextInput text: (setting at: #yKey).
-	dotColorButton enable.
-	connectColorButton enable.
+	dotColorButton
+		pickedColor: (setting at: #dotColor);
+		enable.
+	connectColorButton
+		pickedColor: (setting at: #connectColor);
+		enable.
 	removeButton enable.
 	addButton disable
 ]
@@ -188,6 +204,15 @@ DvtRTDataTableEditor >> removeButton [
 ]
 
 { #category : #private }
+DvtRTDataTableEditor >> resetInputs [
+	nameTextinput text: String empty.
+	xKeyTextInput text: String empty.
+	yKeyTextInput text: String empty.
+	dotColorButton pickedColor: Color red.
+	connectColorButton pickedColor: Color red
+]
+
+{ #category : #private }
 DvtRTDataTableEditor >> saveLastSelectedSetting [
 	
 ]
@@ -195,7 +220,7 @@ DvtRTDataTableEditor >> saveLastSelectedSetting [
 { #category : #private }
 DvtRTDataTableEditor >> selectedSetting [
 	| i |
-	(i := self selectedSettingIndex) ifNil: [ ^ self ].
+	(i := self selectedSettingIndex) isZero ifTrue: [ ^ nil ].
 	^ settingsDataTable widget dataSource elementAt: i
 ]
 
@@ -210,10 +235,10 @@ DvtRTDataTableEditor >> settings [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> settings: aSetOfDictionaries [
+DvtRTDataTableEditor >> settings: anOrderedCollectionOfDictionaries [
 	| dataSource |
-	settings := aSetOfDictionaries.
-	dataSource := DvtRTDataListDataSource elements: aSetOfDictionaries.
+	settings := anOrderedCollectionOfDictionaries.
+	dataSource := DvtRTDataListDataSource elements: settings.
 	dataSource addColumnsTo: settingsDataTable widget.
 	settingsDataTable widget dataSource: dataSource
 ]
