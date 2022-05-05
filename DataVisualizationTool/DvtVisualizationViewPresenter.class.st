@@ -135,7 +135,8 @@ DvtVisualizationViewPresenter >> view: aView [
 	view canvas when: TRResizeCanvasEvent do: [ 
 		view canvas focusOnCenterScaled
 	].
-	view canvas extent: self extent - (30 @ 30)
+	view canvas extent: self extent - (30 @ 30).
+	view @ RTZoomableView
 ]
 
 { #category : #accessing }
