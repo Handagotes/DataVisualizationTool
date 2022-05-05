@@ -119,7 +119,7 @@ DvtVisualizationEditor >> sampleFilePath: anObject [
 ]
 
 { #category : #private }
-DvtVisualizationEditor >> scriptSnippetForSampleLoad [
+DvtVisualizationEditor >> sampleLoadLine [
 	^ 'sample := NeoJSONReader fromString: (''{1}'' asFileReference readStreamDo: [ :rs | rs upToEnd ]).{2}' format: { sampleFilePath. String cr }
 ]
 

@@ -36,7 +36,7 @@ DvtPieChartVisualizationEditor >> generateScript [
 			nextPutAll: ('| pie sample {1}|' format: { legendTextLine ifNotEmpty: [ 'legend ' ] ifEmpty: [ '' ] }); cr;
 			nextPutAll: 'pie := RTPieBuilder new.'; cr;
 			nextPutAll: 'pie interaction popup.'; cr;
-			nextPutAll: self scriptSnippetForSampleLoad;
+			nextPutAll: self sampleLoadLine;
 			nextPutAll: 'pie objects: sample.'; cr;
 			nextPutAll: self sliceKeyLine;
 			nextPutAll: 'pie normalizer distinctColor.'; cr;
@@ -87,9 +87,9 @@ DvtPieChartVisualizationEditor >> legendTextLine [
 
 { #category : #private }
 DvtPieChartVisualizationEditor >> loadConfigToWidgets [
-	(widgets at: #sliceKeyText) text: (config at: #sliceKeyText ifAbsent: [ '' ]).
-	(widgets at: #labelKeyText) text: (config at: #labelKeyText ifAbsent: [ '' ]).
-	(widgets at: #legendTitleText) text: (config at: #legendTitleText ifAbsent: [ '' ])
+	(widgets at: #sliceKeyText) text: (config at: #sliceKeyText ifAbsentPut: [ '' ]).
+	(widgets at: #labelKeyText) text: (config at: #labelKeyText ifAbsentPut: [ '' ]).
+	(widgets at: #legendTitleText) text: (config at: #legendTitleText ifAbsentPut: [ '' ])
 ]
 
 { #category : #private }
