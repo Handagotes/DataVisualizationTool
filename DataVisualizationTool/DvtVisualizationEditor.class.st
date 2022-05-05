@@ -11,6 +11,17 @@ Class {
 }
 
 { #category : #private }
+DvtVisualizationEditor class >> keyForString: aString [
+	| type |
+	aString ifEmpty: [ ^ aString ].
+	(aString first = $' and: [ aString last = $' ]) ifTrue: [ ^ aString ].
+	type := DvtDataTableProcessor resolveTypeForValueString: aString.
+	^ type = #string
+		ifTrue: [ '''{1}''' format: { aString } ]
+		ifFalse: [ aString ]
+]
+
+{ #category : #private }
 DvtVisualizationEditor >> addCheckBox: name label: label checked: checked [
 	self instantiatePresenters: { name. #CheckBoxPresenter }.
 	(widgets at: name)
@@ -74,13 +85,7 @@ DvtVisualizationEditor >> isChecked: checkBoxName [
 
 { #category : #api }
 DvtVisualizationEditor >> keyFor: keyTextInputName [
-	| key type |
-	key := self textOf: keyTextInputName.
-	key ifEmpty: [ ^ key ].
-	(key first = $' and: [ key last = $' ]) ifTrue: [ ^ key ].
-	type := DvtDataTableProcessor resolveTypeForValueString: key.
-	type = #string ifTrue: [ key := '''{1}''' format: { key } ].
-	^ key
+	^ self class keyForString: (self textOf: keyTextInputName)
 ]
 
 { #category : #private }

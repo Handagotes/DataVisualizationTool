@@ -150,7 +150,9 @@ DvtRTDataTableEditor >> onAddButtonAction [
 
 { #category : #private }
 DvtRTDataTableEditor >> onCloseButtonAction [
-	self closeDialog: settings
+	self
+		saveLastSelectedSetting;
+		closeDialog: settings
 ]
 
 { #category : #private }
@@ -214,7 +216,15 @@ DvtRTDataTableEditor >> resetInputs [
 
 { #category : #private }
 DvtRTDataTableEditor >> saveLastSelectedSetting [
-	
+	| name |
+	lastSelectedSetting ifNil: [ ^ self ].
+	(name := nameTextinput text) ifNotEmpty: [ 
+		lastSelectedSetting at: #name put: name
+	].
+	lastSelectedSetting at: #xKey put: xKeyTextInput text.
+	lastSelectedSetting at: #yKey put: yKeyTextInput text.
+	lastSelectedSetting at: #dotColor put: dotColorButton pickedColor.
+	lastSelectedSetting at: #connectColor put: connectColorButton pickedColor
 ]
 
 { #category : #private }

@@ -1,6 +1,9 @@
 Class {
 	#name : #DvtGraphVisualizationEditor,
 	#superclass : #DvtGrapherVisualizationEditor,
+	#instVars : [
+		'rtDataSettings'
+	],
 	#category : #'DataVisualizationTool-Boundary'
 }
 
@@ -8,18 +11,6 @@ Class {
 DvtGraphVisualizationEditor class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
 		column
-			newRow: [ :row |
-				row
-					add: #xKeyTextLabel width: 150;
-					add: #xKeyText
-			] height: self buttonHeight;
-			newRow: [ :row |
-				row
-					add: #yKeyTextLabel width: 150;
-					add: #yKeyText
-			] height: self buttonHeight;
-			add: #dotColorButton height: self buttonHeight;
-			add: #connectColorButton height: self buttonHeight;
 			newRow: [ :row |
 				row
 					add: #xTitleTextLabel width: 150;
@@ -30,41 +21,50 @@ DvtGraphVisualizationEditor class >> defaultSpec [
 					add: #yTitleTextLabel width: 150;
 					add: #yTitleText
 			] height: self buttonHeight;
+			add: #editRTDataTableButton height: self buttonHeight;
 			add: #newNullPresenter
 	];
 	yourself
 ]
 
 { #category : #private }
-DvtGraphVisualizationEditor >> connectColorLine [
+DvtGraphVisualizationEditor >> connectColorLineFor: setting dataName: dataName [
 	| color |
-	color := self pickedColorFor: #connectColorButton.
+	color := setting at: #connectColor.
 	^ color alpha > 0
-		ifTrue: [ ('data connectColor: {1}.{2}' format: { color storeString. String cr }) ]
+		ifTrue: [ ('{1} connectColor: {2}.{3}' format: { dataName. color storeString. String cr }) ]
 		ifFalse: [ '' ]
 ]
 
 { #category : #private }
-DvtGraphVisualizationEditor >> dotColorLine [
+DvtGraphVisualizationEditor >> dotColorLineFor: setting dataName: dataName [
 	| color |
-	color := self pickedColorFor: #dotColorButton.
-	^ 'data dotShape size: 5; color: {1}.{2}' format: { color storeString. String cr }
+	color := setting at: #dotColor.
+	^ '{1} dotShape size: 3; color: {2}.{3}' format: { dataName. color storeString. String cr }
 ]
 
 { #category : #api }
 DvtGraphVisualizationEditor >> generateScript [
 	^ String streamContents: [ :ws |
 		ws
-			nextPutAll: '| grapher data sample |'; cr;
+			nextPutAll: '| grapher sample '.
+		1 to: rtDataSettings size do: [ :i | ws nextPutAll: ('data{1} ' format: { i }) ].
+		ws
+			nextPut: $|; cr;
 			nextPutAll: 'grapher := RTGrapher new.'; cr;
-			nextPutAll: 'data := RTData new.'; cr;
-			nextPutAll: self dotColorLine;
-			nextPutAll: self scriptSnippetForSampleLoad;
-			nextPutAll: 'data points: sample.'; cr;
-			nextPutAll: self xKeyLine;
-			nextPutAll: self yKeyLine;
-			nextPutAll: self connectColorLine;
-			nextPutAll: 'grapher add: data.'; cr;
+			nextPutAll: self scriptSnippetForSampleLoad.
+		rtDataSettings withIndexDo: [ :s :i | | dataName |
+			dataName := 'data' , i asString.
+			ws
+				nextPutAll: dataName; nextPutAll: ' := RTData new.'; cr;
+				nextPutAll: (self dotColorLineFor: s dataName: dataName);
+				nextPutAll: dataName; nextPutAll: ' points: sample.'; cr;
+				nextPutAll: (self xKeyLineFor: s dataName: dataName);
+				nextPutAll: (self yKeyLineFor: s dataName: dataName);
+				nextPutAll: (self connectColorLineFor: s dataName: dataName);
+				nextPutAll: 'grapher add: '; nextPutAll: dataName; nextPut: $.; cr
+		].
+		ws
 			nextPutAll: self xTitleLine;
 			nextPutAll: self yTitleLine;
 			"nextPutAll: 'grapher extent: 650 @ 650.'; cr;"
@@ -74,42 +74,54 @@ DvtGraphVisualizationEditor >> generateScript [
 ]
 
 { #category : #initialization }
+DvtGraphVisualizationEditor >> initializePresenter [
+	(widgets at: #editRTDataTableButton) action: [ self onEditRTDataTableButton ]
+]
+
+{ #category : #initialization }
 DvtGraphVisualizationEditor >> initializeWidgets [
 	self
-		addTextInput: #xKeyText label: 'Ключ оси абсцисс:';
-		addTextInput: #yKeyText label: 'Ключ оси ординат:';
-		addColorPickButton: #dotColorButton label: 'Цвет точек' defaultColor: Color red;
-		addColorPickButton: #connectColorButton label: 'Цвет линий' defaultColor: Color red;
+		instantiatePresenters: { #editRTDataTableButton. #ButtonPresenter };
 		addTextInput: #xTitleText label: 'Название оси абсцисс:';
-		addTextInput: #yTitleText label: 'Название оси ординат:'
+		addTextInput: #yTitleText label: 'Название оси ординат:'.
+	(widgets at: #editRTDataTableButton) label: 'Редактировать данные графика'
 ]
 
 { #category : #private }
 DvtGraphVisualizationEditor >> loadConfigToWidgets [
-	(widgets at: #xKeyText) text: (config at: #xKeyText ifAbsent: [ '' ]).
-	(widgets at: #yKeyText) text: (config at: #yKeyText ifAbsent: [ '' ]).
-	(widgets at: #dotColorButton) pickedColor: (Color fromArray: (config at: #dotColor ifAbsent: [ #(1 0 0) ])).
-	(widgets at: #connectColorButton) pickedColor: (Color fromArray: (config at: #connectColor ifAbsent: [ #(1 0 0) ])).
-	(widgets at: #xTitleText) text: (config at: #xTitleText ifAbsent: [ '' ]).
-	(widgets at: #yTitleText) text: (config at: #yTitleText ifAbsent: [ '' ])
+	(widgets at: #xTitleText) text: (config at: #xTitleText ifAbsentPut: [ '' ]).
+	(widgets at: #yTitleText) text: (config at: #yTitleText ifAbsentPut: [ '' ]).
+	rtDataSettings := config at: #rtDataSettings ifAbsentPut: [ OrderedCollection new ].
+	rtDataSettings do: [ :s |
+		s at: #dotColor put: (Color fromArray: (s at: #dotColor ifAbsent: [ #(1 0 0) ])).
+		s at: #connectColor put: (Color fromArray: (s at: #connectColor ifAbsent: [ #(1 0 0) ]))
+	]
+]
+
+{ #category : #private }
+DvtGraphVisualizationEditor >> onEditRTDataTableButton [
+	DvtRTDataTableEditor openForSettings: rtDataSettings
 ]
 
 { #category : #api }
 DvtGraphVisualizationEditor >> updateConfig [
-	config at: #xKeyText put: (self keyFor: #xKeyText).
-	config at: #yKeyText put: (self keyFor: #yKeyText).
-	config at: #dotColor put: (self pickedColorFor: #dotColorButton) asArray.
-	config at: #connectColor put: (self pickedColorFor: #connectColorButton) asArray.
+	| settings |
+	settings := rtDataSettings deepCopy.
+	settings do: [ :s |
+		s at: #dotColor put: (s at: #dotColor) asArray.
+		s at: #connectColor put: (s at: #connectColor) asArray
+	].
+	(config at: #rtDataSettings put: settings).
 	config at: #xTitleText put: (self textOf: #xTitleText).
-	config at: #yTitleText put: (self textOf: #yTitleText)
+	config at: #yTitleText put: (self textOf: #yTitleText).
 ]
 
 { #category : #private }
-DvtGraphVisualizationEditor >> xKeyLine [
+DvtGraphVisualizationEditor >> xKeyLineFor: setting dataName: dataName [
 	| key |
-	key := self keyFor: #xKeyText.
+	key := self class keyForString: (setting at: #xKey).
 	^ key
-		ifNotEmpty: [ ('data x: [ :e | e at: {1} ].{2}' format: { key. String cr }) ]
+		ifNotEmpty: [ ('{1} x: [ :e | e at: {2} ].{3}' format: { dataName. key. String cr }) ]
 		ifEmpty: [ '' ]
 ]
 
@@ -123,11 +135,11 @@ DvtGraphVisualizationEditor >> xTitleLine [
 ]
 
 { #category : #private }
-DvtGraphVisualizationEditor >> yKeyLine [
+DvtGraphVisualizationEditor >> yKeyLineFor: setting dataName: dataName [
 	| key |
-	key := self keyFor: #yKeyText.
+	key := self class keyForString: (setting at: #yKey).
 	^ key
-		ifNotEmpty: [ ('data y: [ :e | e at: {1} ].{2}' format: { key. String cr }) ]
+		ifNotEmpty: [ ('{1} y: [ :e | e at: {2} ].{3}' format: { dataName. key. String cr }) ]
 		ifEmpty: [ '' ]
 ]
 
