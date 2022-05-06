@@ -77,7 +77,7 @@ DvtSampleEditorPresenter class >> openPickNodeTypeDialog [
 				#dict -> 'Словарь'.
 				#list -> 'Список'.
 				#listOfLists -> 'Двумерный список'.
-				#listOfDicts -> 'Массив словарей'.
+				#listOfDicts -> 'Список словарей'.
 			} asDictionary at: option
 		]
 		descriptionBlock: [ :option |

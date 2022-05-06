@@ -185,11 +185,11 @@ DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
 	} asDictionary at: (configData at: #type).
 	
 	visualizationEditorPanel
+		updateVisualizationConfigFile;
 		openEditorClass: editorClass
 		visualization: visualization
 		sampleFilePath: (DvtApp samplesFolder , sample sampleFilePath)
 		sampleData: sampleTable data
-	
 ]
 
 { #category : #private }
