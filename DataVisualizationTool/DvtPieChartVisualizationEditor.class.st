@@ -33,11 +33,12 @@ DvtPieChartVisualizationEditor >> generateScript [
 	legendTextLine := self legendTextLine.
 	^ String streamContents: [ :ws |
 		ws
-			nextPutAll: ('| pie sample {1}|' format: { legendTextLine ifNotEmpty: [ 'legend ' ] ifEmpty: [ '' ] }); cr;
+			nextPutAll: ('| pie sample normalizer {1}|' format: { legendTextLine ifNotEmpty: [ 'legend ' ] ifEmpty: [ '' ] }); cr;
 			nextPutAll: 'pie := RTPieBuilder new.'; cr;
-			nextPutAll: 'pie interaction popup.'; cr;
 			nextPutAll: self sampleLoadLine;
+			nextPutAll: 'normalizer := RTMultiLinearColorForIdentity new objects: sample.'; cr;
 			nextPutAll: 'pie objects: sample.'; cr;
+			nextPutAll: 'pie shape color: [ :e | normalizer rtValue: e ].'; cr;
 			nextPutAll: self sliceKeyLine;
 			nextPutAll: 'pie normalizer distinctColor.'; cr;
 			nextPutAll: self labelKeyLine;
