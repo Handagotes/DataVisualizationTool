@@ -113,7 +113,8 @@ DvtEditRequestDialog >> dvtRequest [
 DvtEditRequestDialog >> dvtRequest: aDvtRequest [
 	dvtRequest := aDvtRequest.
 	nameTextInput text: dvtRequest name.
-	requestTextInput text: dvtRequest text
+	requestTextInput text: dvtRequest text.
+	dataTypeDropList setSelectedItem: dvtRequest dataType
 ]
 
 { #category : #api }
@@ -188,6 +189,7 @@ DvtEditRequestDialog >> initializeWidgets [
 	requestTextInput autoAccept: true.
 	dataTypeLabel label: 'Тип данных:'.
 	dataTypeDropList
+		items: #(auto json csv tsv);
 		displayBlock: [ :i |
 			{ 
 				#auto -> 'Определить автоматически'.
@@ -195,8 +197,7 @@ DvtEditRequestDialog >> initializeWidgets [
 				#csv -> 'CSV (значения, разделенные запятой)'.
 				#tsv -> 'TSV (значения, разделенные табуляцией)'.
 			} asDictionary at: i
-		];
-		items: #(auto json csv tsv).
+		].
 	headerFieldsDataTable widget beSingleSelection.
 	headerTextInput autoAccept: true.
 	fieldTextInput autoAccept: true.
