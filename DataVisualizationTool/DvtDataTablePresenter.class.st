@@ -76,8 +76,9 @@ DvtDataTablePresenter >> editCellAt: coord value: value [
 	(allowCellEdit and: [ self isCellEditable: coord ]) ifFalse: [ ^ self ].
 	newValue := value ifNil: [ '' ] ifNotNil: [ value asString ].
 	(newValue := DvtTextInputDialog open: 'Введите значение ячейки' default: newValue) ifNil: [ ^ self ].
-	newValue := DvtDataTableProcessor detectValueStringTypeAndConvert: newValue.
-	
+	(self isCellKeyEditable: coord) ifFalse: [ "keep strings for keys"
+		newValue := DvtDataTableProcessor detectValueStringTypeAndConvert: newValue
+	].
 	self
 		editCellAt: coord value: value newValue: newValue silent: false;
 		updateNode.
