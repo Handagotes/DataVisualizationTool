@@ -27,22 +27,6 @@ DvtGrapherVisualizationEditor class >> defaultSpec [
 	yourself
 ]
 
-{ #category : #private }
-DvtGrapherVisualizationEditor >> connectColorLineFor: setting dataName: dataName [
-	| color |
-	color := setting at: #connectColor.
-	^ color alpha > 0
-		ifTrue: [ ('{1} connectColor: {2}.{3}' format: { dataName. color storeString. String cr }) ]
-		ifFalse: [ '' ]
-]
-
-{ #category : #private }
-DvtGrapherVisualizationEditor >> dotColorLineFor: setting dataName: dataName [
-	| color |
-	color := setting at: #dotColor.
-	^ '{1} dotShape size: 3; color: {2}.{3}' format: { dataName. color storeString. String cr }
-]
-
 { #category : #api }
 DvtGrapherVisualizationEditor >> generateScript [
 	^ String streamContents: [ :ws |
@@ -53,16 +37,16 @@ DvtGrapherVisualizationEditor >> generateScript [
 			nextPut: $|; cr;
 			nextPutAll: 'grapher := RTGrapher new.'; cr;
 			nextPutAll: self sampleLoadLine.
-		rtDataSettings withIndexDo: [ :s :i | | dataName |
-			dataName := 'data' , i asString.
+		rtDataSettings withIndexDo: [ :s :i |
+			s variableName: 'data' , i asString.
 			ws
-				nextPutAll: dataName; nextPutAll: ' := RTData new.'; cr;
-				nextPutAll: (self dotColorLineFor: s dataName: dataName);
-				nextPutAll: dataName; nextPutAll: ' points: sample.'; cr;
-				nextPutAll: (self xKeyLineFor: s dataName: dataName);
-				nextPutAll: (self yKeyLineFor: s dataName: dataName);
-				nextPutAll: (self connectColorLineFor: s dataName: dataName);
-				nextPutAll: 'grapher add: '; nextPutAll: dataName; nextPut: $.; cr
+				nextPutAll: s createLine;
+				nextPutAll: s shapeColorLine;
+				nextPutAll: s variableName; nextPutAll: ' points: sample.'; cr;
+				nextPutAll: s xKeyLine;
+				nextPutAll: s yKeyLine;
+				nextPutAll: s connectColorLine;
+				nextPutAll: 'grapher add: '; nextPutAll: s variableName; nextPut: $.; cr
 		].
 		ws
 			nextPutAll: self xTitleLine;
@@ -91,9 +75,15 @@ DvtGrapherVisualizationEditor >> loadConfigToWidgets [
 	(widgets at: #xTitleText) text: (config at: #xTitleText ifAbsentPut: [ '' ]).
 	(widgets at: #yTitleText) text: (config at: #yTitleText ifAbsentPut: [ '' ]).
 	rtDataSettings := config at: #rtDataSettings ifAbsentPut: [ OrderedCollection new ].
-	rtDataSettings do: [ :s |
-		s at: #dotColor put: (Color fromArray: (s at: #dotColor ifAbsent: [ #(1 0 0) ])).
-		s at: #connectColor put: (Color fromArray: (s at: #connectColor ifAbsent: [ #(1 0 0) ]))
+	rtDataSettings withIndexDo: [ :s :i |
+		rtDataSettings at: i put: (DvtRTDataSetting new
+			name: (s at: #name ifAbsent: [ '' ]);
+			xKey: (s at: #xKey ifAbsent: [ '' ]);
+			yKey: (s at: #yKey ifAbsent: [ '' ]);
+			shapeColor: (Color fromArray: (s at: #shapeColor ifAbsent: [ #(1 0 0) ]));
+			connectColor: (Color fromArray: (s at: #connectColor ifAbsent: [ #(1 0 0) ]));
+			shapeType: (s at: #shapeType ifAbsent: [ DvtRTDataSetting availableShapeTypes first ]);
+			yourself)
 	]
 ]
 
@@ -104,24 +94,20 @@ DvtGrapherVisualizationEditor >> onEditRTDataTableButton [
 
 { #category : #api }
 DvtGrapherVisualizationEditor >> updateConfig [
-	| settings |
-	settings := rtDataSettings deepCopy.
-	settings do: [ :s |
-		s at: #dotColor put: (s at: #dotColor) asArray.
-		s at: #connectColor put: (s at: #connectColor) asArray
+	| settingsAsDicts |
+	settingsAsDicts := rtDataSettings collect: [ :s |
+		{ 
+			#name -> s name.
+			#xKey -> s xKey.
+			#yKey -> s yKey.
+			#shapeColor -> s shapeColor asArray.
+			#connectColor -> s connectColor asArray.
+			#shapeType -> s shapeType.
+		} asDictionary
 	].
-	(config at: #rtDataSettings put: settings).
+	(config at: #rtDataSettings put: settingsAsDicts).
 	config at: #xTitleText put: (self textOf: #xTitleText).
 	config at: #yTitleText put: (self textOf: #yTitleText).
-]
-
-{ #category : #private }
-DvtGrapherVisualizationEditor >> xKeyLineFor: setting dataName: dataName [
-	| key |
-	key := self class keyForString: (setting at: #xKey).
-	^ key
-		ifNotEmpty: [ ('{1} x: [ :e | e at: {2} ].{3}' format: { dataName. key. String cr }) ]
-		ifEmpty: [ '' ]
 ]
 
 { #category : #private }
@@ -130,15 +116,6 @@ DvtGrapherVisualizationEditor >> xTitleLine [
 	title := self textOf: #xTitleText.
 	^ title
 		ifNotEmpty: [ ('grapher axisX title: {1}.{2}' format: { title storeString. String cr }) ]
-		ifEmpty: [ '' ]
-]
-
-{ #category : #private }
-DvtGrapherVisualizationEditor >> yKeyLineFor: setting dataName: dataName [
-	| key |
-	key := self class keyForString: (setting at: #yKey).
-	^ key
-		ifNotEmpty: [ ('{1} y: [ :e | e at: {2} ].{3}' format: { dataName. key. String cr }) ]
 		ifEmpty: [ '' ]
 ]
 

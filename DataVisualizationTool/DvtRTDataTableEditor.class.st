@@ -6,8 +6,9 @@ Class {
 		'nameTextinput',
 		'xKeyTextInput',
 		'yKeyTextInput',
-		'dotColorButton',
+		'shapeColorButton',
 		'connectColorButton',
+		'shapeTypeDropList',
 		'addButton',
 		'removeButton',
 		'closeButton',
@@ -27,8 +28,9 @@ DvtRTDataTableEditor class >> defaultSpec [
 					add: #nameTextInput;
 					add: #xKeyTextInput;
 					add: #yKeyTextInput;
-					add: #dotColorButton;
-					add: #connectColorButton
+					add: #shapeColorButton;
+					add: #connectColorButton;
+					add: #shapeTypeDropList
 			] height: self buttonHeight;
 			newRow: [ :row |
 				row
@@ -45,9 +47,9 @@ DvtRTDataTableEditor class >> open [
 ]
 
 { #category : #'instance creation' }
-DvtRTDataTableEditor class >> openForSettings: anOrderedCollectionOfDictionaries [
+DvtRTDataTableEditor class >> openForSettings: anOrderedCollectionOfDvtRTDataSetting [
 	^ self openDialogConfiguredAs: [ :dialog |
-		dialog settings: anOrderedCollectionOfDictionaries
+		dialog settings: anOrderedCollectionOfDvtRTDataSetting
 	]
 ]
 
@@ -66,14 +68,9 @@ DvtRTDataTableEditor >> connectColorButton [
 	^ connectColorButton
 ]
 
-{ #category : #accessing }
-DvtRTDataTableEditor >> dotColorButton [
-	^ dotColorButton
-]
-
 { #category : #api }
 DvtRTDataTableEditor >> extent [
-	^ 600 @ 300
+	^ 700 @ 300
 ]
 
 { #category : #initialization }
@@ -92,8 +89,9 @@ DvtRTDataTableEditor >> initializeWidgets [
 	nameTextinput := self newTextInput.
 	xKeyTextInput := self newTextInput.
 	yKeyTextInput := self newTextInput.
-	dotColorButton := self newColorPickerButton.
+	shapeColorButton := self newColorPickerButton.
 	connectColorButton := self newColorPickerButton.
+	shapeTypeDropList := self newDropList.
 	addButton := self newButton.
 	removeButton := self newButton.
 	closeButton := self newButton.
@@ -102,12 +100,15 @@ DvtRTDataTableEditor >> initializeWidgets [
 	nameTextinput autoAccept: true.
 	xKeyTextInput autoAccept: true.
 	yKeyTextInput autoAccept: true.
-	dotColorButton
+	shapeColorButton
 		label: 'Цвет точек';
 		pickedColor: Color red.
 	connectColorButton
 		label: 'Цвет соединений';
 		pickedColor: Color red.
+	shapeTypeDropList
+		items: DvtRTDataSetting availableShapeTypes;
+		displayBlock: DvtRTDataSetting shapeTypeDisplayBlock.
 	addButton label:
 		'Добавить данные графика';
 		disable.
@@ -120,7 +121,7 @@ DvtRTDataTableEditor >> initializeWidgets [
 		add: settingsDataTable;
 		add: xKeyTextInput;
 		add: yKeyTextInput;
-		add: dotColorButton;
+		add: shapeColorButton;
 		add: connectColorButton;
 		add: addButton;
 		add: removeButton;
@@ -136,13 +137,14 @@ DvtRTDataTableEditor >> nameTextInput [
 DvtRTDataTableEditor >> onAddButtonAction [
 	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
 	nameTextinput text ifEmpty: [ ^ self ].
-	settings add: {
-		#name -> nameTextinput text.
-		#xKey -> xKeyTextInput text.
-		#yKey -> yKeyTextInput text.
-		#dotColor -> dotColorButton pickedColor.
-		#connectColor -> connectColorButton pickedColor.
-	} asDictionary.
+	settings add: (DvtRTDataSetting new
+		name: nameTextinput text;
+		xKey: xKeyTextInput text;
+		yKey: yKeyTextInput text;
+		shapeColor: shapeColorButton pickedColor;
+		connectColor: connectColorButton pickedColor;
+		shapeType: shapeTypeDropList selectedItem;
+		yourself).
 	self
 		resetInputs;
 		updateSettingsDataTable
@@ -159,7 +161,7 @@ DvtRTDataTableEditor >> onCloseButtonAction [
 DvtRTDataTableEditor >> onNameTextInputTextChanged [
 	| name |
 	name := nameTextinput text.
-	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | (s at: #name) ~= name ] ])
+	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | s name ~= name ] ])
 ]
 
 { #category : #private }
@@ -182,22 +184,23 @@ DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
 	
 	setting ifNil: [ 
 		self resetInputs.
-		removeButton disable.
 		addButton enable.
+		removeButton disable.
 		^ self
 	].
 	
-	nameTextinput text: (setting at: #name).
-	xKeyTextInput text: (setting at: #xKey).
-	yKeyTextInput text: (setting at: #yKey).
-	dotColorButton
-		pickedColor: (setting at: #dotColor);
+	nameTextinput text: setting name.
+	xKeyTextInput text: setting xKey.
+	yKeyTextInput text: setting yKey.
+	shapeColorButton
+		pickedColor: setting shapeColor;
 		enable.
 	connectColorButton
-		pickedColor: (setting at: #connectColor);
+		pickedColor: setting connectColor;
 		enable.
-	removeButton enable.
-	addButton disable
+	shapeTypeDropList setSelectedItem: setting shapeType.
+	addButton disable.
+	removeButton enable
 ]
 
 { #category : #accessing }
@@ -210,8 +213,9 @@ DvtRTDataTableEditor >> resetInputs [
 	nameTextinput text: String empty.
 	xKeyTextInput text: String empty.
 	yKeyTextInput text: String empty.
-	dotColorButton pickedColor: Color red.
-	connectColorButton pickedColor: Color red
+	shapeColorButton pickedColor: Color red.
+	connectColorButton pickedColor: Color red.
+	shapeTypeDropList setSelectedItem: DvtRTDataSetting availableShapeTypes first
 ]
 
 { #category : #private }
@@ -219,12 +223,14 @@ DvtRTDataTableEditor >> saveLastSelectedSetting [
 	| name |
 	lastSelectedSetting ifNil: [ ^ self ].
 	(name := nameTextinput text) ifNotEmpty: [ 
-		lastSelectedSetting at: #name put: name
+		lastSelectedSetting name: name
 	].
-	lastSelectedSetting at: #xKey put: xKeyTextInput text.
-	lastSelectedSetting at: #yKey put: yKeyTextInput text.
-	lastSelectedSetting at: #dotColor put: dotColorButton pickedColor.
-	lastSelectedSetting at: #connectColor put: connectColorButton pickedColor
+	lastSelectedSetting
+		xKey: xKeyTextInput text;
+		yKey: yKeyTextInput text;
+		shapeColor: shapeColorButton pickedColor;
+		connectColor: connectColorButton pickedColor;
+		shapeType: shapeTypeDropList selectedItem
 ]
 
 { #category : #private }
@@ -245,10 +251,10 @@ DvtRTDataTableEditor >> settings [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> settings: anOrderedCollectionOfDictionaries [
+DvtRTDataTableEditor >> settings: anOrderedCollectionOfDvtRTDataSetting [
 	| dataSource |
-	settings := anOrderedCollectionOfDictionaries.
-	dataSource := DvtRTDataListDataSource elements: settings.
+	settings := anOrderedCollectionOfDvtRTDataSetting.
+	dataSource := DvtRTDataSettingDataSource elements: settings.
 	dataSource addColumnsTo: settingsDataTable widget.
 	settingsDataTable widget dataSource: dataSource
 ]
@@ -256,6 +262,16 @@ DvtRTDataTableEditor >> settings: anOrderedCollectionOfDictionaries [
 { #category : #accessing }
 DvtRTDataTableEditor >> settingsDataTable [
 	^ settingsDataTable
+]
+
+{ #category : #accessing }
+DvtRTDataTableEditor >> shapeColorButton [
+	^ shapeColorButton
+]
+
+{ #category : #accessing }
+DvtRTDataTableEditor >> shapeTypeDropList [
+	^ shapeTypeDropList
 ]
 
 { #category : #private }
