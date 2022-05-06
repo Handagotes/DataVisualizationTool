@@ -410,9 +410,16 @@ DvtSampleEditorPresenter >> updateDataSetDropList [
 
 { #category : #private }
 DvtSampleEditorPresenter >> updateRequestDropList [
-	requestDropList
-		setIndex: 0;
-		items: DvtAppDB requests
+	| lastSelectedRequest requests |
+	lastSelectedRequest := requestDropList selectedIndex isZero
+		ifFalse: [ requestDropList selectedItem ]
+		ifTrue: [ nil ].
+	requests := DvtAppDB requests.
+	requestDropList items: requests.
+	lastSelectedRequest ifNil: [ ^ self ].
+	requests detect: [ :r | r id = lastSelectedRequest id ]
+		ifFound: [ :r | requestDropList setSelectedItem: r ]
+		ifNone: [ requestDropList setIndex: 0 ]
 ]
 
 { #category : #private }

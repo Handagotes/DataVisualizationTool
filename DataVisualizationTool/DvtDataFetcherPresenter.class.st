@@ -96,9 +96,7 @@ DvtDataFetcherPresenter >> editRequest: r headerFields: hfs create: shouldCreate
 	request := r.
 	headerFields := hfs.
 	[ 
-		(result := DvtEditRequestDialog open: request headerFields: headerFields) ifNil: [ 
-			^ self updateRequestDropList.
-		].
+		(result := DvtEditRequestDialog open: request headerFields: headerFields) ifNil: [ 	^ self ].
 		request := result at: 1.
 		headerFields := result at: 2.
 		[ 
