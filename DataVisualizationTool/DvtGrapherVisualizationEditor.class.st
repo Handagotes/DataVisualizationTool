@@ -22,6 +22,7 @@ DvtGrapherVisualizationEditor class >> defaultSpec [
 					add: #yTitleText
 			] height: self buttonHeight;
 			add: #editRTDataTableButton height: self buttonHeight;
+			add: #legendCheckBox height: self buttonHeight;
 			add: #newNullPresenter
 	];
 	yourself
@@ -41,6 +42,7 @@ DvtGrapherVisualizationEditor >> generateScript [
 			s variableName: 'data' , i asString.
 			ws
 				nextPutAll: s createLine;
+				nextPutAll: s labelLine;
 				nextPutAll: s shapeColorLine;
 				nextPutAll: s variableName; nextPutAll: ' points: sample.'; cr;
 				nextPutAll: s xKeyLine;
@@ -51,6 +53,7 @@ DvtGrapherVisualizationEditor >> generateScript [
 		ws
 			nextPutAll: self xTitleLine;
 			nextPutAll: self yTitleLine;
+			nextPutAll: self legendLine;
 			nextPutAll: 'grapher build.'; cr;
 			nextPutAll: '^ grapher view'; cr
 	]
@@ -66,14 +69,23 @@ DvtGrapherVisualizationEditor >> initializeWidgets [
 	self
 		instantiatePresenters: { #editRTDataTableButton. #ButtonPresenter };
 		addTextInput: #xTitleText label: 'Название оси абсцисс:';
-		addTextInput: #yTitleText label: 'Название оси ординат:'.
+		addTextInput: #yTitleText label: 'Название оси ординат:';
+		addCheckBox: #legendCheckBox label: 'Добавить легенду' checked: false.
 	(widgets at: #editRTDataTableButton) label: 'Редактировать данные графика'
+]
+
+{ #category : #private }
+DvtGrapherVisualizationEditor >> legendLine [
+	^ (self isChecked: #legendCheckBox)
+		ifTrue: [ 'grapher legend.' , String cr ]
+		ifFalse: [ '' ]
 ]
 
 { #category : #private }
 DvtGrapherVisualizationEditor >> loadConfigToWidgets [
 	(widgets at: #xTitleText) text: (config at: #xTitleText ifAbsentPut: [ '' ]).
 	(widgets at: #yTitleText) text: (config at: #yTitleText ifAbsentPut: [ '' ]).
+	(widgets at: #legendCheckBox) state: (config at: #legend ifAbsentPut: [ false ]).
 	rtDataSettings := config at: #rtDataSettings ifAbsentPut: [ OrderedCollection new ].
 	rtDataSettings withIndexDo: [ :s :i |
 		rtDataSettings at: i put: (DvtRTDataSetting new
@@ -108,6 +120,7 @@ DvtGrapherVisualizationEditor >> updateConfig [
 	(config at: #rtDataSettings put: settingsAsDicts).
 	config at: #xTitleText put: (self textOf: #xTitleText).
 	config at: #yTitleText put: (self textOf: #yTitleText).
+	config at: #legend put: (self isChecked: #legendCheckBox)
 ]
 
 { #category : #private }

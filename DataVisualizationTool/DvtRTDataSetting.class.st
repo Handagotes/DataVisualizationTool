@@ -51,6 +51,11 @@ DvtRTDataSetting >> createLine [
 	^ '{1} := RTData new.{2}' format: { variableName. String cr }
 ]
 
+{ #category : #'as yet unclassified' }
+DvtRTDataSetting >> labelLine [
+	^ '{1} label: ''{2}''.{3}' format: { variableName. name. String cr }
+]
+
 { #category : #accessing }
 DvtRTDataSetting >> name [
 	^ name
