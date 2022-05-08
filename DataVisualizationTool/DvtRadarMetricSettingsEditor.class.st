@@ -40,6 +40,11 @@ DvtRadarMetricSettingsEditor >> dvtDataSourceForSettings [
 	^ DvtRadarMetricSettingDataSource elements: settings
 ]
 
+{ #category : #api }
+DvtRadarMetricSettingsEditor >> extent [
+	^ 400 @ 300
+]
+
 { #category : #initialization }
 DvtRadarMetricSettingsEditor >> initializeWidgets [
 	super initializeWidgets.
@@ -57,8 +62,33 @@ DvtRadarMetricSettingsEditor >> initializeWidgets [
 		add: closeButton
 ]
 
+{ #category : #accessing }
+DvtRadarMetricSettingsEditor >> keyTextInput [
+	^ keyTextInput
+]
+
+{ #category : #private }
+DvtRadarMetricSettingsEditor >> onSettingSelected [
+	| setting |
+	setting := self selectedSetting.
+	titleTextInput text: setting title.
+	keyTextInput text: setting key
+]
+
 { #category : #initialization }
 DvtRadarMetricSettingsEditor >> resetInputs [
 	titleTextInput text: String empty.
 	keyTextInput text: String empty
+]
+
+{ #category : #private }
+DvtRadarMetricSettingsEditor >> saveLastSelectedSetting [
+	lastSelectedSetting
+		title: titleTextInput text;
+		key: keyTextInput text
+]
+
+{ #category : #accessing }
+DvtRadarMetricSettingsEditor >> titleTextInput [
+	^ titleTextInput
 ]
