@@ -33,13 +33,33 @@ DvtRadarMetricSettingsEditor >> dvtDataSourceForSettings [
 ]
 
 { #category : #initialization }
-DvtRadarMetricSettingsEditor >> initializePresenter [
-	super initializePresenter.
+DvtRadarMetricSettingsEditor >> initializeWidgets [
+	super initializeWidgets.
+	titleTextInput := self newTextInput.
+	keyTextInput := self newTextInput.
+	titleTextInput autoAccept: true.
+	keyTextInput autoAccept: true.
 	
+	self focusOrder
+		add: settingsDataTable;
+		add: titleTextInput;
+		add: keyTextInput;
+		add: addButton;
+		add: removeButton;
+		add: closeButton
+]
+
+{ #category : #private }
+DvtRadarMetricSettingsEditor >> onAddButtonAction [
+	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
+	settings add: (DvtRadarMetricSetting new
+		title: titleTextInput text;
+		key: keyTextInput text
+		yourself)
 ]
 
 { #category : #initialization }
-DvtRadarMetricSettingsEditor >> initializeWidgets [
-	super initializeWidgets.
-	
+DvtRadarMetricSettingsEditor >> resetInputs [
+	titleTextInput text: String empty.
+	keyTextInput text: String empty
 ]

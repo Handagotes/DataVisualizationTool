@@ -2,7 +2,7 @@ Class {
 	#name : #DvtRTDataSettingsEditor,
 	#superclass : #DvtVisualizationSettingsEditorDialog,
 	#instVars : [
-		'nameTextinput',
+		'nameTextInput',
 		'xKeyTextInput',
 		'yKeyTextInput',
 		'shapeColorButton',
@@ -53,20 +53,20 @@ DvtRTDataSettingsEditor >> extent [
 { #category : #initialization }
 DvtRTDataSettingsEditor >> initializePresenter [
 	super initializePresenter.
-	nameTextinput whenTextChanged: [ self onNameTextInputTextChanged ]
+	nameTextInput whenTextChanged: [ self onNameTextInputTextChanged ]
 ]
 
 { #category : #initialization }
 DvtRTDataSettingsEditor >> initializeWidgets [
 	super initializeWidgets.
-	nameTextinput := self newTextInput.
+	nameTextInput := self newTextInput.
 	xKeyTextInput := self newTextInput.
 	yKeyTextInput := self newTextInput.
 	shapeColorButton := self newColorPickerButton.
 	connectColorButton := self newColorPickerButton.
 	shapeTypeDropList := self newDropList.
 	
-	nameTextinput autoAccept: true.
+	nameTextInput autoAccept: true.
 	xKeyTextInput autoAccept: true.
 	yKeyTextInput autoAccept: true.
 	shapeColorButton
@@ -83,10 +83,12 @@ DvtRTDataSettingsEditor >> initializeWidgets [
 	
 	self focusOrder
 		add: settingsDataTable;
+		add: nameTextInput;
 		add: xKeyTextInput;
 		add: yKeyTextInput;
 		add: shapeColorButton;
 		add: connectColorButton;
+		add: shapeTypeDropList;
 		add: addButton;
 		add: removeButton;
 		add: closeButton
@@ -94,15 +96,15 @@ DvtRTDataSettingsEditor >> initializeWidgets [
 
 { #category : #accessing }
 DvtRTDataSettingsEditor >> nameTextInput [
-	^ nameTextinput
+	^ nameTextInput
 ]
 
 { #category : #private }
 DvtRTDataSettingsEditor >> onAddButtonAction [
 	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
-	nameTextinput text ifEmpty: [ ^ self ].
+	nameTextInput text ifEmpty: [ ^ self ].
 	settings add: (DvtRTDataSetting new
-		name: nameTextinput text;
+		name: nameTextInput text;
 		xKey: xKeyTextInput text;
 		yKey: yKeyTextInput text;
 		shapeColor: shapeColorButton pickedColor;
@@ -114,7 +116,7 @@ DvtRTDataSettingsEditor >> onAddButtonAction [
 { #category : #private }
 DvtRTDataSettingsEditor >> onNameTextInputTextChanged [
 	| name |
-	name := nameTextinput text.
+	name := nameTextInput text.
 	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | s name ~= name ] ])
 ]
 
@@ -129,7 +131,7 @@ DvtRTDataSettingsEditor >> onRemoveButtonAction [
 DvtRTDataSettingsEditor >> onSettingSelected [
 	| setting |
 	setting := self selectedSetting.
-	nameTextinput text: setting name.
+	nameTextInput text: setting name.
 	xKeyTextInput text: setting xKey.
 	yKeyTextInput text: setting yKey.
 	shapeColorButton
@@ -143,7 +145,7 @@ DvtRTDataSettingsEditor >> onSettingSelected [
 
 { #category : #private }
 DvtRTDataSettingsEditor >> resetInputs [
-	nameTextinput text: String empty.
+	nameTextInput text: String empty.
 	xKeyTextInput text: String empty.
 	yKeyTextInput text: String empty.
 	shapeColorButton pickedColor: Color red.
@@ -154,7 +156,7 @@ DvtRTDataSettingsEditor >> resetInputs [
 { #category : #private }
 DvtRTDataSettingsEditor >> saveLastSelectedSetting [
 	| name |
-	(name := nameTextinput text) ifNotEmpty: [ 
+	(name := nameTextInput text) ifNotEmpty: [ 
 		lastSelectedSetting name: name
 	].
 	lastSelectedSetting
