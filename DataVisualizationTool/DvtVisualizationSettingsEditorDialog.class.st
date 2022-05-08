@@ -12,6 +12,18 @@ Class {
 	#category : #'DataVisualizationTool-Boundary'
 }
 
+{ #category : #'instance creation' }
+DvtVisualizationSettingsEditorDialog class >> open [
+	^ self openForSettings: OrderedCollection new
+]
+
+{ #category : #'instance creation' }
+DvtVisualizationSettingsEditorDialog class >> openForSettings: anOrderedCollectionOfDvtSettings [
+	^ self openDialogConfiguredAs: [ :dialog |
+		dialog settings: anOrderedCollectionOfDvtSettings
+	]
+]
+
 { #category : #accessing }
 DvtVisualizationSettingsEditorDialog >> addButton [
 	^ addButton

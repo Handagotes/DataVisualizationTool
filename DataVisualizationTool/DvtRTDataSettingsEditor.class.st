@@ -35,18 +35,6 @@ DvtRTDataSettingsEditor class >> defaultSpec [
 	]
 ]
 
-{ #category : #'instance creation' }
-DvtRTDataSettingsEditor class >> open [
-	^ self openForSettings: OrderedCollection new
-]
-
-{ #category : #'instance creation' }
-DvtRTDataSettingsEditor class >> openForSettings: anOrderedCollectionOfDvtRTDataSetting [
-	^ self openDialogConfiguredAs: [ :dialog |
-		dialog settings: anOrderedCollectionOfDvtRTDataSetting
-	]
-]
-
 { #category : #accessing }
 DvtRTDataSettingsEditor >> connectColorButton [
 	^ connectColorButton
