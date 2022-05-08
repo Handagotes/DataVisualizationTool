@@ -2,18 +2,12 @@ Class {
 	#name : #DvtRTDataSettingsEditor,
 	#superclass : #DvtVisualizationSettingsEditorDialog,
 	#instVars : [
-		'settingsDataTable',
 		'nameTextinput',
 		'xKeyTextInput',
 		'yKeyTextInput',
 		'shapeColorButton',
 		'connectColorButton',
-		'shapeTypeDropList',
-		'addButton',
-		'removeButton',
-		'closeButton',
-		'settings',
-		'lastSelectedSetting'
+		'shapeTypeDropList'
 	],
 	#category : #'DataVisualizationTool-Boundary'
 }
@@ -54,18 +48,13 @@ DvtRTDataSettingsEditor class >> openForSettings: anOrderedCollectionOfDvtRTData
 ]
 
 { #category : #accessing }
-DvtRTDataSettingsEditor >> addButton [
-	^ addButton
-]
-
-{ #category : #accessing }
-DvtRTDataSettingsEditor >> closeButton [
-	^ closeButton
-]
-
-{ #category : #accessing }
 DvtRTDataSettingsEditor >> connectColorButton [
 	^ connectColorButton
+]
+
+{ #category : #private }
+DvtRTDataSettingsEditor >> dvtDataSourceForSettings [
+	^ DvtRTDataSettingDataSource elements: settings
 ]
 
 { #category : #api }
@@ -75,28 +64,20 @@ DvtRTDataSettingsEditor >> extent [
 
 { #category : #initialization }
 DvtRTDataSettingsEditor >> initializePresenter [
-	settingsDataTable when: FTSelectionChanged do: [ self onSettingsDataTableSelectionChanged ].
-	nameTextinput whenTextChanged: [ self onNameTextInputTextChanged ].
-	addButton action: [ self onAddButtonAction ].
-	removeButton action: [ self onRemoveButtonAction ].
-	closeButton action: [ self onCloseButtonAction ].
-	self makeWindowUnresizeable
+	super initializePresenter.
+	nameTextinput whenTextChanged: [ self onNameTextInputTextChanged ]
 ]
 
 { #category : #initialization }
 DvtRTDataSettingsEditor >> initializeWidgets [
-	settingsDataTable := self newDataTable.
+	super initializeWidgets.
 	nameTextinput := self newTextInput.
 	xKeyTextInput := self newTextInput.
 	yKeyTextInput := self newTextInput.
 	shapeColorButton := self newColorPickerButton.
 	connectColorButton := self newColorPickerButton.
 	shapeTypeDropList := self newDropList.
-	addButton := self newButton.
-	removeButton := self newButton.
-	closeButton := self newButton.
 	
-	settingsDataTable widget beSingleSelection.
 	nameTextinput autoAccept: true.
 	xKeyTextInput autoAccept: true.
 	yKeyTextInput autoAccept: true.
@@ -109,13 +90,8 @@ DvtRTDataSettingsEditor >> initializeWidgets [
 	shapeTypeDropList
 		items: DvtRTDataSetting availableShapeTypes;
 		displayBlock: DvtRTDataSetting shapeTypeDisplayBlock.
-	addButton label:
-		'Добавить данные графика';
-		disable.
-	removeButton
-		label: 'Удалить данные графика';
-		disable.
-	closeButton label: 'Закрыть'.
+	addButton label: 'Добавить данные графика'; disable.
+	removeButton label: 'Удалить данные графика'.
 	
 	self focusOrder
 		add: settingsDataTable;
@@ -144,17 +120,7 @@ DvtRTDataSettingsEditor >> onAddButtonAction [
 		shapeColor: shapeColorButton pickedColor;
 		connectColor: connectColorButton pickedColor;
 		shapeType: shapeTypeDropList selectedItem;
-		yourself).
-	self
-		resetInputs;
-		updateSettingsDataTable
-]
-
-{ #category : #private }
-DvtRTDataSettingsEditor >> onCloseButtonAction [
-	self
-		saveLastSelectedSetting;
-		closeDialog: settings
+		yourself)
 ]
 
 { #category : #private }
@@ -168,27 +134,13 @@ DvtRTDataSettingsEditor >> onNameTextInputTextChanged [
 DvtRTDataSettingsEditor >> onRemoveButtonAction [
 	| setting |
 	(setting := self selectedSetting) ifNil: [ ^ self ].
-	settings remove: setting.
-	self
-		resetInputs;
-		updateSettingsDataTable.
-	settingsDataTable widget selectRowIndex: 0
+	settings remove: setting
 ]
 
 { #category : #private }
-DvtRTDataSettingsEditor >> onSettingsDataTableSelectionChanged [
+DvtRTDataSettingsEditor >> onSettingSelected [
 	| setting |
 	setting := self selectedSetting.
-	self saveLastSelectedSetting.
-	lastSelectedSetting := setting.
-	
-	setting ifNil: [ 
-		self resetInputs.
-		addButton enable.
-		removeButton disable.
-		^ self
-	].
-	
 	nameTextinput text: setting name.
 	xKeyTextInput text: setting xKey.
 	yKeyTextInput text: setting yKey.
@@ -198,14 +150,7 @@ DvtRTDataSettingsEditor >> onSettingsDataTableSelectionChanged [
 	connectColorButton
 		pickedColor: setting connectColor;
 		enable.
-	shapeTypeDropList setSelectedItem: setting shapeType.
-	addButton disable.
-	removeButton enable
-]
-
-{ #category : #accessing }
-DvtRTDataSettingsEditor >> removeButton [
-	^ removeButton
+	shapeTypeDropList setSelectedItem: setting shapeType
 ]
 
 { #category : #private }
@@ -221,7 +166,6 @@ DvtRTDataSettingsEditor >> resetInputs [
 { #category : #private }
 DvtRTDataSettingsEditor >> saveLastSelectedSetting [
 	| name |
-	lastSelectedSetting ifNil: [ ^ self ].
 	(name := nameTextinput text) ifNotEmpty: [ 
 		lastSelectedSetting name: name
 	].
@@ -233,37 +177,6 @@ DvtRTDataSettingsEditor >> saveLastSelectedSetting [
 		shapeType: shapeTypeDropList selectedItem
 ]
 
-{ #category : #private }
-DvtRTDataSettingsEditor >> selectedSetting [
-	| i |
-	(i := self selectedSettingIndex) isZero ifTrue: [ ^ nil ].
-	^ settingsDataTable widget dataSource elementAt: i
-]
-
-{ #category : #private }
-DvtRTDataSettingsEditor >> selectedSettingIndex [
-	^ settingsDataTable widget selectedRowIndex
-]
-
-{ #category : #accessing }
-DvtRTDataSettingsEditor >> settings [
-	^ settings
-]
-
-{ #category : #accessing }
-DvtRTDataSettingsEditor >> settings: anOrderedCollectionOfDvtRTDataSetting [
-	| dataSource |
-	settings := anOrderedCollectionOfDvtRTDataSetting.
-	dataSource := DvtRTDataSettingDataSource elements: settings.
-	dataSource addColumnsTo: settingsDataTable widget.
-	settingsDataTable widget dataSource: dataSource
-]
-
-{ #category : #accessing }
-DvtRTDataSettingsEditor >> settingsDataTable [
-	^ settingsDataTable
-]
-
 { #category : #accessing }
 DvtRTDataSettingsEditor >> shapeColorButton [
 	^ shapeColorButton
@@ -272,11 +185,6 @@ DvtRTDataSettingsEditor >> shapeColorButton [
 { #category : #accessing }
 DvtRTDataSettingsEditor >> shapeTypeDropList [
 	^ shapeTypeDropList
-]
-
-{ #category : #private }
-DvtRTDataSettingsEditor >> updateSettingsDataTable [
-	settingsDataTable widget refresh
 ]
 
 { #category : #accessing }
