@@ -48,6 +48,11 @@ DvtVisualizationEditor >> config: aDictionary [
 	config := aDictionary
 ]
 
+{ #category : #private }
+DvtVisualizationEditor >> createNormalizerLine [
+	^ 'normalizer := RTMultiLinearColorForIdentity new objects: sample; yourself.' , String cr
+]
+
 { #category : #api }
 DvtVisualizationEditor >> generateScript [
 	self subclassResponsibility

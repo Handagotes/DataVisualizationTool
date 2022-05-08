@@ -10,10 +10,11 @@ Class {
 
 { #category : #api }
 DvtRadarMetricSetting >> addMetricLine [
-	^ '{1} addMetric: [ :e | e at: {2} ] title: ''{3}''.' format: { 
+	^ '{1} addMetric: [ :e | e at: {2} ] title: ''{3}''.{4}' format: { 
 		variableName.
 		self class keyForString: key.
 		title.
+		String cr
 	}
 ]
 

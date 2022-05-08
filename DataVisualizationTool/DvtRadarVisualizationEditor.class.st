@@ -22,13 +22,30 @@ DvtRadarVisualizationEditor class >> defaultSpec [
 	yourself
 ]
 
+{ #category : #private }
+DvtRadarVisualizationEditor >> addLegendColorLine [
+	^ 'sample do: [ :e | legend addColor: (normalizer rtValue: e) text: (e at: {1}) ].' format: { self keyFor: #nameKeyText }
+]
+
 { #category : #api }
 DvtRadarVisualizationEditor >> generateScript [
 	^ String streamContents: [ :ws |
 		ws
-			nextPutAll: '| view |';
-			
-			nextPutAll: '^ view'
+			nextPutAll: '| radar sample normalizer legend |'; cr;
+			nextPutAll: 'radar := RTKiviatBuilder new.'; cr;
+			nextPutAll: self sampleLoadLine;
+			nextPutAll: 'radar objects: sample.'; cr;
+			nextPutAll: self createNormalizerLine;
+			nextPutAll: 'radar shape circle color: [ :e | n rtValue: e kiviatNode named ]; size: 5.'; cr.
+		radarMetricSettings do: [ :s | ws nextPutAll: s addMetricLine ].
+		ws
+			nextPutAll: 'radar activateAxisTitle; activatePolygons; build'; cr;
+			nextPutAll: 'legend := RTLegendBuilder new.'; cr;
+			nextPutAll: 'legend view: radar view.'; cr;
+			nextPutAll: 'legend right.'; cr;
+			nextPutAll: self addLegendColorLine;
+			nextPutAll: 'legend build.'; cr;
+			nextPutAll: '^ radar view'
 	]
 ]
 

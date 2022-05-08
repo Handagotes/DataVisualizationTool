@@ -31,8 +31,7 @@ DvtGrapherVisualizationEditor class >> defaultSpec [
 { #category : #api }
 DvtGrapherVisualizationEditor >> generateScript [
 	^ String streamContents: [ :ws |
-		ws
-			nextPutAll: '| grapher sample '.
+		ws nextPutAll: '| grapher sample '.
 		1 to: rtDataSettings size do: [ :i | ws nextPutAll: ('data{1} ' format: { i }) ].
 		ws
 			nextPut: $|; cr;
