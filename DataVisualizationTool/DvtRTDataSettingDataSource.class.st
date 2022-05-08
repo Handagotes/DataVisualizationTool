@@ -17,7 +17,7 @@ DvtRTDataSettingDataSource >> addColumnsTo: aTable [
 			id: 'Ключ Y';
 			yourself);
 		addColumn: (FTColumn new
-			id: 'Цвет точек';
+			id: 'Цвет вершин';
 			yourself);
 		addColumn: (FTColumn new
 			id: 'Цвет соединений';
@@ -34,7 +34,7 @@ DvtRTDataSettingDataSource >> cellColumn: column row: rowIndex [
 	column id = 'Имя' ifTrue: [ ^ (setting name) asStringMorph ].
 	column id = 'Ключ X' ifTrue: [ ^ (setting xKey) asStringMorph ].
 	column id = 'Ключ Y' ifTrue: [ ^ (setting yKey) asStringMorph ].
-	column id = 'Цвет точек' ifTrue: [ ^ (setting shapeColor) asHexString asStringMorph ].
+	column id = 'Цвет вершин' ifTrue: [ ^ (setting shapeColor) asHexString asStringMorph ].
 	column id = 'Цвет соединений' ifTrue: [ ^ (setting connectColor) asHexString asStringMorph ].
 	column id = 'Форма вершин' ifTrue: [ ^ (setting shapeTypeForUser) asStringMorph ]
 ]

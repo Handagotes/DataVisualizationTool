@@ -70,7 +70,7 @@ DvtRTDataTableEditor >> connectColorButton [
 
 { #category : #api }
 DvtRTDataTableEditor >> extent [
-	^ 700 @ 300
+	^ 780 @ 300
 ]
 
 { #category : #initialization }
@@ -101,7 +101,7 @@ DvtRTDataTableEditor >> initializeWidgets [
 	xKeyTextInput autoAccept: true.
 	yKeyTextInput autoAccept: true.
 	shapeColorButton
-		label: 'Цвет точек';
+		label: 'Цвет вершин';
 		pickedColor: Color red.
 	connectColorButton
 		label: 'Цвет соединений';
