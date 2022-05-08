@@ -21,7 +21,7 @@ DvtGrapherVisualizationEditor class >> defaultSpec [
 					add: #yTitleTextLabel width: 150;
 					add: #yTitleText
 			] height: self buttonHeight;
-			add: #editRTDataTableButton height: self buttonHeight;
+			add: #editRTDataSettingsButton height: self buttonHeight;
 			add: #legendCheckBox height: self buttonHeight;
 			add: #newNullPresenter
 	];
@@ -61,17 +61,17 @@ DvtGrapherVisualizationEditor >> generateScript [
 
 { #category : #initialization }
 DvtGrapherVisualizationEditor >> initializePresenter [
-	(widgets at: #editRTDataTableButton) action: [ self onEditRTDataTableButton ]
+	(widgets at: #editRTDataSettingsButton) action: [ self onEditRTDataSettingsButton ]
 ]
 
 { #category : #initialization }
 DvtGrapherVisualizationEditor >> initializeWidgets [
 	self
-		instantiatePresenters: { #editRTDataTableButton. #ButtonPresenter };
+		instantiatePresenters: { #editRTDataSettingsButton. #ButtonPresenter };
 		addTextInput: #xTitleText label: 'Название оси абсцисс:';
 		addTextInput: #yTitleText label: 'Название оси ординат:';
 		addCheckBox: #legendCheckBox label: 'Добавить легенду' checked: false.
-	(widgets at: #editRTDataTableButton) label: 'Редактировать данные графика'
+	(widgets at: #editRTDataSettingsButton) label: 'Редактировать данные графика'
 ]
 
 { #category : #private }
@@ -100,7 +100,7 @@ DvtGrapherVisualizationEditor >> loadConfigToWidgets [
 ]
 
 { #category : #private }
-DvtGrapherVisualizationEditor >> onEditRTDataTableButton [
+DvtGrapherVisualizationEditor >> onEditRTDataSettingsButton [
 	DvtRTDataSettingsEditor openForSettings: rtDataSettings
 ]
 

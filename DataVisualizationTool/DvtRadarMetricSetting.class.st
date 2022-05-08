@@ -19,7 +19,7 @@ DvtRadarMetricSetting >> addMetricLine [
 
 { #category : #api }
 DvtRadarMetricSetting >> createLine [
-	^ '{1} := RTKiviatBuilder new.{2}' format: { variableName. String cr }
+	^ self addMetricLine
 ]
 
 { #category : #accessing }
