@@ -35,41 +35,20 @@ DvtVisualizationSettingsEditorDialog >> closeButton [
 ]
 
 { #category : #private }
+DvtVisualizationSettingsEditorDialog >> createSettingFromInputs [
+	self subclassResponsibility
+]
+
+{ #category : #private }
 DvtVisualizationSettingsEditorDialog >> dvtDataSourceForSettings [
 	self subclassResponsibility
 ]
 
 { #category : #initialization }
 DvtVisualizationSettingsEditorDialog >> initializePresenter [
-	settingsDataTable when: FTSelectionChanged do: [ | setting |
-		setting := self selectedSetting.
-		setting == lastSelectedSetting ifFalse: [ 
-			lastSelectedSetting ifNotNil: [ self saveLastSelectedSetting ].
-			lastSelectedSetting := setting
-		].
-		setting ifNil: [ 
-			self resetInputs.
-			addButton enable.
-			removeButton disable
-		] ifNotNil: [ 
-			self onSettingSelected.
-			addButton disable.
-			removeButton enable
-		]
-	].
-	addButton action: [ 
-		self
-			onAddButtonAction
-			resetInputs;
-			updateSettingsDataTable
-	].
-	removeButton action: [ 
-		self
-			onRemoveButtonAction
-			resetInputs;
-			updateSettingsDataTable.
-			settingsDataTable widget selectRowIndex: 0
-	].
+	settingsDataTable when: FTSelectionChanged do: [ self onSettingsDataTableSelectionChanged ].
+	addButton action: [ self onAddButtonAction ].
+	removeButton action: [ self onRemoveButtonAction ].
 	closeButton action: [ self onCloseButtonAction ].
 	self makeWindowUnresizeable
 ]
@@ -92,7 +71,13 @@ DvtVisualizationSettingsEditorDialog >> initializeWidgets [
 
 { #category : #private }
 DvtVisualizationSettingsEditorDialog >> onAddButtonAction [
-	self subclassResponsibility
+	| setting |
+	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
+	(setting := self createSettingFromInputs) ifNil: [ ^ self ].
+	settings add: setting.
+	self
+		resetInputs;
+		updateSettingsDataTable
 ]
 
 { #category : #private }
@@ -103,12 +88,37 @@ DvtVisualizationSettingsEditorDialog >> onCloseButtonAction [
 
 { #category : #private }
 DvtVisualizationSettingsEditorDialog >> onRemoveButtonAction [
-	self subclassResponsibility
+	| setting |
+	(setting := self selectedSetting) ifNil: [ ^ self ].
+	settings remove: setting.
+	self
+		resetInputs;
+		updateSettingsDataTable.
+		settingsDataTable widget selectRowIndex: 0
 ]
 
 { #category : #private }
 DvtVisualizationSettingsEditorDialog >> onSettingSelected [
 	self subclassResponsibility
+]
+
+{ #category : #private }
+DvtVisualizationSettingsEditorDialog >> onSettingsDataTableSelectionChanged [
+	| setting |
+	setting := self selectedSetting.
+	setting == lastSelectedSetting ifFalse: [ 
+		lastSelectedSetting ifNotNil: [ self saveLastSelectedSetting ].
+		lastSelectedSetting := setting
+	].
+	setting ifNil: [ 
+		self resetInputs.
+		addButton enable.
+		removeButton disable
+	] ifNotNil: [ 
+		self onSettingSelected.
+		addButton disable.
+		removeButton enable
+	]
 ]
 
 { #category : #accessing }

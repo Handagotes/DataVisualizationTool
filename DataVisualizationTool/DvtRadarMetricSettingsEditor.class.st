@@ -28,6 +28,14 @@ DvtRadarMetricSettingsEditor class >> defaultSpec [
 ]
 
 { #category : #private }
+DvtRadarMetricSettingsEditor >> createSettingFromInputs [
+	^ DvtRadarMetricSetting new
+		title: titleTextInput text;
+		key: keyTextInput text
+		yourself
+]
+
+{ #category : #private }
 DvtRadarMetricSettingsEditor >> dvtDataSourceForSettings [
 	^ DvtRadarMetricSettingDataSource elements: settings
 ]
@@ -47,15 +55,6 @@ DvtRadarMetricSettingsEditor >> initializeWidgets [
 		add: addButton;
 		add: removeButton;
 		add: closeButton
-]
-
-{ #category : #private }
-DvtRadarMetricSettingsEditor >> onAddButtonAction [
-	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
-	settings add: (DvtRadarMetricSetting new
-		title: titleTextInput text;
-		key: keyTextInput text
-		yourself)
 ]
 
 { #category : #initialization }

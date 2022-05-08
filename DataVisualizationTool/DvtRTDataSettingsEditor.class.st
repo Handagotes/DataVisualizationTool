@@ -41,6 +41,19 @@ DvtRTDataSettingsEditor >> connectColorButton [
 ]
 
 { #category : #private }
+DvtRTDataSettingsEditor >> createSettingFromInputs [
+	nameTextInput text ifEmpty: [ ^ nil ].
+	^ DvtRTDataSetting new
+		name: nameTextInput text;
+		xKey: xKeyTextInput text;
+		yKey: yKeyTextInput text;
+		shapeColor: shapeColorButton pickedColor;
+		connectColor: connectColorButton pickedColor;
+		shapeType: shapeTypeDropList selectedItem;
+		yourself
+]
+
+{ #category : #private }
 DvtRTDataSettingsEditor >> dvtDataSourceForSettings [
 	^ DvtRTDataSettingDataSource elements: settings
 ]
@@ -100,31 +113,10 @@ DvtRTDataSettingsEditor >> nameTextInput [
 ]
 
 { #category : #private }
-DvtRTDataSettingsEditor >> onAddButtonAction [
-	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
-	nameTextInput text ifEmpty: [ ^ self ].
-	settings add: (DvtRTDataSetting new
-		name: nameTextInput text;
-		xKey: xKeyTextInput text;
-		yKey: yKeyTextInput text;
-		shapeColor: shapeColorButton pickedColor;
-		connectColor: connectColorButton pickedColor;
-		shapeType: shapeTypeDropList selectedItem;
-		yourself)
-]
-
-{ #category : #private }
 DvtRTDataSettingsEditor >> onNameTextInputTextChanged [
 	| name |
 	name := nameTextInput text.
 	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | s name ~= name ] ])
-]
-
-{ #category : #private }
-DvtRTDataSettingsEditor >> onRemoveButtonAction [
-	| setting |
-	(setting := self selectedSetting) ifNil: [ ^ self ].
-	settings remove: setting
 ]
 
 { #category : #private }
