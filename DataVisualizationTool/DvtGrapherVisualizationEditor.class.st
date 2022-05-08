@@ -101,7 +101,7 @@ DvtGrapherVisualizationEditor >> loadConfigToWidgets [
 
 { #category : #private }
 DvtGrapherVisualizationEditor >> onEditRTDataTableButton [
-	DvtRTDataTableEditor openForSettings: rtDataSettings
+	DvtRTDataSettingsEditor openForSettings: rtDataSettings
 ]
 
 { #category : #api }

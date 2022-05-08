@@ -1,6 +1,6 @@
 Class {
-	#name : #DvtRTDataTableEditor,
-	#superclass : #DvtDialog,
+	#name : #DvtRTDataSettingsEditor,
+	#superclass : #DvtVisualizationSettingsEditorDialog,
 	#instVars : [
 		'settingsDataTable',
 		'nameTextinput',
@@ -19,7 +19,7 @@ Class {
 }
 
 { #category : #specs }
-DvtRTDataTableEditor class >> defaultSpec [
+DvtRTDataSettingsEditor class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
 		column
 			add: #settingsDataTable;
@@ -42,39 +42,39 @@ DvtRTDataTableEditor class >> defaultSpec [
 ]
 
 { #category : #'instance creation' }
-DvtRTDataTableEditor class >> open [
+DvtRTDataSettingsEditor class >> open [
 	^ self openForSettings: OrderedCollection new
 ]
 
 { #category : #'instance creation' }
-DvtRTDataTableEditor class >> openForSettings: anOrderedCollectionOfDvtRTDataSetting [
+DvtRTDataSettingsEditor class >> openForSettings: anOrderedCollectionOfDvtRTDataSetting [
 	^ self openDialogConfiguredAs: [ :dialog |
 		dialog settings: anOrderedCollectionOfDvtRTDataSetting
 	]
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> addButton [
+DvtRTDataSettingsEditor >> addButton [
 	^ addButton
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> closeButton [
+DvtRTDataSettingsEditor >> closeButton [
 	^ closeButton
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> connectColorButton [
+DvtRTDataSettingsEditor >> connectColorButton [
 	^ connectColorButton
 ]
 
 { #category : #api }
-DvtRTDataTableEditor >> extent [
+DvtRTDataSettingsEditor >> extent [
 	^ 780 @ 300
 ]
 
 { #category : #initialization }
-DvtRTDataTableEditor >> initializePresenter [
+DvtRTDataSettingsEditor >> initializePresenter [
 	settingsDataTable when: FTSelectionChanged do: [ self onSettingsDataTableSelectionChanged ].
 	nameTextinput whenTextChanged: [ self onNameTextInputTextChanged ].
 	addButton action: [ self onAddButtonAction ].
@@ -84,7 +84,7 @@ DvtRTDataTableEditor >> initializePresenter [
 ]
 
 { #category : #initialization }
-DvtRTDataTableEditor >> initializeWidgets [
+DvtRTDataSettingsEditor >> initializeWidgets [
 	settingsDataTable := self newDataTable.
 	nameTextinput := self newTextInput.
 	xKeyTextInput := self newTextInput.
@@ -129,12 +129,12 @@ DvtRTDataTableEditor >> initializeWidgets [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> nameTextInput [
+DvtRTDataSettingsEditor >> nameTextInput [
 	^ nameTextinput
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onAddButtonAction [
+DvtRTDataSettingsEditor >> onAddButtonAction [
 	self selectedSettingIndex > 0 ifTrue: [ ^ self ].
 	nameTextinput text ifEmpty: [ ^ self ].
 	settings add: (DvtRTDataSetting new
@@ -151,21 +151,21 @@ DvtRTDataTableEditor >> onAddButtonAction [
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onCloseButtonAction [
+DvtRTDataSettingsEditor >> onCloseButtonAction [
 	self
 		saveLastSelectedSetting;
 		closeDialog: settings
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onNameTextInputTextChanged [
+DvtRTDataSettingsEditor >> onNameTextInputTextChanged [
 	| name |
 	name := nameTextinput text.
 	addButton enabled: (name isNotEmpty and: [ settings allSatisfy: [ :s | s name ~= name ] ])
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onRemoveButtonAction [
+DvtRTDataSettingsEditor >> onRemoveButtonAction [
 	| setting |
 	(setting := self selectedSetting) ifNil: [ ^ self ].
 	settings remove: setting.
@@ -176,7 +176,7 @@ DvtRTDataTableEditor >> onRemoveButtonAction [
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
+DvtRTDataSettingsEditor >> onSettingsDataTableSelectionChanged [
 	| setting |
 	setting := self selectedSetting.
 	self saveLastSelectedSetting.
@@ -204,12 +204,12 @@ DvtRTDataTableEditor >> onSettingsDataTableSelectionChanged [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> removeButton [
+DvtRTDataSettingsEditor >> removeButton [
 	^ removeButton
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> resetInputs [
+DvtRTDataSettingsEditor >> resetInputs [
 	nameTextinput text: String empty.
 	xKeyTextInput text: String empty.
 	yKeyTextInput text: String empty.
@@ -219,7 +219,7 @@ DvtRTDataTableEditor >> resetInputs [
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> saveLastSelectedSetting [
+DvtRTDataSettingsEditor >> saveLastSelectedSetting [
 	| name |
 	lastSelectedSetting ifNil: [ ^ self ].
 	(name := nameTextinput text) ifNotEmpty: [ 
@@ -234,24 +234,24 @@ DvtRTDataTableEditor >> saveLastSelectedSetting [
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> selectedSetting [
+DvtRTDataSettingsEditor >> selectedSetting [
 	| i |
 	(i := self selectedSettingIndex) isZero ifTrue: [ ^ nil ].
 	^ settingsDataTable widget dataSource elementAt: i
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> selectedSettingIndex [
+DvtRTDataSettingsEditor >> selectedSettingIndex [
 	^ settingsDataTable widget selectedRowIndex
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> settings [
+DvtRTDataSettingsEditor >> settings [
 	^ settings
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> settings: anOrderedCollectionOfDvtRTDataSetting [
+DvtRTDataSettingsEditor >> settings: anOrderedCollectionOfDvtRTDataSetting [
 	| dataSource |
 	settings := anOrderedCollectionOfDvtRTDataSetting.
 	dataSource := DvtRTDataSettingDataSource elements: settings.
@@ -260,31 +260,31 @@ DvtRTDataTableEditor >> settings: anOrderedCollectionOfDvtRTDataSetting [
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> settingsDataTable [
+DvtRTDataSettingsEditor >> settingsDataTable [
 	^ settingsDataTable
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> shapeColorButton [
+DvtRTDataSettingsEditor >> shapeColorButton [
 	^ shapeColorButton
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> shapeTypeDropList [
+DvtRTDataSettingsEditor >> shapeTypeDropList [
 	^ shapeTypeDropList
 ]
 
 { #category : #private }
-DvtRTDataTableEditor >> updateSettingsDataTable [
+DvtRTDataSettingsEditor >> updateSettingsDataTable [
 	settingsDataTable widget refresh
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> xKeyTextInput [
+DvtRTDataSettingsEditor >> xKeyTextInput [
 	^ xKeyTextInput
 ]
 
 { #category : #accessing }
-DvtRTDataTableEditor >> yKeyTextInput [
+DvtRTDataSettingsEditor >> yKeyTextInput [
 	^ yKeyTextInput
 ]
