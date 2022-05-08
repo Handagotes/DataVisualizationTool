@@ -60,7 +60,7 @@ DvtGrapherVisualizationEditor >> generateScript [
 
 { #category : #initialization }
 DvtGrapherVisualizationEditor >> initializePresenter [
-	(widgets at: #editRTDataSettingsButton) action: [ self onEditRTDataSettingsButton ]
+	(widgets at: #editRTDataSettingsButton) action: [ self onEditRTDataSettingsButtonAction ]
 ]
 
 { #category : #initialization }
@@ -99,7 +99,7 @@ DvtGrapherVisualizationEditor >> loadConfigToWidgets [
 ]
 
 { #category : #private }
-DvtGrapherVisualizationEditor >> onEditRTDataSettingsButton [
+DvtGrapherVisualizationEditor >> onEditRTDataSettingsButtonAction [
 	DvtRTDataSettingsEditor openForSettings: rtDataSettings
 ]
 

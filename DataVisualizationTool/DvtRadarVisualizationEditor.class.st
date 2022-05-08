@@ -50,6 +50,11 @@ DvtRadarVisualizationEditor >> generateScript [
 ]
 
 { #category : #initialization }
+DvtRadarVisualizationEditor >> initializePresenter [
+	(widgets at: #editRadarMetricSettingsButton) action: [ self onEditRadarMetricSettingsButtonAction ]
+]
+
+{ #category : #initialization }
 DvtRadarVisualizationEditor >> initializeWidgets [
 	self
 		addTextInput: #nameKeyText label: 'Ключ названия:';
@@ -59,7 +64,7 @@ DvtRadarVisualizationEditor >> initializeWidgets [
 
 { #category : #private }
 DvtRadarVisualizationEditor >> loadConfigToWidgets [
-	(widgets at: #nameKeyText) text: (config at: #sliceKeyText ifAbsentPut: [ '' ]).
+	(widgets at: #nameKeyText) text: (config at: #nameKeyText ifAbsentPut: [ '' ]).
 	radarMetricSettings := config at: #radarMetricSettings ifAbsentPut: [ OrderedCollection new ].
 	radarMetricSettings withIndexDo: [ :s :i |
 		radarMetricSettings at: i put: (DvtRadarMetricSetting new
@@ -67,6 +72,11 @@ DvtRadarVisualizationEditor >> loadConfigToWidgets [
 			key: (s at: #key ifAbsent: [ '' ]);
 			yourself)
 	]
+]
+
+{ #category : #private }
+DvtRadarVisualizationEditor >> onEditRadarMetricSettingsButtonAction [
+	DvtRadarMetricSettingsEditor openForSettings: radarMetricSettings
 ]
 
 { #category : #api }
