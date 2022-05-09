@@ -22,14 +22,6 @@ DvtRadarVisualizationEditor class >> defaultSpec [
 	yourself
 ]
 
-{ #category : #private }
-DvtRadarVisualizationEditor >> addLegendColorLine [
-	^ 'sample do: [ :e | legend addColor: (normalizer rtValue: e) text: (e at: {1}) ].{2}' format: { 
-		self keyFor: #nameKeyText.
-		String cr
-	}
-]
-
 { #category : #api }
 DvtRadarVisualizationEditor >> generateScript [
 	^ String streamContents: [ :ws |
@@ -46,10 +38,7 @@ DvtRadarVisualizationEditor >> generateScript [
 		].
 		ws
 			nextPutAll: 'radar activateAxisTitle; activatePolygons; build.'; cr;
-			nextPutAll: 'legend := RTLegendBuilder new.'; cr;
-			nextPutAll: 'legend view: radar view.'; cr;
-			nextPutAll: self addLegendColorLine;
-			nextPutAll: 'legend build.'; cr;
+			nextPutAll: self legendLines;
 			nextPutAll: '^ radar view'
 	]
 ]
@@ -65,6 +54,20 @@ DvtRadarVisualizationEditor >> initializeWidgets [
 		addTextInput: #nameKeyText label: 'Ключ названия:';
 		instantiatePresenters: { #editRadarMetricSettingsButton. #ButtonPresenter }.
 	(widgets at: #editRadarMetricSettingsButton) label: 'Редактировать метрики'.
+]
+
+{ #category : #private }
+DvtRadarVisualizationEditor >> legendLines [
+	| nameKey |
+	(nameKey := self keyFor: #nameKeyText) ifEmpty: [ ^ String empty ].
+	^ String streamContents: [ :ws |
+		ws
+			nextPutAll: 'legend := RTLegendBuilder new.'; cr;
+			nextPutAll: 'legend view: radar view.'; cr;
+			nextPutAll: 'sample do: [ :e | legend addColor: (normalizer rtValue: e) text: (e at: ';
+			nextPutAll: nameKey; nextPutAll: ') ].'; cr;
+			nextPutAll: 'legend build.'; cr
+	]
 ]
 
 { #category : #private }
