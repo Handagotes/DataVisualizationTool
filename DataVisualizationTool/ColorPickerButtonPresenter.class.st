@@ -11,16 +11,17 @@ Class {
 ColorPickerButtonPresenter >> initialize [
 	super initialize.
 	colorIcon := Color white asFormOfExtent: 16 @ 16.
-	self icon: colorIcon.
-	self action: [ | picker topWindow |
-		picker := ColorSelectorDialogWindow new.
-		topWindow := SystemWindow topWindow.
-		picker selectedColor: self pickedColor.
-		topWindow modalLockTo: picker.
-		picker openModal.
-		topWindow modalUnlockFrom: picker.
-		picker cancelled ifFalse: [ self pickedColor: picker selectedColor ]
-	]
+	self
+		icon: colorIcon;
+		action: [ | picker topWindow |
+			picker := ColorSelectorDialogWindow new.
+			topWindow := SystemWindow topWindow.
+			picker selectedColor: self pickedColor.
+			topWindow modalLockTo: picker.
+			picker openModal.
+			topWindow modalUnlockFrom: picker.
+			picker cancelled ifFalse: [ self pickedColor: picker selectedColor ]
+		]
 ]
 
 { #category : #accessing }
