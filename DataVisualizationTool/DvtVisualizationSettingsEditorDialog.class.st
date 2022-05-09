@@ -126,7 +126,7 @@ DvtVisualizationSettingsEditorDialog >> removeButton [
 	^ removeButton
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 DvtVisualizationSettingsEditorDialog >> resetInputs [
 	self subclassResponsibility
 ]

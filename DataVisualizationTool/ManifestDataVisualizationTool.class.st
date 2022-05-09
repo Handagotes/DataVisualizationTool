@@ -19,7 +19,7 @@ ManifestDataVisualizationTool class >> ruleGRVariableAssignedLiteralRuleV1FalseP
 
 { #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleLiteralArrayContainsSuspiciousTrueFalseOrNilRuleV1FalsePositive [
-	^ #(#(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #canValue:beConvertedToType: #true)) #'2022-05-02T11:58:00.366928+05:00') #(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #resolveTypeForValueString: #true)) #'2022-05-02T11:58:00.366928+05:00') )
+	^ #(#(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #canValue:beConvertedToType: #true)) #'2022-05-02T11:58:00.366928+05:00') #(#(#RGMethodDefinition #(#'DvtDataTablePresenter class' #resolveTypeForValueString: #true)) #'2022-05-02T11:58:00.366928+05:00') #(#(#RGMethodDefinition #(#'DvtDataTableProcessor class' #resolveTypeForValueString: #true)) #'2022-05-09T12:26:38.952648+05:00') #(#(#RGMethodDefinition #(#'DvtDataTableProcessor class' #canValue:beConvertedToType: #true)) #'2022-05-09T12:26:38.952648+05:00') )
 ]
 
 { #category : #'code-critics' }
@@ -55,6 +55,16 @@ ManifestDataVisualizationTool class >> ruleRTInvocationSequenceRuleV1FalsePositi
 { #category : #'code-critics' }
 ManifestDataVisualizationTool class >> ruleRefersToClassRuleV1FalsePositive [
 	^ #(#(#(#RGMethodDefinition #(#'DvtSingleton class' #initialize #true)) #'2022-04-22T23:52:20.829938+05:00') #(#(#RGMethodDefinition #(#'DvtSingleton class' #removeAll #true)) #'2022-04-22T23:52:20.829938+05:00') )
+]
+
+{ #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleTempsReadBeforeWrittenRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#DvtVisualizationEditor #generateView #false)) #'2022-05-09T12:26:38.130648+05:00') )
+]
+
+{ #category : #'code-critics' }
+ManifestDataVisualizationTool class >> ruleToDoWithIncrementRuleV1FalsePositive [
+	^ #(#(#(#RGMethodDefinition #(#DataGridPresenter #updateCells #false)) #'2022-05-09T12:26:38.709648+05:00') )
 ]
 
 { #category : #'code-critics' }

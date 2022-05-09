@@ -75,7 +75,7 @@ DvtRadarMetricSettingsEditor >> onSettingSelected [
 	keyTextInput text: setting key
 ]
 
-{ #category : #initialization }
+{ #category : #private }
 DvtRadarMetricSettingsEditor >> resetInputs [
 	titleTextInput text: String empty.
 	keyTextInput text: String empty
