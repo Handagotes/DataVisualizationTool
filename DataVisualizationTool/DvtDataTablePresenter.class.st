@@ -2,6 +2,7 @@ Class {
 	#name : #DvtDataTablePresenter,
 	#superclass : #ComposablePresenter,
 	#instVars : [
+		'pathLabel',
 		'dataGrid',
 		'goBackButton',
 		'selectRowsButton',
@@ -11,6 +12,7 @@ Class {
 		'node',
 		'processor',
 		'parentStack',
+		'pathsKeysList',
 		'allowCellEdit',
 		'cellEditedBlock'
 	],
@@ -30,6 +32,7 @@ DvtDataTablePresenter class >> cellTextColorForValue: value [
 DvtDataTablePresenter class >> defaultSpec [
 	^ SpecLayout composed newColumn: [ :column |
 		column
+			add: #pathLabel height: self labelHeight;
 			add: #dataGrid;
 			newRow: [ :row |
 				row
@@ -62,6 +65,7 @@ DvtDataTablePresenter >> data: aCollectionOfCollections [
 	data = aCollectionOfCollections ifTrue: [ ^ self ].
 	data := aCollectionOfCollections.
 	parentStack removeAll.
+	pathsKeysList removeAll. 
 	self node: data
 ]
 
@@ -109,6 +113,7 @@ DvtDataTablePresenter >> initialize [
 	data := nil.
 	node := nil.
 	parentStack := Stack new.
+	pathsKeysList := LinkedList new.
 	allowCellEdit := false.
 ]
 
@@ -129,6 +134,7 @@ DvtDataTablePresenter >> initializeDataGrid [
 		whenCellDoubleClicked: [ :value :coord |
 			(DvtDataTableProcessor isNode: value) ifTrue: [ 
 				parentStack push: node.
+				pathsKeysList addLast: (dataGrid keysForCellCoord: coord).
 				self node: value
 			] ifFalse: [ 
 				self editCellAt: coord value: value
@@ -156,6 +162,7 @@ DvtDataTablePresenter >> initializePresenter [
 { #category : #initialization }
 DvtDataTablePresenter >> initializeWidgets [
 	self initializeDataGrid.
+	pathLabel := self newLabel.
 	goBackButton := self newButton.
 	selectColumnsButton := self newButton.
 	selectRowsButton := self newButton.
@@ -205,6 +212,8 @@ DvtDataTablePresenter >> node [
 DvtDataTablePresenter >> node: aNode [
 	node := aNode.
 	
+	self updatePathLabel.
+	
 	node ifNil: [ 
 		dataGrid reset.
 		^ self
@@ -234,6 +243,7 @@ DvtDataTablePresenter >> node: aNode [
 { #category : #private }
 DvtDataTablePresenter >> onGoBackButtonAction [
 	parentStack ifEmpty: [ ^ self ].
+	pathsKeysList removeLast.
 	self node: parentStack pop
 ]
 
@@ -258,6 +268,11 @@ DvtDataTablePresenter >> onSelectRowsButtonAction [
 { #category : #private }
 DvtDataTablePresenter >> onTransposeCheckBoxStateChanged [
 	self updateNode
+]
+
+{ #category : #accessing }
+DvtDataTablePresenter >> pathLabel [
+	^ pathLabel
 ]
 
 { #category : #api }
@@ -302,6 +317,18 @@ DvtDataTablePresenter >> tryConvertCellValueAt: coord toType: type [
 { #category : #updating }
 DvtDataTablePresenter >> updateNode [
 	self node: node
+]
+
+{ #category : #private }
+DvtDataTablePresenter >> updatePathLabel [
+	pathsKeysList ifEmpty: [ ^ pathLabel label: '' ].
+	pathLabel label: (String streamContents: [ :ws | | last |
+		last := pathsKeysList last.
+		pathsKeysList do: [ :keys |
+			ws << (', ' join: keys).
+			keys == last ifFalse: [ ws << ' -> ' ]
+		]
+	])
 ]
 
 { #category : #enumerating }
