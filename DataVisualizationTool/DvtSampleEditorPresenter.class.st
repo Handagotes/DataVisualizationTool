@@ -300,7 +300,8 @@ DvtSampleEditorPresenter >> onCreateSampleButtonAction [
 			} asDictionary at: rootNodeType)
 		].
 	
-	self updateSampleDropList
+	self updateSampleDropList.
+	DvtApp updateVisualizerSampleDropList
 ]
 
 { #category : #private }
@@ -325,7 +326,8 @@ DvtSampleEditorPresenter >> onDeleteSampleButtonAction [
 	(DvtYesNoDialog open: ('Выборка "{1}" и её визуализации будут удалёны из базы данных и из файловой системы. Продолжить?' format: { sample name })) ifFalse: [ ^ self ].
 	DvtAppDB deleteSample: sample.
 	(DvtApp sampleFileRefFor: sample) delete.
-	self updateSampleDropList
+	self updateSampleDropList.
+	DvtApp updateVisualizerSampleDropList
 ]
 
 { #category : #private }

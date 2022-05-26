@@ -79,6 +79,11 @@ DvtApplicationController >> folderRoot [
 	^ 'data visualization tool/'
 ]
 
+{ #category : #private }
+DvtApplicationController >> ifPresenterExists: presenterClass do: aBlock [
+	appPresenters detect: [ :p | p class = presenterClass ] ifFound: [ :p | aBlock value: p ]
+]
+
 { #category : #initialization }
 DvtApplicationController >> initialize [
 	launcher := nil.
@@ -102,8 +107,8 @@ DvtApplicationController >> onAppPresenterClosed: presenter [
 
 { #category : #private }
 DvtApplicationController >> openAppPresenter: presenterClass [
+	self ifPresenterExists: presenterClass do: [ :p | p window flash. ^ self ].
 	appPresenters
-		detect: [ :p | p class = presenterClass ] ifFound: [ :p | p window flash. ^ self ];
 		ifEmpty: [ DvtAppDB openConnection ];
 		add: (presenterClass new
 			openWithSpec;
@@ -133,6 +138,21 @@ DvtApplicationController >> sampleFileRefFor: sample [
 { #category : #api }
 DvtApplicationController >> samplesFolder [
 	^ self folderRoot , 'samples/'
+]
+
+{ #category : #private }
+DvtApplicationController >> updateSampleEditorDataSetDropList [
+	self ifPresenterExists: DvtSampleEditorPresenter do: [ :p | p updateDataSetDropList ]
+]
+
+{ #category : #private }
+DvtApplicationController >> updateSampleEditorRequestDropList [
+	self ifPresenterExists: DvtSampleEditorPresenter do: [ :p | p updateRequestDropList ]
+]
+
+{ #category : #private }
+DvtApplicationController >> updateVisualizerSampleDropList [
+	self ifPresenterExists: DvtVisualizerPresenter do: [ :p | p updateSampleDropList ]
 ]
 
 { #category : #versions }

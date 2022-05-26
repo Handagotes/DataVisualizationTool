@@ -103,7 +103,11 @@ DvtDataFetcherPresenter >> editRequest: r headerFields: hfs create: shouldCreate
 			shouldCreate
 				ifTrue: [ DvtAppDB insertRequest: request headerFields: headerFields ]
 				ifFalse: [ DvtAppDB updateRequest: request headerFields: headerFields ].
-			^ self updateRequestDropList
+			self updateRequestDropList.
+			shouldCreate ifTrue: [ 
+				DvtApp updateSampleEditorRequestDropList.
+			].
+			^ self
 		] on: SQLite3ConstraintViolation do: [ 
 			DvtErrorDialog open: ('Запрос с именем "{1}" уже существует.' format: { request name }).
 			false
@@ -198,7 +202,8 @@ DvtDataFetcherPresenter >> onDeleteDataSetButtonAction [
 	dataSet := dataSetDropList selectedItem.
 	DvtAppDB deleteDataSet: dataSet.
 	(DvtApp dataSetFileRefFor: dataSet) delete.
-	self updateDataSetDropList
+	self updateDataSetDropList.
+	DvtApp updateSampleEditorDataSetDropList
 ]
 
 { #category : #private }
@@ -211,7 +216,8 @@ DvtDataFetcherPresenter >> onDeleteRequestButtonAction [
 	('{1}{2}/' format: { DvtApp dataSetsFolder. request name }) asFileReference ensureDeleteAll.
 	self
 		updateRequestDropList;
-		updateDataSetDropList
+		updateDataSetDropList.
+	DvtApp updateSampleEditorRequestDropList
 ]
 
 { #category : #private }
@@ -302,7 +308,8 @@ DvtDataFetcherPresenter >> processNewDataSet: dataString [
 			ws nextPutAll: dataString
 		].
 	
-	self updateDataSetDropList
+	self updateDataSetDropList.
+	DvtApp updateSampleEditorDataSetDropList
 ]
 
 { #category : #accessing }
