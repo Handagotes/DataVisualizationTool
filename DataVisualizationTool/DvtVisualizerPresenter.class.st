@@ -51,13 +51,12 @@ DvtVisualizerPresenter class >> defaultSpec [
 DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
 	^ DvtDropListDialog
 		open: 'Выберите тип визуализации'
-		items: #(graph pieChart radar tree)
+		items: #(graph pieChart radar)
 		displayBlock: [ :option | 
 			{
 				#graph -> 'График'.
 				#pieChart -> 'Круговая диаграмма'.
 				#radar -> 'Радиальная диаграмма'.
-				#tree -> 'Дерево'.
 			} asDictionary at: option
 		]
 		descriptionBlock: [ :option |
@@ -65,7 +64,6 @@ DvtVisualizerPresenter class >> openPickVisualizationTypeDialog [
 				#graph -> 'График зависимости одного значения от другого.'.
 				#pieChart -> 'Секторная диаграмма, отображающая доли величин в общем объёме.'.
 				#radar -> 'Диаграмма с несколькими осями для одновременного отображения нескольких независимых величин.'.
-				#tree -> 'Диаграмма для иерархического представления данных.'.
 			} asDictionary at: option
 		]
 ]
@@ -181,7 +179,6 @@ DvtVisualizerPresenter >> onVisualizationDropListSelectedItemChanged [
 		#graph -> DvtGrapherVisualizationEditor.
 		#pieChart -> DvtPieChartVisualizationEditor.
 		#radar -> DvtRadarVisualizationEditor.
-		#tree -> DvtTreeVisualizationEditor.
 	} asDictionary at: (configData at: #type).
 	
 	visualizationEditorPanel
