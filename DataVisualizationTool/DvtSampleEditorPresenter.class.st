@@ -397,6 +397,11 @@ DvtSampleEditorPresenter >> sampleTable [
 	^ sampleTable
 ]
 
+{ #category : #api }
+DvtSampleEditorPresenter >> title [
+	^ super title , ' - редактор выборки'
+]
+
 { #category : #private }
 DvtSampleEditorPresenter >> updateDataSetDropList [
 	dataSetDropList setIndex: 0.

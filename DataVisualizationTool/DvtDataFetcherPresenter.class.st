@@ -315,6 +315,11 @@ DvtDataFetcherPresenter >> requestLabel [
 	^ requestLabel
 ]
 
+{ #category : #api }
+DvtDataFetcherPresenter >> title [
+	^ super title , ' - сборщик данных'
+]
+
 { #category : #private }
 DvtDataFetcherPresenter >> updateDataSetDropList [
 	dataSetDropList setIndex: 0.

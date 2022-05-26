@@ -216,6 +216,11 @@ DvtVisualizerPresenter >> sampleTable [
 	^ sampleTable
 ]
 
+{ #category : #api }
+DvtVisualizerPresenter >> title [
+	^ super title , ' - визуализатор'
+]
+
 { #category : #private }
 DvtVisualizerPresenter >> updateSampleDropList [
 	sampleDropList
